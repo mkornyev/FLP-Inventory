@@ -1,0 +1,1 @@
+web: gunicorn ReEntryApp.wsgi --log-file -
