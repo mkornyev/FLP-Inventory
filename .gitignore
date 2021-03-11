@@ -1,0 +1,10 @@
+# FLP GitIgnore
+*.pyc
+db.sqlite3
+migrations
+.DS_Store
+.vscode/
+djangoEnv/
+inventory/__pycache__
+flp/__pycache__
+inventory/migrations/__pycache__
