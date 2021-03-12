@@ -1,0 +1,1 @@
+web: gunicorn flp.wsgi --log-file -
