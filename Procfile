@@ -1,1 +1,1 @@
-web: gunicorn ReEntryApp.wsgi --log-file -
+web: gunicorn flp.wsgi --log-file -
