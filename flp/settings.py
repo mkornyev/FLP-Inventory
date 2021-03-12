@@ -25,7 +25,7 @@ SECRET_KEY = '=ads&*+!$6j2rhf4=&!wpa6c0+cz2ippgu)q))j@7b#&y@8r(+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'inventory'
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'flp.urls'
+
+# URL to use if the authentication system requires a user to log in.
+LOGIN_URL = '/inventory/login'
+
+# Default URL to redirect to after a user logs in.
+LOGIN_REDIRECT_URL = '/inventory/'
 
 TEMPLATES = [
     {
