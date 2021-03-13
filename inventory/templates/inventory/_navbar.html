@@ -1,0 +1,88 @@
+{% block navbar %} 
+	<nav id="app-nav" class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+		<!-- Render the logo -->
+		<a class="navbar-brand" href="{% url 'Home' %}">
+			{% load static %}
+			<img src="{% static 'inventory/logo.png' %}" width="35" height="33" class="d-inline-block align-top" alt="FLP Logo">
+			<b>&nbsp;&nbsp;Foster Love Project&nbsp;&nbsp;</b>
+		</a>
+
+		<!-- Create the hamburger button -->
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		
+		<div class="collapse navbar-collapse" id="navbarText">
+			<ul class="navbar-nav ml-auto">
+
+				<!-- Set up the resources link -->
+				<li class="nav-item">
+					{%  url 'Home' as resources_url %}
+					<a class="nav-link {% if request.path == resources_url %}active{% endif %}" href="{{ resources_url }}">Resources</span></a>
+				</li>
+        
+        <!-- SOME SAMPLE CODE I STOLE FROM ANOTEHR PROJECT: -->
+				<!-- Only show the tags link if the user is logged in and an admin -->
+				{% if user.is_superuser %}
+					<li class="nav-item">
+						{%  url 'Tags' as tags_url %}
+						<a class="nav-link {% if request.path == tags_url %}active{% endif %}" href="{{ tags_url }}">Tags</a>
+					</li>
+				{% endif %}
+
+				<!-- Only show the referrals link if the user is logged in -->
+				{% if user.is_authenticated %}
+					<li class="nav-item">
+						{% url 'Referrals' as referrals_url %}
+						<a class="nav-link {% if request.path == referrals_url %}active{% endif %}" href="{{ referrals_url }}">Referrals</a>
+					</li>
+				{% endif %}
+
+				<!-- Only show the case load link if the user is logged in -->
+				{% if user.is_staff %}
+					<li class="nav-item">
+						{% url 'Case Load' as case_load_url %} 
+						<a class="nav-link {% if request.path == case_load_url %}active{% endif %}" href="{{ case_load_url }}">Case Load</a>
+					</li>
+				{% endif %}
+
+				<!-- Only show the dashboard link if the user is logged in and an admin -->
+				{% if user.is_superuser %}
+					<li class="nav-item">
+						{% url 'Dashboard' as dashboard_url %}
+						<a class="nav-link {% if request.path == dashboard_url %}active{% endif %}" href="{{ dashboard_url }}">Dashboard</a>
+					</li>
+				{% endif %}
+
+				<!-- Only show the log out link if the user is logged in -->
+				{% if user.is_authenticated %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'Logout' %}">Log Out</a>
+					</li>
+				{% else %}
+
+					<!-- Only show the log in link if the user is logged out -->
+					<li class="nav-item">
+						{% url 'Login' as login_url %}
+						<a class="nav-link {% if request.path == login_url %}active{% endif %}" href="{{ login_url }}">Log In</a>
+					</li>
+
+					<!-- Only show the about link if the user is logged out -->
+					<li class="nav-item">
+						{% url 'About' as about_url %}
+						<a class="nav-link {% if request.path == about_url %}active{% endif %}" href="{{ about_url }}">About</a>
+					</li>
+				{% endif %}
+
+				<!-- Only show the change password link if the user is logged in -->
+				{% if user.is_staff %}
+					<li class="nav-item">
+						{% url 'password_change' as change_password_url %}
+						<a class="nav-link {% if request.path == change_password_url %}active{% endif %}" href="{{ change_password_url }}"><i class="material-icons" style="font-size: 20px;">settings</i></a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+	</nav>
+{% endblock %}

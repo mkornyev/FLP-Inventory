@@ -1,0 +1,34 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_styles %}
+  <style>
+    .about-spacer {
+      padding-bottom: 5vh;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}{% block navtitle %}
+	About
+{% endblock %}{% endblock %}
+
+
+{% block content %}
+
+    <div>
+        <h1 class="text-white parallax-text">WHO WE ARE</h1>
+    </div>
+
+    <div class="container" style="padding-top: 5vh;">
+        <h2>What is the Foster Love Project?</h2>
+        <br />
+        <p>The mission of Foster Love Project is to provide love in action to foster children as well as support to the foster families who are providing care for them. This may look like providing a placement bag for a child, easing the transition with gift cards, assisting with additional resources or connecting families with a time of respite.</p>
+
+        <p>
+        Contact the webmasters for additional info:<br>
+        <a href="https://github.com/alex-bellomo">Alex Bellomo</a> | <a href="https://github.com/mkornyev">Max Kornyev</a> | <a href="https://github.com/austin-leung">Austin Leung</a> | <a href="https://github.com/lydiaxing">Lydia Xing</a> | <a href="https://github.com/SeanEZhou">Sean Zhou</a>&nbsp;&copy; 2021 
+        </p>
+        
+        <div class="about-spacer"></div>
+    </div>
+{% endblock %}

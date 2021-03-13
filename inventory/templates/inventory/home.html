@@ -1,0 +1,29 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_styles %}
+  {% load static %}
+  <!-- <link href="{% static 'inventory/index_styles.css' %}" rel="stylesheet" type="text/css"> -->
+{% endblock %}
+
+{% block title %}
+  {% block navtitle %}
+  	Home
+  {% endblock %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+      <div class="row">
+          <div class="col-sm-6 mb-3">
+              {% load static %}
+              <img src="{% static 'inventory/logo.png' %}" width="280" height="264" class="" alt="FLP Logo">
+          </div>
+
+          <div class="col-sm-6 mb-3 ">
+              <p>The mission of Foster Love Project is to provide love in action to foster children as well as support to the foster families who are providing care for them. This may look like providing a placement bag for a child, easing the transition with gift cards, assisting with additional resources or connecting families with a time of respite.</p>
+          </div>
+      </div>
+  </div>
+
+{% endblock %}
