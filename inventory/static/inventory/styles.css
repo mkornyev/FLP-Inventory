@@ -1,0 +1,21 @@
+  
+/* App Styles  */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.content {
+  margin: auto;
+  margin-top: 10%;
+  width: 100%;
+}
