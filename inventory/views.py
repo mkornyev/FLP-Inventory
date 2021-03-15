@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse
@@ -70,3 +71,21 @@ def register_action(request):
 
     login(request, new_user)
     return redirect(reverse('home'))
+=======
+
+# IMPORTS 
+
+from django.shortcuts import render
+# from django.http import Http404, HttpResponse, HttpResponseRedirect #, JsonResponse
+# from django.shortcuts import render, redirect, get_object_or_404
+# from django.urls import reverse
+
+
+# BASIC VIEWS 
+
+def home(request): 
+	return render(request, 'inventory/home.html')
+
+def about(request):
+	return render(request, 'inventory/about.html')
+>>>>>>> 956df356c2727cba6e12dafcfc55080b332619e0

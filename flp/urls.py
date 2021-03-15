@@ -18,6 +18,9 @@ from django.urls import path, include
 from inventory import views
 
 urlpatterns = [
-    path('', views.login_action),
+    path('', views.home, name='Home'),
+    path('login/', views.login_action),
+    path('about/', views.about, name='About'),  
     path('inventory/', include('inventory.urls')),
+    path('admin/', admin.site.urls),
 ]

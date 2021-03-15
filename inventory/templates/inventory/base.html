@@ -1,36 +1,29 @@
 <!doctype html>
 <html>
 	<head>
-	    <meta charset="utf-8">
-	    {% load static %}
-		<link href="{% static 'inventory/base.css' %}" rel="stylesheet" type="text/css">
-		<title> {% block title %} inventory {% endblock %} </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    {% load static %}
+    <link href="{% static 'inventory/styles.css' %}" rel="stylesheet" type="text/css">
+    {% block page_specific_styles %}{% endblock %}
+    <link rel="icon" href="{% static 'inventory/logo.png' %}">
+    <title>Inventory | {% block title %}Home{% endblock %}</title>
+  
+    <!-- Material Icons CSS -->
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
 	</head>
 
 	<body>
-		<div class="big-heading">
-			Login
+		{% include 'inventory/_navbar.html' %}
+
+		<div class="content">
+			{% block content %}{% endblock %}
 		</div>
 
-	    <div class="user-info">
-			{% block user-info %}
-			{% endblock %}
-	    </div>
-
-	    <div class="search-bar">
-			{% block search-bar %}
-			{% endblock %}
-		</div>
-
-	    {% if message %}
-	        <div class="message">
-	            {{message}}
-	        </div>
-	    {% endif %}
-
-	    <div class="content">
-		    {% block content %}
-		    {% endblock %}
-		</div>
+		<!-- SCRIPTS: JQuery & Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+		{% block page_specific_scripts %}{% endblock %}
 	</body>
 </html>
