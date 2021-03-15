@@ -2,7 +2,7 @@
 
 {% block user-info %}
     <div>
-        <a href="{% url 'register' %}">
+        <a href="{% url 'Register' %}">
             <button>Register</button>
         </a>
     </div>
@@ -11,7 +11,7 @@
 {% block content %}
     <p>Login:</p>
 
-    <form method="post" action="{% url 'login' %}">
+    <form method="post" action="{% url 'Login' %}">
         <table>
             {{form}}
         </table>

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse
@@ -10,10 +9,14 @@ from django.contrib.auth import authenticate, login, logout
 from inventory.forms import LoginForm
 from inventory.forms import RegistrationForm
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the index.")
+# BASIC VIEWS
+def home(request): 
+	return render(request, 'inventory/home.html')
 
-# Create your views here.
+def about(request):
+	return render(request, 'inventory/about.html')
+
+# AUTH VIEWS
 def login_action(request):
     context = {}
 
@@ -35,11 +38,11 @@ def login_action(request):
                             password=form.cleaned_data['password'])
 
     login(request, new_user)
-    return redirect(reverse('home'))
+    return redirect(reverse('Home'))
 
 def logout_action(request):
     logout(request)
-    return redirect(reverse('login'))
+    return redirect(reverse('Login'))
 
 def register_action(request):
     context = {}
@@ -70,22 +73,4 @@ def register_action(request):
                             password=form.cleaned_data['password1'])
 
     login(request, new_user)
-    return redirect(reverse('home'))
-=======
-
-# IMPORTS 
-
-from django.shortcuts import render
-# from django.http import Http404, HttpResponse, HttpResponseRedirect #, JsonResponse
-# from django.shortcuts import render, redirect, get_object_or_404
-# from django.urls import reverse
-
-
-# BASIC VIEWS 
-
-def home(request): 
-	return render(request, 'inventory/home.html')
-
-def about(request):
-	return render(request, 'inventory/about.html')
->>>>>>> 956df356c2727cba6e12dafcfc55080b332619e0
+    return redirect(reverse('Home'))
