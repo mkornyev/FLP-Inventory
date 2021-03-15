@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
+from inventory.forms import RegistrationForm
 
 def index(request):
     return HttpResponse("Hello, world. You're at the index.")
