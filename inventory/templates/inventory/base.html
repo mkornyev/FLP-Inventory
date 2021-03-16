@@ -17,6 +17,11 @@
 	<body>
 		{% include 'inventory/_navbar.html' %}
 
+		{% if message %}
+			<!-- A flash popup for user messages -->
+			<div class="message">{{message}}</div>
+		{% endif %}
+
 		<div class="content">
 			{% block content %}{% endblock %}
 		</div>
