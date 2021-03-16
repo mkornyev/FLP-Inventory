@@ -11,28 +11,35 @@
 
 
 {% block content %}
-    <p>Register:</p>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Register:</h1>
 
-    <form method="post" action="{% url 'Register' %}">
-        <table>
-            {% for field in form.visible_fields %}
-                <tr>
-                    <td>{{field.label_tag}}</td>
-                    <td>{{field}}</td>
-                    <td class="error">
-                        {% for error in field.errors %} {{error}} {% endfor %}
-                    </td>
-                </tr>
+            <form method="POST" action="{% url 'Register' %}">
+                <table>
+                    {% for field in form.visible_fields %}
+                        <tr>
+                            <td>{{field.label_tag}}</td>
+                            <td>{{field}}</td>
+                            <td class="error">
+                                {% for error in field.errors %} {{error}} {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {% csrf_token %}
+                <br>
+                <button class="btn btn-primary" type="submit">Register</button>
+            </form>
+
+            {% for error in form.non_field_errors %}
+                <p class="error">
+                    {{ error }}
+                </p>
             {% endfor %}
-        </table>
-        {% csrf_token %}
-        <button type="submit">Register</button>
-    </form>
-
-    {% for error in form.non_field_errors %}
-        <p class="error">
-            {{ error }}
-        </p>
-    {% endfor %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}
