@@ -118,8 +118,9 @@ USE_TZ = True
 #####################################################
 
 # AUTH 
-LOGIN_URL = '/login'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/inventory/login' # URL to use if the authentication system requires a user to log in.
+LOGIN_REDIRECT_URL = '/inventory/' # Default URL to redirect to after a user logs in.
+
 # Makes our custom user the base used for authentication (overrides django default)
 # AUTH_USER_MODEL = 'inventory.User'
 

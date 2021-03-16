@@ -18,7 +18,10 @@ from django.urls import path
 from inventory import views
 
 urlpatterns = [
+    path('', views.home, name="Home"),
+    path('about/', views.about, name="About"),  
+    path('login/', views.login_action, name='Login'),
+    path('logout/', views.logout_action, name='Logout'),
+    path('register/', views.register_action, name='Register'),
     path('admin/', admin.site.urls),
-    path('', views.home, name='Home'),
-    path('about/', views.about, name='About'),  
 ]
