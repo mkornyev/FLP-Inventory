@@ -41,13 +41,13 @@ The following will set up a python environment for this project using `virtualen
 * `python manage.py populate`
 	* Creates sample model data for testing 
 
+###### Drop
+
+* `python manage.py drop`
+	* Destroys all objects 
+
 ## THE FOLLOWING HAVE NOT YET BEEN WRITTEN
 
 ### Test Suite 
 
 * Run the suite with `./manage.py test`
-
-###### Drop
-
-* `python manage.py drop`
-	* Destroys all objects 
