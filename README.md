@@ -34,17 +34,18 @@ The following will set up a python environment for this project using `virtualen
 
 <hr></hr>
 
-## THE FOLLOWING HAVE NOT YET BEEN WRITTEN
-
-### Test Suite 
-
-* Run the suite with `./manage.py test`
-
 ### Included Scripts 
 
 ###### Populate
 
 * `python manage.py populate`
+	* Creates sample model data for testing 
+
+## THE FOLLOWING HAVE NOT YET BEEN WRITTEN
+
+### Test Suite 
+
+* Run the suite with `./manage.py test`
 
 ###### Drop
 
