@@ -1,0 +1,36 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_styles %}
+  <style>
+    .about-spacer {
+      padding-bottom: 5vh;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}{% block navtitle %}
+  Check In
+{% endblock %}{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Check In:</h1>
+
+            <form method="POST" action="{% url 'Checkin' %}">
+                <table>
+                    {{form}}
+                </table>
+                {% csrf_token %}
+                <br>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
