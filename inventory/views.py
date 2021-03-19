@@ -4,6 +4,7 @@ from django.urls import reverse
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
 from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
@@ -72,6 +73,8 @@ def checkin_action(request):
     context = {}
 
     if request.method == 'GET':
+        context['items'] = Item.objects.all()
+        context['categories'] = Category.objects.all()
         context['form'] = CheckinForm()
         return render(request, 'inventory/checkin.html', context)
 
@@ -80,5 +83,27 @@ def checkin_action(request):
 
     if not form.is_valid():
         return render(request, 'inventory/checkin.html', context)
+
+    category = form.cleaned_data['category']
+    name = form.cleaned_data['name']
+    price = form.cleaned_data['price']
+    quantity = form.cleaned_data['quantity']
+
+    item = Item.objects.filter(name=name).first()
+    if not item:
+        newItem = Item(category=category, name=name, price=price)
+        newItem.save()
+        item = newItem
+    
+    tx = ItemTransaction(item=item, quantity=quantity)
+    tx.save()
+
+    checkin = Checkin()
+    checkin.save()
+    # checkin = Checkin(user=request.user)
+    checkin.items.add(tx)
+
+    item.quantity += tx.quantity
+    item.save()
 
     return redirect(reverse('Home'))
