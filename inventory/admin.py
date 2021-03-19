@@ -21,7 +21,7 @@ class ItemTransactionAdmin(admin.ModelAdmin):
 admin.site.register(ItemTransaction, ItemTransactionAdmin)
 
 class CheckinAdmin(admin.ModelAdmin):
-    list_display = ('user', 'datetime', 'in_items', )
+    list_display = ('user', 'in_items', 'datetime', )
 admin.site.register(Checkin, CheckinAdmin)
 
 class CheckoutAdmin(admin.ModelAdmin):
