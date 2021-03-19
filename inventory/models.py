@@ -42,7 +42,9 @@ class Checkin(models.Model):
   items = models.ManyToManyField(ItemTransaction, blank=False)
 
   def __str__(self):
-    return "({}, {})".format(self.datetime, self.items)
+    return "({}, {})".format(self.datetime, self.in_items())
+  def in_items(self):
+        return ", ".join([str(i) for i in self.items.all()])
 
 class Checkout(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
@@ -51,4 +53,6 @@ class Checkout(models.Model):
   datetime = models.DateTimeField(default=datetime.now)
 
   def __str__(self):
-    return "({}, {})".format(self.family, self.items)
+    return "({}, {})".format(self.family, self.out_items())
+  def out_items(self):
+        return ", ".join([str(i) for i in self.items.all()])
