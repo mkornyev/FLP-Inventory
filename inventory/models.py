@@ -29,8 +29,14 @@ class Checkin(models.Model):
   datetime = models.DateTimeField(default=datetime.now)
   items = models.ManyToManyField(ItemTransaction, blank=False)
 
+  def in_items(self):
+        return ", ".join([str(i) for i in self.items.all()])
+
 class Checkout(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
   family = models.ForeignKey(Family, on_delete=models.PROTECT, blank=True, null=True)
   items = models.ManyToManyField(ItemTransaction, blank=False)
   datetime = models.DateTimeField(default=datetime.now)
+
+  def out_items(self):
+        return ", ".join([str(i) for i in self.items.all()])
