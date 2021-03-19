@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
 from inventory.forms import RegistrationForm
+from inventory.forms import CheckinForm
 
 # BASIC VIEWS
 def home(request): 
@@ -64,4 +65,20 @@ def register_action(request):
                             password=form.cleaned_data['password1'])
 
     login(request, new_user)
+    return redirect(reverse('Home'))
+
+# CHECKIN VIEWS
+def checkin_action(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = CheckinForm()
+        return render(request, 'inventory/checkin.html', context)
+
+    form = CheckinForm(request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'inventory/checkin.html', context)
+
     return redirect(reverse('Home'))
