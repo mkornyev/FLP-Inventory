@@ -4,7 +4,7 @@ from django.urls import reverse
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
+from inventory.models import Category, Item, ItemTransaction, Checkin
 from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
