@@ -36,6 +36,12 @@ The following will set up a python environment for this project using `virtualen
 
 ### Included Scripts 
 
+##### Admin
+
+* `python manage.py createsuperuser`
+	* Create an admin username and password
+* Log into admin view at <a href="http://localhost:8000/admin/">localhost:8000/admin/</a>
+
 ###### Populate
 
 * `python manage.py populate`
