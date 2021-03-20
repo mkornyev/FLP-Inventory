@@ -8,37 +8,37 @@ class Command(BaseCommand):
     help = 'Run this script to destroy all objects.'
 
     def _destroy_users(self):
-        users = User.objects.all().delete() 
+        User.objects.all().delete() 
 
         print("\nUsers deleted.\n")
 
     def _destroy_families(self):
-        families = Family.objects.all().delete() 
+        Family.objects.all().delete() 
 
         print("\nFamilies deleted.\n")
 
     def _destroy_categories(self):
-        categories = Category.objects.all().delete() 
+        Category.objects.all().delete() 
 
         print("\nCategories deleted.\n")
 
     def _destroy_items(self):
-        items = Item.objects.all().delete() 
+        Item.objects.all().delete() 
 
         print("\nItems deleted.\n")
 
     def _destroy_item_transactions(self):
-        item_transactions = ItemTransaction.objects.all().delete() 
+        ItemTransaction.objects.all().delete() 
 
         print("\nItemTransactions deleted.\n")
 
     def _destroy_checkins(self):
-        checkins = Checkin.objects.all().delete() 
+        Checkin.objects.all().delete() 
 
         print("\nCheckins deleted.\n")
 
     def _destroy_checkouts(self):
-        checkouts = Checkout.objects.all().delete() 
+        Checkout.objects.all().delete() 
 
         print("\nCheckouts deleted.\n")
 
