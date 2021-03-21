@@ -46,13 +46,13 @@ The following will set up a python environment for this project using `virtualen
 
 * `python manage.py populate`
 	* Creates sample model data for testing 
+	* Creates a superuser login: `<username>:<pass>` | `admin:admin`
+	* Creates a staff login: `<username>:<pass>` | `staff:staff`
 
 ###### Drop
 
 * `python manage.py drop`
 	* Destroys all objects 
-
-## THE FOLLOWING HAVE NOT YET BEEN WRITTEN
 
 ### Test Suite 
 

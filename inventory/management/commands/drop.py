@@ -10,37 +10,37 @@ class Command(BaseCommand):
     def _destroy_users(self):
         User.objects.all().delete() 
 
-        print("\nUsers deleted.\n")
+        print("Users deleted.")
 
     def _destroy_families(self):
         Family.objects.all().delete() 
 
-        print("\nFamilies deleted.\n")
+        print("Families deleted.")
 
     def _destroy_categories(self):
         Category.objects.all().delete() 
 
-        print("\nCategories deleted.\n")
+        print("Categories deleted.")
 
     def _destroy_items(self):
         Item.objects.all().delete() 
 
-        print("\nItems deleted.\n")
+        print("Items deleted.")
 
     def _destroy_item_transactions(self):
         ItemTransaction.objects.all().delete() 
 
-        print("\nItemTransactions deleted.\n")
+        print("ItemTransactions deleted.")
 
     def _destroy_checkins(self):
         Checkin.objects.all().delete() 
 
-        print("\nCheckins deleted.\n")
+        print("\nCheckins deleted.")
 
     def _destroy_checkouts(self):
         Checkout.objects.all().delete() 
 
-        print("\nCheckouts deleted.\n")
+        print("Checkouts deleted.")
 
     def handle(self, *args, **options):
         self._destroy_checkins()
