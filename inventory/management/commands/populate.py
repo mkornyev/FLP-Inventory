@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from inventory.models import User, Family, Category, Item, ItemTransaction, Checkin, Checkout
+from datetime import date, timedelta
 
 # POPULATE SCRIPT
 
@@ -23,32 +24,72 @@ class Command(BaseCommand):
         print("Staff has been created.")
 
     def _create_sample_objects(self):
+        today = date.today()
+        five_days_ago = today - timedelta(days=5)
+        ten_days_ago = today - timedelta(days=10)
+
 
         family = Family.objects.create(name="Jones-Indiana")
         family.save()
         print("Family has been created.")
 
-        category = Category.objects.create(name="Clothes")
-        category.save()
+        category1 = Category.objects.create(name="Clothes")
+        category1.save()
+        category2 = Category.objects.create(name="Expirable")
+        category2.save()
+        category3 = Category.objects.create(name="Expensive Items")
+        category3.save()
         print("Category has been created.")
 
-        shirt = Item.objects.create(category=category, name="tshirt boys 4", price=10.56, quantity=10)
-        shirt.save()
+        item1 = Item.objects.create(category=category1, name="tshirt boys 4", price=10.56, quantity=10)
+        item1.save()
+        item2 = Item.objects.create(category=category1, name="jacket", price=13.50, quantity=18)
+        item2.save()
+        item3 = Item.objects.create(category=category3, name="stroller", price=45.00, quantity=5)
+        item3.save()
+        item4 = Item.objects.create(category=category2, name="formula", price=5.56, quantity=15)
+        item4.save()
         print("Item has been created.")
 
-        transaction = ItemTransaction.objects.create(item=shirt, quantity=2)
-        transaction.save()
+        tx2 = ItemTransaction.objects.create(item=item3, quantity=1)
+        tx2.save()
+        tx3 = ItemTransaction.objects.create(item=item2, quantity=5)
+        tx3.save()
+        tx4 = ItemTransaction.objects.create(item=item4, quantity=3)
+        tx4.save()
+        tx1 = ItemTransaction.objects.create(item=item1, quantity=2)
+        tx1.save()
+        
         print("Transaction has been created.")
 
         staffUsr = User.objects.filter(first_name='Max').first()
 
-        checkin = Checkin.objects.create(user=staffUsr)
-        checkin.items.add(transaction)
+        checkin = Checkin.objects.create(user=staffUsr, datetime=five_days_ago)
+        checkin.items.add(tx1)
+        checkin.save()
+
+        checkin = Checkin.objects.create(user=staffUsr, datetime=five_days_ago)
+        checkin.items.add(tx2)
         checkin.save()
         print("Checkin has been created.")
 
-        checkout = Checkout.objects.create(user=staffUsr, family=family)
-        checkout.items.add(transaction)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago)
+        checkout.items.add(tx4)
+        checkout.items.add(tx1)
+        checkout.save()
+
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago)
+        checkout.items.add(tx2)
+        checkout.items.add(tx1)
+        checkout.items.add(tx4)
+        checkout.save()
+
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago)
+        checkout.items.add(tx3)
+        checkout.save()
+
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=ten_days_ago)
+        checkout.items.add(tx3)
         checkout.save()
         print("Checkout has been created.")
     
