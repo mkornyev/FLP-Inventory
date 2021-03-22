@@ -160,7 +160,7 @@ def additemout_action(request):
         name = form.cleaned_data['name']
         price = form.cleaned_data['price']
         quantity = form.cleaned_data['quantity']
-        family = form.cleaned_data['family']
+        # family = form.cleaned_data['family']
 
         item = Item.objects.filter(name=name).first()
         if not item:
