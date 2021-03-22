@@ -6,17 +6,22 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
-from inventory.forms import LoginForm
-from inventory.forms import RegistrationForm
+from inventory.forms import LoginForm, RegistrationForm
+from inventory.models import Checkin, Checkout
 
-# BASIC VIEWS
+from datetime import date, timedelta
+
+######################### BASIC VIEWS #########################
+
 def home(request): 
 	return render(request, 'inventory/home.html')
 
 def about(request):
 	return render(request, 'inventory/about.html')
 
-# AUTH VIEWS
+
+######################### AUTH VIEWS ##########################
+
 def login_action(request):
     context = {}
 
@@ -65,3 +70,32 @@ def register_action(request):
 
     login(request, new_user)
     return redirect(reverse('Home'))
+
+
+######################### OTHER ACTIONS #########################
+
+def generate_report(request):
+    context = {}
+
+    if 'start-date' in request.POST \
+        and 'end-date' in request.POST \
+        and 'tx-type' in request.POST \
+        and (request.POST['tx-type'] in ['Checkin', 'Checkout']):
+
+        context['endDate'] = request.POST['end-date']
+        context['startDate'] = request.POST['start-date']
+        context['tx'] = request.POST['tx-type']
+
+        if request.POST['tx-type'] == 'Checkin':
+            context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
+        else:
+            context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
+
+        
+        return render(request, 'inventory/generate_report.html', context)
+
+    today = date.today()
+    weekAgo = today - timedelta(days=7)
+    context['endDate'] = today.strftime('%Y-%m-%d')
+    context['startDate'] = weekAgo.strftime('%Y-%m-%d')
+    return render(request, 'inventory/generate_report.html', context)

@@ -18,10 +18,16 @@ from django.urls import path
 from inventory import views
 
 urlpatterns = [
+    # GENERIC ROUTES 
+    path('admin/', admin.site.urls),
     path('', views.home, name="Home"),
     path('about/', views.about, name="About"),  
+
+    # AUTH ROUTES 
     path('login/', views.login_action, name='Login'),
     path('logout/', views.logout_action, name='Logout'),
     path('register/', views.register_action, name='Register'),
-    path('admin/', admin.site.urls),
+
+    # ACTION ROUTES
+    path('report/', views.generate_report, name='Report'),
 ]

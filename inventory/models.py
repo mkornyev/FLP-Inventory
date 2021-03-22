@@ -41,6 +41,12 @@ class Checkin(models.Model):
   datetime = models.DateTimeField(default=datetime.now)
   items = models.ManyToManyField(ItemTransaction, blank=False)
 
+  def getValue(self):
+    val = 0
+    for tx in self.items.all().select_related("item"):
+      val += (tx.item.price * tx.quantity)
+    return val
+
   def __str__(self):
     return "({}, {})".format(self.datetime, self.in_items())
   def in_items(self):
@@ -51,6 +57,12 @@ class Checkout(models.Model):
   family = models.ForeignKey(Family, on_delete=models.PROTECT, blank=True, null=True)
   items = models.ManyToManyField(ItemTransaction, blank=False)
   datetime = models.DateTimeField(default=datetime.now)
+
+  def getValue(self):
+    val = 0
+    for tx in self.items.all().select_related("item"):
+      val += (tx.item.price * tx.quantity)
+    return val
 
   def __str__(self):
     return "({}, {})".format(self.family, self.out_items())

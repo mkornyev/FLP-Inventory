@@ -17,5 +17,16 @@ a:hover {
 .content {
   margin: auto;
   margin-top: 10%;
+  margin-bottom: 10%;
   width: 100%;
+}
+
+/* Report Generation: */
+
+form.check-report-form {
+  width: 80%;
+}
+
+form.check-report-form input.date-input {
+  max-width: 225px;
 }

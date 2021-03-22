@@ -1,0 +1,92 @@
+{% extends "inventory/base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Generate Report:</h1><br>
+
+            <form class="check-report-form" method="POST" action="{% url 'Report' %}">
+
+                <div class="row">
+
+                  <div class="col">
+                    <label class="mb-3">Report Type:&nbsp;&nbsp;</label><br>
+
+                    <div class="btn-group" role="group" aria-label="Transaction toggle group">
+                      <input type="radio" class="btn-check" name="tx-type" value="Checkout" id="radio1" autocomplete="off" {% if tx == 'Checkout' %}checked{% endif %} required>
+                      <label class="btn btn-outline-primary" for="radio1">CheckOut</label>
+
+                      <input type="radio" class="btn-check" name="tx-type" value="Checkin" id="radio2" autocomplete="off" {% if tx == 'Checkin' %}checked{% endif %} required>
+                      <label class="btn btn-outline-primary" for="radio2">CheckIn</label>
+                    </div><br><br>
+                  </div>
+
+                  <div class="col">
+                    <label for="date1" class="mb-3">Start Date:</label>
+                    <input class="form-control date-input" name="start-date" type="date" value="{{ startDate }}" id="date1"><br>
+                  </div>
+
+                  <div class="col">
+                    <label for="date2" class="mb-3">End Date:</label>
+                    <input class="form-control date-input" name="end-date" type="date" value="{{ endDate }}" id="date2">
+                    <!-- <br> -->
+                  </div>
+
+                  <div class="col mt-2"><br>
+                    <button class="btn btn-lg btn-warning" type="submit">Generate</button>
+                  </div>
+                </div>
+
+                {% csrf_token %}
+            </form>
+
+            <hr>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col">
+        {% if results %}
+          <h4>Filtered {{ tx }}s:</h4>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                {% if results.0.family %}
+                  <th scope="col">Family</th>
+                {% endif %}
+                <th scope="col">Value</th>
+                <th scope="col">Items</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in results %}
+              <tr>
+                <th scope="row">{{ c.id }}</th>
+                <td>{{ c.datetime }}</td>
+                {% if c.family %}
+                  <td>{{ c.family.name }}</td>
+                {% endif %}
+                <td>{{ c.getValue }}</td>
+                <td>
+                {% for tx in c.items.all %}
+                  {{ tx.item.name }}({{ tx.quantity }}){% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% elif results|length == 0 %}
+          <p>No results for the specified filters.</p>
+        {% else %}
+          <p>Generate a report to see it below.</p>
+        {% endif %}
+      </div>
+    </div>
+</div>
+
+{% endblock %}
