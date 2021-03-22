@@ -2,12 +2,11 @@
 
 {% block content %}
 
+<form class="check-report-form" method="POST" action="{% url 'Report' %}">
 <div class="container">
     <div class="row">
         <div class="col">
             <h1>Generate Report:</h1><br>
-
-            <form class="check-report-form" method="POST" action="{% url 'Report' %}">
 
                 <div class="row">
 
@@ -40,7 +39,6 @@
                 </div>
 
                 {% csrf_token %}
-            </form>
 
             <hr>
         </div>
@@ -80,6 +78,42 @@
               {% endfor %}
             </tbody>
           </table>
+
+          <!-- Pagination -->
+          {% if results.has_other_pages %}
+          <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                  {% if results.has_previous %}
+                      <li class="page-item">
+                          <button type="submit" name="page" value="{{ results.previous_page_number }}" class="page-link" aria-label="Previous">Previous</button>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                  {% endif %}
+
+                  {% for i in results.paginator.page_range %}
+                      {% if results.number == i %}
+                          <li class="page-item active">
+                              <span class="page-link">{{ i }}</span>
+                          </li>
+                      {% else %}
+                          <li class="page-item">
+                              <button type="submit" name="page" value="{{ i }}" class="page-link">{{ i }}</button>
+                          </li>
+                      {% endif %}
+                  {% endfor %}
+
+                  {% if results.has_next %}
+                      <li class="page-item">
+                          <button type="submit" name="page" value="{{ results.next_page_number }}" class="page-link" aria-label="Previous">Next</button>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled"><span class="page-link">Next</span></li>
+                  {% endif %}
+              </ul>
+          </nav>
+          {% endif %}
+
         {% elif results|length == 0 %}
           <p>No results for the specified filters.</p>
         {% else %}
@@ -88,5 +122,6 @@
       </div>
     </div>
 </div>
+</form>
 
 {% endblock %}

@@ -5,11 +5,14 @@ from django.urls import reverse
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inventory.forms import LoginForm, RegistrationForm
 from inventory.models import Checkin, Checkout
 
 from datetime import date, timedelta
+
+DEFAULT_PAGINATION_SIZE = 25
 
 ######################### BASIC VIEWS #########################
 
@@ -91,7 +94,8 @@ def generate_report(request):
         else:
             context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
 
-        
+        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+
         return render(request, 'inventory/generate_report.html', context)
 
     today = date.today()
@@ -99,3 +103,18 @@ def generate_report(request):
     context['endDate'] = today.strftime('%Y-%m-%d')
     context['startDate'] = weekAgo.strftime('%Y-%m-%d')
     return render(request, 'inventory/generate_report.html', context)
+
+
+######################### VIEW HELPERS #########################
+
+def getPagination(request, objects, count):
+    page = request.POST.get('page', 1)
+    paginator = Paginator(objects, count)
+    
+    try:
+        paginationOut = paginator.page(page)
+    except PageNotAnInteger:
+        paginationOut = paginator.page(1)
+    except EmptyPage:
+        paginationOut = paginator.page(paginator.num_pages)
+    return paginationOut

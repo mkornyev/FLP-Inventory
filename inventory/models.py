@@ -51,6 +51,9 @@ class Checkin(models.Model):
     return "({}, {})".format(self.datetime, self.in_items())
   def in_items(self):
         return ", ".join([str(i) for i in self.items.all()])
+  
+  class Meta:
+    ordering = ['-datetime']
 
 class Checkout(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
@@ -68,3 +71,6 @@ class Checkout(models.Model):
     return "({}, {})".format(self.family, self.out_items())
   def out_items(self):
         return ", ".join([str(i) for i in self.items.all()])
+  
+  class Meta:
+    ordering = ['-datetime']
