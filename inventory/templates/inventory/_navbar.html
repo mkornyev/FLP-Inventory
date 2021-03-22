@@ -26,6 +26,11 @@
 					{%  url 'Checkin' as checkin_url %}
 					<a class="nav-link {% if request.path == checkin_url %}active{% endif %}" href="{{ checkin_url }}">Check In</span></a>
 				</li>
+
+				<li class="nav-item">
+					{%  url 'Checkout' as checkout_url %}
+					<a class="nav-link {% if request.path == checkout_url %}active{% endif %}" href="{{ checkout_url }}">Check Out</span></a>
+				</li>
         
         <!-- SOME SAMPLE CODE I STOLE FROM ANOTEHR PROJECT: -->
 				<!-- Only show the tags link if the user is logged in and an admin -->
