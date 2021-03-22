@@ -70,7 +70,7 @@ class RegistrationForm(forms.Form):
         # dictionary
         return username
 
-class CheckinForm(forms.Form):
+class AddItemForm(forms.Form):
     category   = forms.ModelChoiceField(queryset=Category.objects.all())
     name = forms.CharField(max_length=50)
     price =  forms.DecimalField(max_digits=6, decimal_places=2)

@@ -8,11 +8,8 @@ from datetime import datetime
 # MODELS 
 
 class Family(models.Model):
-	name = models.CharField(max_length=50, blank=False, null=False)
-	# first_seen = models.DateTimeField(default=datetime.now)
-
-	def __str__(self):
-		return self.name
+  name = models.CharField(max_length=50, blank=False, null=False)
+  # first_seen = models.DateTimeField(default=datetime.now)
 
   def __str__(self):
     return "{}".format(self.name)
@@ -40,9 +37,9 @@ class ItemTransaction(models.Model):
     return "({}, {})".format(self.item, self.quantity)
 
 class Checkin(models.Model):
-	user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
-	datetime = models.DateTimeField(default=datetime.now)
-	items = models.ManyToManyField(ItemTransaction, blank=False)
+  user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
+  datetime = models.DateTimeField(default=datetime.now)
+  items = models.ManyToManyField(ItemTransaction, blank=False)
 
   def __str__(self):
     return "({}, {})".format(self.datetime, self.in_items())

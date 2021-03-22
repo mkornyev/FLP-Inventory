@@ -13,6 +13,7 @@
 {% endblock %}{% endblock %}
 
 
+
 {% block content %}
 
 <div class="container">
@@ -20,10 +21,29 @@
         <div class="col">
             <h1>Check In:</h1>
 
-            <form method="POST" action="{% url 'Checkin' %}">
+            <table>
+              <tr>
+                  <th>Item</th>
+                  <th>Quantity</th>
+              </tr>
+              {% for tx in transactions %}
+                <tr> 
+                    <td>{{ tx.item}}</td>
+                    <td>{{ tx.quantity }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+
+            <form method="POST" action="{% url 'AddItem' %}">
                 <table>
                     {{form}}
                 </table>
+                {% csrf_token %}
+                <br>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+
+            <form method="POST" action="{% url 'Checkin' %}">
                 {% csrf_token %}
                 <br>
                 <button class="btn btn-primary" type="submit">Submit</button>
