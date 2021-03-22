@@ -34,19 +34,26 @@ The following will set up a python environment for this project using `virtualen
 
 <hr></hr>
 
-## THE FOLLOWING HAVE NOT YET BEEN WRITTEN
-
-### Test Suite 
-
-* Run the suite with `./manage.py test`
-
 ### Included Scripts 
+
+##### Admin
+
+* `python manage.py createsuperuser`
+	* Create an admin username and password
+* Log into admin view at <a href="http://localhost:8000/admin/">localhost:8000/admin/</a>
 
 ###### Populate
 
 * `python manage.py populate`
+	* Creates sample model data for testing 
+	* Creates a superuser login: `<username>:<pass>` | `admin:admin`
+	* Creates a staff login: `<username>:<pass>` | `staff:staff`
 
 ###### Drop
 
 * `python manage.py drop`
 	* Destroys all objects 
+
+### Test Suite 
+
+* Run the suite with `./manage.py test`

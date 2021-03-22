@@ -1,13 +1,9 @@
 {% extends "inventory/base.html" %}
 
 
-{% block user-info %}
-    <div>
-        <a href="{% url 'Login' %}">
-            <button>Login</button>
-        </a>
-    </div>
-{% endblock %}
+{% block title %}{% block navtitle %}
+	Register
+{% endblock %}{% endblock %}
 
 
 {% block content %}
