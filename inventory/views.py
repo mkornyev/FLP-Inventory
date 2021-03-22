@@ -141,3 +141,76 @@ def checkin_action(request):
     request.session.modified = True
 
     return redirect(reverse('Home'))
+
+# CHECKOUT VIEWS
+def additemout_action(request):
+    context = {}
+
+    if request.method == 'GET':
+        return redirect(reverse('Checkout'))
+
+    if request.method == 'POST':
+        form = AddItemForm(request.POST)
+        context['form'] = form
+
+        if not form.is_valid():
+            return render(request, 'inventory/checkout.html', context)
+
+        category = form.cleaned_data['category']
+        name = form.cleaned_data['name']
+        price = form.cleaned_data['price']
+        quantity = form.cleaned_data['quantity']
+
+        item = Item.objects.filter(name=name).first()
+        if not item:
+            newItem = Item(category=category, name=name, price=price)
+            newItem.save()
+            item = newItem
+    
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
+        if not 'transactions' in request.session or not request.session['transactions']:
+            request.session['transactions'] = [tx]
+        else:
+            saved_list = request.session['transactions']
+            saved_list.append(tx)
+            request.session['transactions'] = saved_list
+
+        return redirect(reverse('Checkout'))
+
+
+def checkout_action(request):
+    context = {}
+        
+    # Create transactions if they don't exist
+    if not 'transactions' in request.session or not request.session['transactions']:
+        request.session['transactions'] = []
+
+    # Deserialize transactions 
+    serialized_transactions = request.session['transactions']
+    transactions = []
+    for tx in serialized_transactions:
+        for deserialized_transaction in serializers.deserialize("json", tx):
+            transactions.append(deserialized_transaction.object)
+
+    if request.method == 'GET':
+        context['items'] = Item.objects.all()
+        context['categories'] = Category.objects.all()
+        context['form'] = AddItemForm()
+        context['transactions'] = transactions
+        return render(request, 'inventory/checkout.html', context)
+
+    checkin = Checkin()
+    checkin.save()
+
+    for tx in transactions:
+        tx.save()
+
+        checkin.items.add(tx)
+
+        tx.item.quantity += tx.quantity
+        tx.item.save()
+
+    del request.session['transactions']
+    request.session.modified = True
+
+    return redirect(reverse('Home'))
