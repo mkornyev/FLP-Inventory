@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
 from inventory.forms import RegistrationForm
-from inventory.forms import AddItemForm, AddItemOutForm
+from inventory.forms import AddItemForm, AddItemOutForm, CheckOutForm
 
 # BASIC VIEWS
 def home(request): 
@@ -78,7 +78,6 @@ def additem_action(request):
 
     if request.method == 'POST':
         form = AddItemForm(request.POST)
-        context['form'] = form
 
         if not form.is_valid():
             return render(request, 'inventory/checkin.html', context)
@@ -158,15 +157,11 @@ def additemout_action(request):
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
-        price = form.cleaned_data['price']
         quantity = form.cleaned_data['quantity']
-        # family = form.cleaned_data['family']
 
         item = Item.objects.filter(name=name).first()
         if not item:
-            newItem = Item(category=category, name=name, price=price)
-            newItem.save()
-            item = newItem
+            return 
     
         tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
         if not 'transactions' in request.session or not request.session['transactions']:
@@ -197,10 +192,18 @@ def checkout_action(request):
         context['items'] = Item.objects.all()
         context['categories'] = Category.objects.all()
         context['form'] = AddItemOutForm()
+        context['formcheckout'] = CheckOutForm()
         context['transactions'] = transactions
         return render(request, 'inventory/checkout.html', context)
 
-    checkout = Checkout()
+    form = CheckOutForm(request.POST)
+
+    if not form.is_valid():
+        return render(request, 'inventory/checkout.html', context)
+
+    family = form.cleaned_data['family']
+
+    checkout = Checkout(family=family)
     checkout.save()
 
     for tx in transactions:
