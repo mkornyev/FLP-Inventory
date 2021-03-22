@@ -44,6 +44,9 @@
             </form>
 
             <form method="POST" action="{% url 'Checkout' %}">
+                <table>
+                    {{formcheckout}}
+                </table>
                 {% csrf_token %}
                 <br>
                 <button class="btn btn-primary" type="submit">Submit</button>
