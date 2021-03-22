@@ -5,12 +5,12 @@ from django.core import serializers
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from inventory.models import Category, Item, ItemTransaction, Checkin
+from inventory.models import Category, Item, ItemTransaction, Checkin, Checkout
 from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
 from inventory.forms import RegistrationForm
-from inventory.forms import AddItemForm
+from inventory.forms import AddItemForm, AddItemOutForm
 
 # BASIC VIEWS
 def home(request): 
@@ -150,7 +150,7 @@ def additemout_action(request):
         return redirect(reverse('Checkout'))
 
     if request.method == 'POST':
-        form = AddItemForm(request.POST)
+        form = AddItemOutForm(request.POST)
         context['form'] = form
 
         if not form.is_valid():
@@ -160,6 +160,7 @@ def additemout_action(request):
         name = form.cleaned_data['name']
         price = form.cleaned_data['price']
         quantity = form.cleaned_data['quantity']
+        family = form.cleaned_data['family']
 
         item = Item.objects.filter(name=name).first()
         if not item:
@@ -195,17 +196,17 @@ def checkout_action(request):
     if request.method == 'GET':
         context['items'] = Item.objects.all()
         context['categories'] = Category.objects.all()
-        context['form'] = AddItemForm()
+        context['form'] = AddItemOutForm()
         context['transactions'] = transactions
         return render(request, 'inventory/checkout.html', context)
 
-    checkin = Checkin()
-    checkin.save()
+    checkout = Checkout()
+    checkout.save()
 
     for tx in transactions:
         tx.save()
 
-        checkin.items.add(tx)
+        checkout.items.add(tx)
 
         tx.item.quantity += tx.quantity
         tx.item.save()

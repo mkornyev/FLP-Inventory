@@ -1,6 +1,6 @@
 from django import forms
 
-from inventory.models import Category
+from inventory.models import Category, Family
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -75,6 +75,23 @@ class AddItemForm(forms.Form):
     name = forms.CharField(max_length=50)
     price =  forms.DecimalField(max_digits=6, decimal_places=2)
     quantity = forms.IntegerField()
+
+    # Customizes form validation for properties that apply to more
+    # than one field.  Overrides the forms.Form.clean function.
+    def clean(self):
+        # Calls our parent (forms.Form) .clean function, gets a dictionary
+        # of cleaned data as a result
+        cleaned_data = super().clean()
+
+        # We must return the cleaned data we got from our parent.
+        return cleaned_data
+
+class AddItemOutForm(forms.Form):
+    category   = forms.ModelChoiceField(queryset=Category.objects.all())
+    name = forms.CharField(max_length=50)
+    price =  forms.DecimalField(max_digits=6, decimal_places=2)
+    quantity = forms.IntegerField()
+    family = forms.ModelChoiceField(queryset=Family.objects.all())
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
