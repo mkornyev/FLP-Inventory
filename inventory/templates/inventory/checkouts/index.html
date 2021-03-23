@@ -1,0 +1,39 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_styles %}
+  {% load static %}
+  <!-- <link href="{% static 'inventory/index_styles.css' %}" rel="stylesheet" type="text/css"> -->
+{% endblock %}
+
+{% block title %}
+  {% block navtitle %}
+  	Checkouts
+  {% endblock %}
+{% endblock %}
+
+{% block content %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">User</th>
+                <th scope="col">Family</th>
+                <th scope="col">Date/Time</th>
+                <th scope="col">Item and Quantities</th>>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in checkouts %}
+                <tr>
+                    <th scope="row">{{c.id}}</th>
+                    <td>{{c.user}}</td>
+                    <td>{{c.family.name}}</td>
+                    <td>{{c.datetime}}</td>
+                    <td>{{c.out_items}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

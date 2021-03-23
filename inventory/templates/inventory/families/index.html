@@ -1,0 +1,33 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_styles %}
+  {% load static %}
+  <!-- <link href="{% static 'inventory/index_styles.css' %}" rel="stylesheet" type="text/css"> -->
+{% endblock %}
+
+{% block title %}
+  {% block navtitle %}
+  	Families
+  {% endblock %}
+{% endblock %}
+
+{% block content %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in families %}
+                <tr>
+                    <th scope="row">{{f.id}}</th>
+                    <td>{{f.name}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_styles %}
+  {% load static %}
+  <!-- <link href="{% static 'inventory/index_styles.css' %}" rel="stylesheet" type="text/css"> -->
+{% endblock %}
+
+{% block title %}
+  {% block navtitle %}
+  	Categories
+  {% endblock %}
+{% endblock %}
+
+{% block content %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in categories %}
+                <tr>
+                    <th scope="row">{{c.id}}</th>
+                    <td>{{c.name}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

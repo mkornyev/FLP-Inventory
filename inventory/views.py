@@ -4,6 +4,7 @@ from django.urls import reverse
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
 from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
@@ -65,3 +66,20 @@ def register_action(request):
 
     login(request, new_user)
     return redirect(reverse('Home'))
+
+# DATABASE VIEWS
+
+def families_index(request):
+    return render(request, 'inventory/families/index.html', { "families" : Family.objects.all()})
+
+def categories_index(request):
+    return render(request, 'inventory/categories/index.html', { "categories" : Category.objects.all()})
+
+def items_index(request):
+    return render(request, 'inventory/items/index.html', { "items" : Item.objects.all()})
+
+def checkins_index(request):
+    return render(request, 'inventory/checkins/index.html', { "checkins" : Checkin.objects.all()})
+
+def checkouts_index(request):
+    return render(request, 'inventory/checkouts/index.html', { "checkouts" : Checkout.objects.all()})
