@@ -29,7 +29,13 @@
                     <th scope="row">{{i.id}}</th>
                     <td>{{i.category}}</td>
                     <td>{{i.name}}</td>
-                    <td>{{i.price}}</td>
+                    <td>
+                        {% if i.price %}
+                            ${{i.price}}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                     <td>{{i.quantity}}</td>
                 </tr>
             {% endfor %}
