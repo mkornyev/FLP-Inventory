@@ -70,16 +70,24 @@ def register_action(request):
 # DATABASE VIEWS
 
 def families_index(request):
-    return render(request, 'inventory/families/index.html', { "families" : Family.objects.all()})
+    # sort in alphabetical order
+    families_data = { "families" : Family.objects.order_by('name')}
+    return render(request, 'inventory/families/index.html', families_data)
 
 def categories_index(request):
-    return render(request, 'inventory/categories/index.html', { "categories" : Category.objects.all()})
+    # sort in alphabetical order
+    categories_data = { "categories" : Category.objects.order_by('name')}
+    return render(request, 'inventory/categories/index.html', categories_data)
 
 def items_index(request):
     return render(request, 'inventory/items/index.html', { "items" : Item.objects.all()})
 
 def checkins_index(request):
-    return render(request, 'inventory/checkins/index.html', { "checkins" : Checkin.objects.all()})
+    # sort in reverse chronological order
+    checkins_data = { "checkins" : Checkin.objects.order_by('-datetime')}
+    return render(request, 'inventory/checkins/index.html', checkins_data)
 
 def checkouts_index(request):
-    return render(request, 'inventory/checkouts/index.html', { "checkouts" : Checkout.objects.all()})
+    # sort in reverse chronological order
+    checkouts_data = { "checkouts" : Checkout.objects.order_by('-datetime')}
+    return render(request, 'inventory/checkouts/index.html', checkouts_data)

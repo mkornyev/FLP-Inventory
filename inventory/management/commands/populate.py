@@ -68,7 +68,7 @@ class Command(BaseCommand):
         checkin.items.add(tx1)
         checkin.save()
 
-        checkin = Checkin.objects.create(user=staffUsr, datetime=five_days_ago)
+        checkin = Checkin.objects.create(user=staffUsr, datetime=ten_days_ago)
         checkin.items.add(tx2)
         checkin.save()
         print("Checkin has been created.")
