@@ -155,7 +155,6 @@ def additemout_action(request):
         if not form.is_valid():
             return render(request, 'inventory/checkout.html', context)
 
-        category = form.cleaned_data['category']
         name = form.cleaned_data['name']
         quantity = form.cleaned_data['quantity']
 
