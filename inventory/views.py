@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
+from django.http import JsonResponse
 from django_tables2 import SingleTableView
 from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
 # from django.http import HttpResponse
@@ -142,6 +143,14 @@ def checkin_action(request):
     request.session.modified = True
 
     return redirect(reverse('Home'))
+
+def autocomplete(request):
+    if 'term' in request.GET:
+        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
+        names = list()
+        for item in qs:
+            names.append(item.name)
+        return JsonResponse(names, safe=False)
 
 # CHECKOUT VIEWS
 def additemout_action(request):

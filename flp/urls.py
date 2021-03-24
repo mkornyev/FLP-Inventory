@@ -19,6 +19,7 @@ from inventory import views
 
 urlpatterns = [
     path('', views.home, name="Home"),
+    path('autocomplete/', views.autocomplete, name="autocomplete"),
     path('about/', views.about, name="About"),  
     path('login/', views.login_action, name='Login'),
     path('logout/', views.logout_action, name='Logout'),
