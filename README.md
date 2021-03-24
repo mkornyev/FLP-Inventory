@@ -29,7 +29,7 @@ The following will set up a python environment for this project using `virtualen
 ### Running The App 
 
 * If you created some new models:
-  * `python manage.py makemigrations` && `python manage.py migrate`
+  * `python manage.py makemigrations inventory` && `python manage.py migrate`
 * Run the app: `python manage.py runserver` ~> <a href="http://localhost:8000/">localhost:8000</a>
 
 <hr></hr>
