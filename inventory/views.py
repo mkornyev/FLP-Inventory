@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.generic import ListView
+from django_tables2 import SingleTableView
+from .tables import ItemTable
 # from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
@@ -79,8 +82,10 @@ def categories_index(request):
     categories_data = { "categories" : Category.objects.order_by('name')}
     return render(request, 'inventory/categories/index.html', categories_data)
 
-def items_index(request):
-    return render(request, 'inventory/items/index.html', { "items" : Item.objects.all()})
+class ItemListView(SingleTableView):
+    model = Item
+    table_class = ItemTable
+    template_name = "inventory/items/index.html"
 
 def checkins_index(request):
     # sort in reverse chronological order
