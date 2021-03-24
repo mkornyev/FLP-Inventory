@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import ListView
 from django_tables2 import SingleTableView
-from .tables import ItemTable
+from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
 # from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
@@ -72,27 +72,27 @@ def register_action(request):
 
 # DATABASE VIEWS
 
-def families_index(request):
-    # sort in alphabetical order
-    families_data = { "families" : Family.objects.order_by('name')}
-    return render(request, 'inventory/families/index.html', families_data)
+class FamilyIndexView(SingleTableView):
+    model = Family
+    table_class = FamilyTable
+    template_name = "inventory/families/index.html"
 
-def categories_index(request):
-    # sort in alphabetical order
-    categories_data = { "categories" : Category.objects.order_by('name')}
-    return render(request, 'inventory/categories/index.html', categories_data)
+class CategoryIndexView(SingleTableView):
+    model = Category
+    table_class = CategoryTable
+    template_name = "inventory/categories/index.html"
 
-class ItemListView(SingleTableView):
+class ItemIndexView(SingleTableView):
     model = Item
     table_class = ItemTable
     template_name = "inventory/items/index.html"
 
-def checkins_index(request):
-    # sort in reverse chronological order
-    checkins_data = { "checkins" : Checkin.objects.order_by('-datetime')}
-    return render(request, 'inventory/checkins/index.html', checkins_data)
+class CheckinIndexView(SingleTableView):
+    model = Checkin
+    table_class = CheckinTable
+    template_name = "inventory/checkins/index.html"
 
-def checkouts_index(request):
-    # sort in reverse chronological order
-    checkouts_data = { "checkouts" : Checkout.objects.order_by('-datetime')}
-    return render(request, 'inventory/checkouts/index.html', checkouts_data)
+class CheckoutIndexView(SingleTableView):
+    model = Checkout
+    table_class = CheckoutTable
+    template_name = "inventory/checkouts/index.html"
