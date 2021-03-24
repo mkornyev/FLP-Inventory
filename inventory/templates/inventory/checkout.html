@@ -1,0 +1,59 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_styles %}
+  <style>
+    .about-spacer {
+      padding-bottom: 5vh;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}{% block navtitle %}
+  Check Out
+{% endblock %}{% endblock %}
+
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Check Out:</h1>
+
+            <table>
+              <tr>
+                  <th>Item</th>
+                  <th>Quantity</th>
+              </tr>
+              {% for tx in transactions %}
+                <tr> 
+                    <td>{{ tx.item}}</td>
+                    <td>{{ tx.quantity }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+
+            <form method="POST" action="{% url 'AddItemout' %}">
+                <table>
+                    {{form}}
+                </table>
+                {% csrf_token %}
+                <br>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+
+            <form method="POST" action="{% url 'Checkout' %}">
+                <table>
+                    {{formcheckout}}
+                </table>
+                {% csrf_token %}
+                <br>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
