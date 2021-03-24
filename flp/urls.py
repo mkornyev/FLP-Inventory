@@ -24,4 +24,9 @@ urlpatterns = [
     path('logout/', views.logout_action, name='Logout'),
     path('register/', views.register_action, name='Register'),
     path('admin/', admin.site.urls),
+    path('families/index/', views.FamilyIndexView.as_view(), name="Families"),
+    path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
+    path('items/index/', views.ItemIndexView.as_view(), name="Items"),
+    path('checkins/index/', views.CheckinIndexView.as_view(), name="Checkins"),
+    path('checkouts/index/', views.CheckoutIndexView.as_view(), name="Checkouts"),
 ]

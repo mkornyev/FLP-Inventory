@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django_tables2 import SingleTableView
+from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
 # from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from inventory.models import Family, Category, Item, Checkin, Checkout
 from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
@@ -65,3 +68,30 @@ def register_action(request):
 
     login(request, new_user)
     return redirect(reverse('Home'))
+
+# DATABASE VIEWS
+
+class FamilyIndexView(SingleTableView):
+    model = Family
+    table_class = FamilyTable
+    template_name = "inventory/families/index.html"
+
+class CategoryIndexView(SingleTableView):
+    model = Category
+    table_class = CategoryTable
+    template_name = "inventory/categories/index.html"
+
+class ItemIndexView(SingleTableView):
+    model = Item
+    table_class = ItemTable
+    template_name = "inventory/items/index.html"
+
+class CheckinIndexView(SingleTableView):
+    model = Checkin
+    table_class = CheckinTable
+    template_name = "inventory/checkins/index.html"
+
+class CheckoutIndexView(SingleTableView):
+    model = Checkout
+    table_class = CheckoutTable
+    template_name = "inventory/checkouts/index.html"
