@@ -18,7 +18,21 @@ from django.urls import path
 from inventory import views
 
 urlpatterns = [
+    path('', views.home, name="Home"),
+    path('autocomplete/', views.autocomplete, name="autocomplete"),
+    path('about/', views.about, name="About"),  
+    path('login/', views.login_action, name='Login'),
+    path('logout/', views.logout_action, name='Logout'),
+    path('register/', views.register_action, name='Register'),
+    path('checkin/', views.checkin_action, name='Checkin'),
+    path('additem/', views.additem_action, name='AddItem'),
     path('admin/', admin.site.urls),
-    path('', views.home, name='Home'),
-    path('about/', views.about, name='About'),  
+
+    path('checkout/', views.checkout_action, name='Checkout'),
+    path('additemout/', views.additemout_action, name='AddItemout'),
+    path('families/index/', views.FamilyIndexView.as_view(), name="Families"),
+    path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
+    path('items/index/', views.ItemIndexView.as_view(), name="Items"),
+    path('checkins/index/', views.CheckinIndexView.as_view(), name="Checkins"),
+    path('checkouts/index/', views.CheckoutIndexView.as_view(), name="Checkouts"),
 ]
