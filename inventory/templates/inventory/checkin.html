@@ -54,3 +54,16 @@
 </div>
 
 {% endblock %}
+
+{% block page_specific_scripts %}
+
+<script>
+	$(document).ready(function() {
+    	$("#id_name").autocomplete({
+    		source: '{% url 'autocomplete' %}',
+    		minLength: 2
+    	});
+	});
+</script>
+
+{% endblock %}
