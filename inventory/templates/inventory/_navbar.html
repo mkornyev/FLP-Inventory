@@ -9,9 +9,9 @@
 		</a>
 
 		<!-- Create the hamburger button -->
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
-		</button>
+		  </button>
 		
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
@@ -80,6 +80,19 @@
 					<li class="nav-item">
 						{% url 'password_change' as change_password_url %}
 						<a class="nav-link {% if request.path == change_password_url %}active{% endif %}" href="{{ change_password_url }}"><i class="material-icons" style="font-size: 20px;">settings</i></a>
+					</li>
+				{% endif %}
+
+				{% if user.is_staff %}
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Data</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<li><a class="dropdown-item" href="/families/index/">Families</a></li>
+							<li><a class="dropdown-item" href="/categories/index/">Categories</a></li>
+							<li><a class="dropdown-item" href="/items/index/">Items</a></li>
+							<li><a class="dropdown-item" href="/checkins/index/">Checkins</a></li>
+							<li><a class="dropdown-item" href="/checkouts/index/">Checkouts</a></li>
+						</ul>
 					</li>
 				{% endif %}
 			</ul>
