@@ -39,11 +39,11 @@ class CheckinTable(tables.Table):
         model = Checkin
         template_name = "django_tables2/bootstrap.html"
         fields = ("id", "user", "datetime", "in_items", )
-        order_by = 'datetime'
+        order_by = '-datetime'
 
 class CheckoutTable(tables.Table):
     class Meta:
         model = Checkout
         template_name = "django_tables2/bootstrap.html"
         fields = ("id", "user", "family.name", "datetime", "out_items", )
-        order_by = 'datetime'
+        order_by = '-datetime'
