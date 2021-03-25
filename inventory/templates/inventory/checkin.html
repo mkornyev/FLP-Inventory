@@ -5,6 +5,22 @@
     .about-spacer {
       padding-bottom: 5vh;
     }
+
+    .split {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .top-buttons {
+      display: flex;
+    }
+
+    .top-buttons a {
+      margin-right: 20px;
+    }
+
   </style>
 {% endblock %}
 
@@ -13,55 +29,41 @@
 {% endblock %}{% endblock %}
 
 
-
 {% block content %}
 
 <div class="container">
-    <div class="row">
-      <div class="col-md-8">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="split">
         <h1>Check In Items:</h1>
-            <table class="table">
-              <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for tx in transactions %}
-                  <tr> 
-                      <th scope="row">{{ tx.item}}</td>
-                      <td>{{ tx.quantity }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-
-            <form method="POST" action="{% url 'AddItem' %}">
-                {% for field in form %}
-                <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.errors %}
-                      {% for error in field.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                      {% endfor %}
-                    {% endif %}
-                </div>
-                {% endfor %}
-                {% csrf_token %}
-                <br>
-                <button class="btn btn-primary" type="submit">Submit</button>
-            </form>
+        <div class="top-buttons">
+          <a class="btn btn-primary" href="{% url 'AddItem' %}">Add Item +</a>
 
             <form method="POST" action="{% url 'Checkin' %}">
                 {% csrf_token %}
-                <br>
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-success" type="submit">Check In Items</button>
             </form>
-
         </div>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in transactions %}
+            <tr> 
+                <th scope="row">{{ tx.item}}</td>
+                <td>{{ tx.quantity }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 </div>
 
 {% endblock %}

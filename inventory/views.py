@@ -78,14 +78,15 @@ def additem_action(request):
     context = {}
 
     if request.method == 'GET':
-        return redirect(reverse('Checkin'))
+        context['form'] = AddItemForm()
+        return render(request, 'inventory/additem.html', context)
 
     if request.method == 'POST':
         form = AddItemForm(request.POST)
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/checkin.html', context)
+            return render(request, 'inventory/additem.html', context)
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
@@ -94,12 +95,12 @@ def additem_action(request):
         item = Item.objects.filter(name=name).first()
     
         tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
-        if not 'transactions' in request.session or not request.session['transactions']:
-            request.session['transactions'] = [tx]
+        if not 'transactions-in' in request.session or not request.session['transactions-in']:
+            request.session['transactions-in'] = [tx]
         else:
-            saved_list = request.session['transactions']
+            saved_list = request.session['transactions-in']
             saved_list.append(tx)
-            request.session['transactions'] = saved_list
+            request.session['transactions-in'] = saved_list
 
         return redirect(reverse('Checkin'))
 
@@ -108,11 +109,11 @@ def checkin_action(request):
     context = {}
         
     # Create transactions if they don't exist
-    if not 'transactions' in request.session or not request.session['transactions']:
-        request.session['transactions'] = []
+    if not 'transactions-in' in request.session or not request.session['transactions-in']:
+        request.session['transactions-in'] = []
 
     # Deserialize transactions 
-    serialized_transactions = request.session['transactions']
+    serialized_transactions = request.session['transactions-in']
     transactions = []
     for tx in serialized_transactions:
         for deserialized_transaction in serializers.deserialize("json", tx):
@@ -136,7 +137,7 @@ def checkin_action(request):
         tx.item.quantity += tx.quantity
         tx.item.save()
 
-    del request.session['transactions']
+    del request.session['transactions-in']
     request.session.modified = True
 
     return redirect(reverse('Home'))
@@ -154,29 +155,28 @@ def additemout_action(request):
     context = {}
 
     if request.method == 'GET':
-        return redirect(reverse('Checkout'))
+        context['form'] = AddItemOutForm()
+        return render(request, 'inventory/additemout.html', context)
 
     if request.method == 'POST':
         form = AddItemOutForm(request.POST)
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/checkout.html', context)
+            return render(request, 'inventory/additemout.html', context)
 
         name = form.cleaned_data['name']
         quantity = form.cleaned_data['quantity']
 
         item = Item.objects.filter(name=name).first()
-        if not item:
-            return 
     
         tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
-        if not 'transactions' in request.session or not request.session['transactions']:
-            request.session['transactions'] = [tx]
+        if not 'transactions-out' in request.session or not request.session['transactions-out']:
+            request.session['transactions-out'] = [tx]
         else:
-            saved_list = request.session['transactions']
+            saved_list = request.session['transactions-out']
             saved_list.append(tx)
-            request.session['transactions'] = saved_list
+            request.session['transactions-out'] = saved_list
 
         return redirect(reverse('Checkout'))
 
@@ -185,11 +185,11 @@ def checkout_action(request):
     context = {}
         
     # Create transactions if they don't exist
-    if not 'transactions' in request.session or not request.session['transactions']:
-        request.session['transactions'] = []
+    if not 'transactions-out' in request.session or not request.session['transactions-out']:
+        request.session['transactions-out'] = []
 
     # Deserialize transactions 
-    serialized_transactions = request.session['transactions']
+    serialized_transactions = request.session['transactions-out']
     transactions = []
     for tx in serialized_transactions:
         for deserialized_transaction in serializers.deserialize("json", tx):
@@ -198,7 +198,6 @@ def checkout_action(request):
     if request.method == 'GET':
         context['items'] = Item.objects.all()
         context['categories'] = Category.objects.all()
-        context['form'] = AddItemOutForm()
         context['formcheckout'] = CheckOutForm()
         context['transactions'] = transactions
         return render(request, 'inventory/checkout.html', context)
@@ -221,7 +220,7 @@ def checkout_action(request):
         tx.item.quantity += tx.quantity
         tx.item.save()
 
-    del request.session['transactions']
+    del request.session['transactions-out']
     request.session.modified = True
 
     return redirect(reverse('Home'))
