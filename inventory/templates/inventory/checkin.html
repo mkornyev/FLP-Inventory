@@ -18,20 +18,23 @@
 
 <div class="container">
     <div class="row">
-        <div class="col">
-            <h1>Check In:</h1>
-
-            <table>
-              <tr>
-                  <th>Item</th>
-                  <th>Quantity</th>
-              </tr>
-              {% for tx in transactions %}
-                <tr> 
-                    <td>{{ tx.item}}</td>
-                    <td>{{ tx.quantity }}</td>
+      <div class="col-md-8">
+        <h1>Check In Items:</h1>
+            <table class="table">
+              <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
                 </tr>
-              {% endfor %}
+              </thead>
+              <tbody>
+                {% for tx in transactions %}
+                  <tr> 
+                      <th scope="row">{{ tx.item}}</td>
+                      <td>{{ tx.quantity }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
             </table>
 
             <form method="POST" action="{% url 'AddItem' %}">
