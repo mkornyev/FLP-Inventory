@@ -79,12 +79,25 @@ class AddItemForm(forms.Form):
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):
+        print("in clean")
         # Calls our parent (forms.Form) .clean function, gets a dictionary
         # of cleaned data as a result
         cleaned_data = super().clean()
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
+
+    # Customizes form validation for the name field.
+    def clean_name(self):
+        # Confirms that the username is already present in the
+        # Item model database.
+        name = self.cleaned_data.get('name')
+        if not Item.objects.filter(name__exact=name):
+            raise forms.ValidationError("Item does not exist.")
+
+        # We must return the cleaned data we got from the cleaned_data
+        # dictionary
+        return name 
 
 
 class AddItemOutForm(forms.Form):
@@ -115,7 +128,7 @@ class AddItemOutForm(forms.Form):
         # Confirms that the username is already present in the
         # Item model database.
         name = self.cleaned_data.get('name')
-        if Item.objects.filter(name__exact=name) == None:
+        if not Item.objects.filter(name__exact=name):
             raise forms.ValidationError("Item does not exist.")
 
         # We must return the cleaned data we got from the cleaned_data

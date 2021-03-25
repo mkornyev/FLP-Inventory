@@ -82,6 +82,7 @@ def additem_action(request):
 
     if request.method == 'POST':
         form = AddItemForm(request.POST)
+        context['form'] = form
 
         if not form.is_valid():
             return render(request, 'inventory/checkin.html', context)
@@ -92,10 +93,6 @@ def additem_action(request):
         quantity = form.cleaned_data['quantity']
 
         item = Item.objects.filter(name=name).first()
-        if not item:
-            newItem = Item(category=category, name=name, price=price)
-            newItem.save()
-            item = newItem
     
         tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
         if not 'transactions' in request.session or not request.session['transactions']:
