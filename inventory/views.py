@@ -89,7 +89,6 @@ def additem_action(request):
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
-        price = form.cleaned_data['price']
         quantity = form.cleaned_data['quantity']
 
         item = Item.objects.filter(name=name).first()

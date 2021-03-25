@@ -35,9 +35,17 @@
             </table>
 
             <form method="POST" action="{% url 'AddItemout' %}">
-                <table>
-                    {{form}}
-                </table>
+                {% for field in form %}
+                <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                      {% for error in field.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                      {% endfor %}
+                    {% endif %}
+                </div>
+                {% endfor %}
                 {% csrf_token %}
                 <br>
                 <button class="btn btn-primary" type="submit">Submit</button>
