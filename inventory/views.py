@@ -94,6 +94,10 @@ def generate_report(request):
         else:
             context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
 
+        context['totalValue'] = 0 
+        for result in context['results']:
+            context['totalValue'] = result.getValue() + context['totalValue']
+
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
 
         return render(request, 'inventory/generate_report.html', context)

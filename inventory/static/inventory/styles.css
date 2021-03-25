@@ -30,3 +30,7 @@ form.check-report-form {
 form.check-report-form input.date-input {
   max-width: 225px;
 }
+
+span.monetary-value {
+  color: #0275d8;
+}

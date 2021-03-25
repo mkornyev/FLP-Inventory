@@ -1,7 +1,6 @@
 {% extends "inventory/base.html" %}
 
 {% block content %}
-
 <form class="check-report-form" method="POST" action="{% url 'Report' %}">
 <div class="container">
     <div class="row">
@@ -47,7 +46,7 @@
     <div class="row mt-5">
       <div class="col">
         {% if results %}
-          <h4>Filtered {{ tx }}s:</h4>
+          <h4>Filtered {{ tx }}s | <span class="monetary-value">${{ totalValue }}</span>:</h4>
           <table class="table">
             <thead>
               <tr>
