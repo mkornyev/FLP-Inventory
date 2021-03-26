@@ -80,7 +80,6 @@ class AddItemForm(forms.Form):
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):
-        print("in clean")
         # Calls our parent (forms.Form) .clean function, gets a dictionary
         # of cleaned data as a result
         cleaned_data = super().clean()
@@ -115,6 +114,15 @@ class AddItemOutForm(forms.Form):
         # of cleaned data as a result
         cleaned_data = super().clean()
 
+        if cleaned_data.get('name'):
+            item_name = cleaned_data.get('name')
+            item = Item.objects.get(name__exact=item_name)
+
+            quantity = cleaned_data.get('quantity')
+
+            if item.quantity < quantity:
+                raise ValidationError({'quantity': ["Not enough stock of item.",]})
+
         # We must return the cleaned data we got from our parent.
         return cleaned_data
 
@@ -129,19 +137,6 @@ class AddItemOutForm(forms.Form):
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
         return name 
-
-    def clean_quantity(self):
-        item_name = self.cleaned_data.get('name')
-        item = Item.objects.get(name__exact=item_name)
-
-        quantity = self.cleaned_data.get('quantity')
-
-        if item.quantity < quantity:
-            raise forms.ValidationError("Not enough stock of item.")
-
-        return quantity
-
-
 
 class CheckOutForm(forms.Form):
     family = forms.ModelChoiceField(queryset=Family.objects.all())
