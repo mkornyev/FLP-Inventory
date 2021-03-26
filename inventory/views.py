@@ -154,6 +154,14 @@ def autocomplete(request):
             names.append(item.name)
         return JsonResponse(names, safe=False)
 
+def autocomplete(request):
+    if 'term' in request.GET:
+        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
+        names = list()
+        for item in qs:
+            names.append(item.name)
+        return JsonResponse(names, safe=False)
+
 # CHECKOUT VIEWS
 def additemout_action(request):
     context = {}
