@@ -121,7 +121,7 @@ class AddItemOutForm(forms.Form):
             quantity = cleaned_data.get('quantity')
 
             if item.quantity < quantity:
-                raise ValidationError({'quantity': ["Not enough stock of item.",]})
+                raise forms.ValidationError({'quantity': ["Not enough stock of item.",]})
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
