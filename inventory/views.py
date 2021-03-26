@@ -5,6 +5,8 @@ from django.core import serializers
 from django.http import JsonResponse
 from django_tables2 import SingleTableView
 from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
+
+from django.contrib import messages
 # from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
@@ -102,6 +104,7 @@ def additem_action(request):
             saved_list.append(tx)
             request.session['transactions-in'] = saved_list
 
+        messages.success(request, 'Item Added')
         return redirect(reverse('Checkin'))
 
 
@@ -140,7 +143,8 @@ def checkin_action(request):
     del request.session['transactions-in']
     request.session.modified = True
 
-    return redirect(reverse('Home'))
+    messages.success(request, 'Checkin Created')
+    return redirect(reverse('Checkin'))
 
 def autocomplete(request):
     if 'term' in request.GET:
@@ -178,6 +182,7 @@ def additemout_action(request):
             saved_list.append(tx)
             request.session['transactions-out'] = saved_list
 
+        messages.success(request, 'Item Added')
         return redirect(reverse('Checkout'))
 
 
@@ -223,10 +228,10 @@ def checkout_action(request):
     del request.session['transactions-out']
     request.session.modified = True
 
-    return redirect(reverse('Home'))
+    messages.success(request, 'Checkout Created')
+    return redirect(reverse('Checkout'))
 
 # DATABASE VIEWS
-
 class FamilyIndexView(SingleTableView):
     model = Family
     table_class = FamilyTable
