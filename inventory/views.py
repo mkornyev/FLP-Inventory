@@ -129,6 +129,10 @@ def checkin_action(request):
         context['transactions'] = transactions
         return render(request, 'inventory/checkin.html', context)
 
+    if not transactions:
+        messages.warning(request, 'Could not create checkin: No items added')
+        return redirect(reverse('Checkin'))
+
     checkin = Checkin()
     checkin.save()
 
@@ -143,7 +147,7 @@ def checkin_action(request):
     del request.session['transactions-in']
     request.session.modified = True
 
-    messages.success(request, 'Checkin Created')
+    messages.success(request, 'Checkin created')
     return redirect(reverse('Checkin'))
 
 def autocomplete(request):
@@ -222,6 +226,10 @@ def checkout_action(request):
 
     family = form.cleaned_data['family']
 
+    if not transactions:
+        messages.warning(request, 'Could not create checkout: No items added')
+        return redirect(reverse('Checkout'))
+
     checkout = Checkout(family=family)
     checkout.save()
 
@@ -236,7 +244,7 @@ def checkout_action(request):
     del request.session['transactions-out']
     request.session.modified = True
 
-    messages.success(request, 'Checkout Created')
+    messages.success(request, 'Checkout created')
     return redirect(reverse('Checkout'))
 
 # DATABASE VIEWS
