@@ -1,6 +1,6 @@
 from django import forms
 
-from inventory.models import Category, Family, Item
+from inventory.models import Family, Item
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -71,8 +71,8 @@ class RegistrationForm(forms.Form):
         return username
 
 class AddItemForm(forms.Form):
-    category   = forms.ModelChoiceField(queryset=Category.objects.all(),
-                                        widget=forms.Select(attrs={'class': 'form-select'}))
+    # category   = forms.ModelChoiceField(queryset=Category.objects.all(),
+    #                                     widget=forms.Select(attrs={'class': 'form-select'}))
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -101,8 +101,8 @@ class AddItemForm(forms.Form):
 
 
 class AddItemOutForm(forms.Form):
-    category   = forms.ModelChoiceField(queryset=Category.objects.all(),
-                                        widget=forms.Select(attrs={'class': 'form-select'}))
+    # category   = forms.ModelChoiceField(queryset=Category.objects.all(),
+    #                                     widget=forms.Select(attrs={'class': 'form-select'}))
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))

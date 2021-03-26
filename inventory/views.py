@@ -90,7 +90,7 @@ def additem_action(request):
         if not form.is_valid():
             return render(request, 'inventory/additem.html', context)
 
-        category = form.cleaned_data['category']
+        # category = form.cleaned_data['category']
         name = form.cleaned_data['name']
         quantity = form.cleaned_data['quantity']
 
@@ -149,14 +149,6 @@ def checkin_action(request):
 
     messages.success(request, 'Checkin created')
     return redirect(reverse('Checkin'))
-
-def autocomplete(request):
-    if 'term' in request.GET:
-        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
-        names = list()
-        for item in qs:
-            names.append(item.name)
-        return JsonResponse(names, safe=False)
 
 def autocomplete(request):
     if 'term' in request.GET:
