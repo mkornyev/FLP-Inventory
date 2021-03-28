@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
 from inventory.forms import RegistrationForm
-from inventory.forms import AddItemForm, RemoveItemForm, AddItemOutForm, CheckOutForm
+from inventory.forms import AddItemForm, AddItemOutForm, CheckOutForm
 
 # BASIC VIEWS
 def home(request): 
