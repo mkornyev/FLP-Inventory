@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from inventory.forms import LoginForm
 from inventory.forms import RegistrationForm
-from inventory.forms import AddItemForm, AddItemOutForm, CheckOutForm
+from inventory.forms import AddItemForm, RemoveItemForm, AddItemOutForm, CheckOutForm
 
 # BASIC VIEWS
 def home(request): 
@@ -106,6 +106,17 @@ def additem_action(request):
 
         messages.success(request, 'Item Added')
         return redirect(reverse('Checkin'))
+
+
+def removeitem_action(request, index, location):
+    context = {}
+
+    saved_list = request.session['transactions-' + location]
+    saved_list.pop(index)
+    request.session['transactions-' + location] = saved_list
+
+    messages.success(request, 'Item Removed')
+    return redirect(reverse('Check' + location))
 
 
 def checkin_action(request):

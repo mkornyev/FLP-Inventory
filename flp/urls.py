@@ -26,6 +26,7 @@ urlpatterns = [
     path('register/', views.register_action, name='Register'),
     path('checkin/', views.checkin_action, name='Checkin'),
     path('additem/', views.additem_action, name='AddItem'),
+    path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
     path('admin/', admin.site.urls),
 
     path('checkout/', views.checkout_action, name='Checkout'),
