@@ -109,7 +109,6 @@ def additem_action(request):
 
 
 def removeitem_action(request, index, location):
-    context = {}
 
     saved_list = request.session['transactions-' + location]
     saved_list.pop(index)
