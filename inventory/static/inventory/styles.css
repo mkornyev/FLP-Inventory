@@ -19,3 +19,7 @@ a:hover {
   margin-top: 5%;
   width: 80%;
 }
+
+.pagination li{
+  padding: 5px;
+}
