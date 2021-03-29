@@ -10,7 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from inventory.forms import LoginForm, RegistrationForm
 from inventory.models import Checkin, Checkout
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 DEFAULT_PAGINATION_SIZE = 25
 
@@ -89,10 +89,12 @@ def generate_report(request):
         context['startDate'] = request.POST['start-date']
         context['tx'] = request.POST['tx-type']
 
+        endDatetime = datetime.strptime('{} 23:59:59'.format(context['endDate']), '%Y-%m-%d %H:%M:%S')
+
         if request.POST['tx-type'] == 'Checkin':
-            context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
+            context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
         else:
-            context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
+            context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
 
         context['totalValue'] = 0 
         for result in context['results']:
