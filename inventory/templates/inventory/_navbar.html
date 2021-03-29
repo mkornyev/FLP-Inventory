@@ -27,23 +27,22 @@
 							<li><a class="dropdown-item" href="/checkouts/index/">Checkouts</a></li>
 						</ul>
 					</li>
+
+					<li class="nav-item">
+						{%  url 'Checkin' as checkin_url %}
+						<a class="nav-link {% if request.path == checkin_url %}active{% endif %}" href="{{ checkin_url }}">Check In</span></a>
+					</li>
+	
+					<li class="nav-item">
+						{%  url 'Checkout' as checkout_url %}
+						<a class="nav-link {% if request.path == checkout_url %}active{% endif %}" href="{{ checkout_url }}">Check Out</span></a>
+					</li>
+
+          <li class="nav-item">
+            {%  url 'Report' as report_url %}
+            <a class="nav-link {% if request.path == report_url %}active{% endif %}" href="{{ report_url }}">Generate Report</span></a>
+          </li>
 				{% endif %}
-
-				
-				<li class="nav-item">
-					{%  url 'Checkin' as checkin_url %}
-					<a class="nav-link {% if request.path == checkin_url %}active{% endif %}" href="{{ checkin_url }}">Check In</span></a>
-				</li>
-
-				<li class="nav-item">
-					{%  url 'Checkout' as checkout_url %}
-					<a class="nav-link {% if request.path == checkout_url %}active{% endif %}" href="{{ checkout_url }}">Check Out</span></a>
-				</li>
-
-				<li class="nav-item">
-					{%  url 'Report' as report_url %}
-					<a class="nav-link {% if request.path == report_url %}active{% endif %}" href="{{ report_url }}">Generate Report</span></a>
-				</li>
         
 				<!-- Only show the log out link if the user is logged in -->
 				{% if user.is_authenticated %}
@@ -62,14 +61,6 @@
 					<li class="nav-item">
 						{% url 'About' as about_url %}
 						<a class="nav-link {% if request.path == about_url %}active{% endif %}" href="{{ about_url }}">About</a>
-					</li>
-				{% endif %}
-
-				<!-- Only show the change password link if the user is logged in -->
-				{% if user.is_staff %}
-					<li class="nav-item">
-						{% url 'password_change' as change_password_url %}
-						<a class="nav-link {% if request.path == change_password_url %}active{% endif %}" href="{{ change_password_url }}"><i class="material-icons" style="font-size: 20px;">settings</i></a>
 					</li>
 				{% endif %}
 			</ul>
