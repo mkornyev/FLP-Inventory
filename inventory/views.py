@@ -10,6 +10,8 @@ from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, Checkou
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
@@ -82,7 +84,7 @@ def register_action(request):
 
 
 ######################### REPORT GENERATION #########################
-
+@login_required
 def generate_report(request):
     context = {}
 
@@ -118,6 +120,7 @@ def generate_report(request):
 
   
 ######################### CHECKIN VIEWS #########################
+@login_required
 def additem_action(request):
     context = {}
 
@@ -151,7 +154,7 @@ def additem_action(request):
 
         return redirect(reverse('Checkin'))
 
-
+@login_required
 def checkin_action(request):
     context = {}
         
@@ -197,7 +200,7 @@ def autocomplete(request):
             names.append(item.name)
         return JsonResponse(names, safe=False)
 
-######################### CHECKOUT VIEWS #########################
+@login_required
 def additemout_action(request):
     context = {}
 
@@ -228,7 +231,7 @@ def additemout_action(request):
 
         return redirect(reverse('Checkout'))
 
-
+@login_required
 def checkout_action(request):
     context = {}
         
@@ -277,27 +280,27 @@ def checkout_action(request):
   
 ######################### DATABASE VIEWS #########################
 
-class FamilyIndexView(SingleTableView):
+class FamilyIndexView(LoginRequiredMixin, SingleTableView):
     model = Family
     table_class = FamilyTable
     template_name = "inventory/families/index.html"
 
-class CategoryIndexView(SingleTableView):
+class CategoryIndexView(LoginRequiredMixin, SingleTableView):
     model = Category
     table_class = CategoryTable
     template_name = "inventory/categories/index.html"
 
-class ItemIndexView(SingleTableView):
+class ItemIndexView(LoginRequiredMixin, SingleTableView):
     model = Item
     table_class = ItemTable
     template_name = "inventory/items/index.html"
 
-class CheckinIndexView(SingleTableView):
+class CheckinIndexView(LoginRequiredMixin, SingleTableView):
     model = Checkin
     table_class = CheckinTable
     template_name = "inventory/checkins/index.html"
 
-class CheckoutIndexView(SingleTableView):
+class CheckoutIndexView(LoginRequiredMixin, SingleTableView):
     model = Checkout
     table_class = CheckoutTable
     template_name = "inventory/checkouts/index.html"
