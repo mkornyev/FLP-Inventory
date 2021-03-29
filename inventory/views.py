@@ -75,7 +75,8 @@ def register_action(request):
     login(request, new_user)
     return redirect(reverse('Home'))
 
-# CHECKIN VIEWS
+
+# Add item to checkin
 def additem_action(request):
     context = {}
 
@@ -108,67 +109,7 @@ def additem_action(request):
         return redirect(reverse('Checkin'))
 
 
-def removeitem_action(request, index, location):
-
-    saved_list = request.session['transactions-' + location]
-    saved_list.pop(index)
-    request.session['transactions-' + location] = saved_list
-
-    messages.success(request, 'Item Removed')
-    return redirect(reverse('Check' + location))
-
-
-def checkin_action(request):
-    context = {}
-        
-    # Create transactions if they don't exist
-    if not 'transactions-in' in request.session or not request.session['transactions-in']:
-        request.session['transactions-in'] = []
-
-    # Deserialize transactions 
-    serialized_transactions = request.session['transactions-in']
-    transactions = []
-    for tx in serialized_transactions:
-        for deserialized_transaction in serializers.deserialize("json", tx):
-            transactions.append(deserialized_transaction.object)
-
-    if request.method == 'GET':
-        context['items'] = Item.objects.all()
-        context['categories'] = Category.objects.all()
-        context['form'] = AddItemForm()
-        context['transactions'] = transactions
-        return render(request, 'inventory/checkin.html', context)
-
-    if not transactions:
-        messages.warning(request, 'Could not create checkin: No items added')
-        return redirect(reverse('Checkin'))
-
-    checkin = Checkin()
-    checkin.save()
-
-    for tx in transactions:
-        tx.save()
-
-        checkin.items.add(tx)
-
-        tx.item.quantity += tx.quantity
-        tx.item.save()
-
-    del request.session['transactions-in']
-    request.session.modified = True
-
-    messages.success(request, 'Checkin created')
-    return redirect(reverse('Checkin'))
-
-def autocomplete(request):
-    if 'term' in request.GET:
-        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
-        names = list()
-        for item in qs:
-            names.append(item.name)
-        return JsonResponse(names, safe=False)
-
-# CHECKOUT VIEWS
+# Add item to checkout
 def additemout_action(request):
     context = {}
 
@@ -200,6 +141,61 @@ def additemout_action(request):
         return redirect(reverse('Checkout'))
 
 
+# Remove item from cart
+def removeitem_action(request, index, location):
+    saved_list = request.session['transactions-' + location]
+    saved_list.pop(index)
+    request.session['transactions-' + location] = saved_list
+
+    messages.success(request, 'Item Removed')
+    return redirect(reverse('Check' + location))
+
+
+# Checkout view
+def checkin_action(request):
+    context = {}
+        
+    # Create transactions if they don't exist
+    if not 'transactions-in' in request.session or not request.session['transactions-in']:
+        request.session['transactions-in'] = []
+
+    # Deserialize transactions 
+    serialized_transactions = request.session['transactions-in']
+    transactions = []
+    for tx in serialized_transactions:
+        for deserialized_transaction in serializers.deserialize("json", tx):
+            transactions.append(deserialized_transaction.object)
+
+    if request.method == 'GET':
+        context['items'] = Item.objects.all()
+        context['categories'] = Category.objects.all()
+        context['form'] = AddItemForm()
+        context['transactions'] = transactions
+        return render(request, 'inventory/checkin.html', context)
+
+    if not transactions:
+        messages.warning(request, 'Could not create checkin: No items added')
+        return redirect(reverse('Checkin'))
+
+    checkin = Checkin(user=request.user)
+    checkin.save()
+
+    for tx in transactions:
+        tx.save()
+
+        checkin.items.add(tx)
+
+        tx.item.quantity += tx.quantity
+        tx.item.save()
+
+    del request.session['transactions-in']
+    request.session.modified = True
+
+    messages.success(request, 'Checkin created')
+    return redirect(reverse('Checkin'))
+
+
+# Checkout view
 def checkout_action(request):
     context = {}
         
@@ -232,7 +228,7 @@ def checkout_action(request):
         messages.warning(request, 'Could not create checkout: No items added')
         return redirect(reverse('Checkout'))
 
-    checkout = Checkout(family=family)
+    checkout = Checkout(family=family, user=request.user)
     checkout.save()
 
     for tx in transactions:
@@ -248,6 +244,16 @@ def checkout_action(request):
 
     messages.success(request, 'Checkout created')
     return redirect(reverse('Checkout'))
+
+
+def autocomplete(request):
+    if 'term' in request.GET:
+        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
+        names = list()
+        for item in qs:
+            names.append(item.name)
+        return JsonResponse(names, safe=False)
+
 
 # DATABASE VIEWS
 class FamilyIndexView(SingleTableView):
