@@ -43,7 +43,7 @@
     <div class="col-md-8">
       <div class="split">
         <h1>Check Out Items:</h1>
-        <a class="btn btn-primary" href="{% url 'AddItemOut' %}">Add Item +</a>
+        <a class="btn btn-primary" href="{% url 'AddItem' location='out' %}">Add Item +</a>
       </div>
         <form class="checkin-form" method="POST" action="{% url 'Checkout' %}">
             {% for field in formcheckout %}

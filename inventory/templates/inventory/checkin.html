@@ -43,7 +43,7 @@
       <div class="split">
         <h1>Check In Items:</h1>
         <div class="top-buttons">
-          <a class="btn btn-primary" href="{% url 'AddItem' %}">Add Item +</a>
+          <a class="btn btn-primary" href="{% url 'AddItem' location='in' %}">Add Item +</a>
 
             <form method="POST" action="{% url 'Checkin' %}">
                 {% csrf_token %}

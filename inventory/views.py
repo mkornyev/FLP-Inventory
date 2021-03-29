@@ -76,20 +76,32 @@ def register_action(request):
     return redirect(reverse('Home'))
 
 
-# Add item to checkin
-def additem_action(request):
+# Add item to cart
+def addtocart_action(request, location):
     context = {}
 
+    context['location'] = location
     if request.method == 'GET':
-        context['form'] = AddItemForm()
+        if location == 'in':
+            context['form'] = AddItemForm()
+        else:
+            context['form'] = AddItemOutForm()
+        
         return render(request, 'inventory/additem.html', context)
 
     if request.method == 'POST':
-        form = AddItemForm(request.POST)
+        if location == 'in':
+            form = AddItemForm(request.POST)
+        else:
+            form = AddItemOutForm(request.POST)
+
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/additem.html', context)
+            if location == 'in':
+                return render(request, 'inventory/additem.html', context)
+            else:
+                return render(request, 'inventory/additemout.html', context)
 
         # category = form.cleaned_data['category']
         name = form.cleaned_data['name']
@@ -98,47 +110,15 @@ def additem_action(request):
         item = Item.objects.filter(name=name).first()
     
         tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
-        if not 'transactions-in' in request.session or not request.session['transactions-in']:
-            request.session['transactions-in'] = [tx]
+        if not 'transactions-' + location in request.session or not request.session['transactions-' + location]:
+            request.session['transactions-' + location] = [tx]
         else:
-            saved_list = request.session['transactions-in']
+            saved_list = request.session['transactions-' + location]
             saved_list.append(tx)
-            request.session['transactions-in'] = saved_list
+            request.session['transactions-' + location] = saved_list
 
         messages.success(request, 'Item Added')
-        return redirect(reverse('Checkin'))
-
-
-# Add item to checkout
-def additemout_action(request):
-    context = {}
-
-    if request.method == 'GET':
-        context['form'] = AddItemOutForm()
-        return render(request, 'inventory/additemout.html', context)
-
-    if request.method == 'POST':
-        form = AddItemOutForm(request.POST)
-        context['form'] = form
-
-        if not form.is_valid():
-            return render(request, 'inventory/additemout.html', context)
-
-        name = form.cleaned_data['name']
-        quantity = form.cleaned_data['quantity']
-
-        item = Item.objects.filter(name=name).first()
-    
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
-        if not 'transactions-out' in request.session or not request.session['transactions-out']:
-            request.session['transactions-out'] = [tx]
-        else:
-            saved_list = request.session['transactions-out']
-            saved_list.append(tx)
-            request.session['transactions-out'] = saved_list
-
-        messages.success(request, 'Item Added')
-        return redirect(reverse('Checkout'))
+        return redirect(reverse('Check' + location))
 
 
 # Remove item from cart
