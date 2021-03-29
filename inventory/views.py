@@ -240,7 +240,7 @@ def checkout_action(request):
 
         checkout.items.add(tx)
 
-        tx.item.quantity += tx.quantity
+        tx.item.quantity -= tx.quantity
         tx.item.save()
 
     del request.session['transactions-out']
