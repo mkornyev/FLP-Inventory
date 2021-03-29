@@ -32,12 +32,11 @@ urlpatterns = [
     # ACTION ROUTES
     path('report/', views.generate_report, name='Report'),
     path('checkin/', views.checkin_action, name='Checkin'),
-    path('additem/', views.additem_action, name='AddItem'),
+    path('checkout/', views.checkout_action, name='Checkout'),
+    path('additem/<str:location>/', views.addtocart_action, name='AddItem'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
     path('admin/', admin.site.urls),
 
-    path('checkout/', views.checkout_action, name='Checkout'),
-    path('additemout/', views.additemout_action, name='AddItemOut'),
     path('families/index/', views.FamilyIndexView.as_view(), name="Families"),
     path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
     path('items/index/', views.ItemIndexView.as_view(), name="Items"),
