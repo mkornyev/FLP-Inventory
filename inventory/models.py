@@ -1,3 +1,4 @@
+
 # IMPORTS 
 
 from django.db import models
@@ -69,6 +70,7 @@ class Checkout(models.Model):
 
   def __str__(self):
     return "({}, {})".format(self.family, self.out_items())
+  
   def out_items(self):
         return ", ".join([str(i) for i in self.items.all()])
   

@@ -16,9 +16,9 @@ a:hover {
 
 .content {
   margin: auto;
-  margin-top: 10%;
+  margin-top: 5%;
+  width: 80%;
   margin-bottom: 10%;
-  width: 100%;
 }
 
 /* Report Generation: */

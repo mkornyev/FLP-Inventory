@@ -9,57 +9,42 @@
 		</a>
 
 		<!-- Create the hamburger button -->
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
 
-				<!-- Set up the resources link -->
-				<li class="nav-item">
-					{%  url 'Home' as resources_url %}
-					<a class="nav-link {% if request.path == resources_url %}active{% endif %}" href="{{ resources_url }}">Resources</span></a>
-				</li>
+				{% if user.is_staff %}
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Data</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<li><a class="dropdown-item" href="/families/index/">Families</a></li>
+							<li><a class="dropdown-item" href="/categories/index/">Categories</a></li>
+							<li><a class="dropdown-item" href="/items/index/">Items</a></li>
+							<li><a class="dropdown-item" href="/checkins/index/">Checkins</a></li>
+							<li><a class="dropdown-item" href="/checkouts/index/">Checkouts</a></li>
+						</ul>
+					</li>
+				{% endif %}
+
 				
+				<li class="nav-item">
+					{%  url 'Checkin' as checkin_url %}
+					<a class="nav-link {% if request.path == checkin_url %}active{% endif %}" href="{{ checkin_url }}">Check In</span></a>
+				</li>
+
+				<li class="nav-item">
+					{%  url 'Checkout' as checkout_url %}
+					<a class="nav-link {% if request.path == checkout_url %}active{% endif %}" href="{{ checkout_url }}">Check Out</span></a>
+				</li>
+
 				<li class="nav-item">
 					{%  url 'Report' as report_url %}
 					<a class="nav-link {% if request.path == report_url %}active{% endif %}" href="{{ report_url }}">Generate Report</span></a>
 				</li>
         
-        <!-- SOME SAMPLE CODE I STOLE FROM ANOTEHR PROJECT: -->
-				<!-- Only show the tags link if the user is logged in and an admin -->
-				{% if user.is_superuser %}
-					<li class="nav-item">
-						{%  url 'Tags' as tags_url %}
-						<a class="nav-link {% if request.path == tags_url %}active{% endif %}" href="{{ tags_url }}">Tags</a>
-					</li>
-				{% endif %}
-
-				<!-- Only show the referrals link if the user is logged in -->
-				{% if user.is_authenticated %}
-					<li class="nav-item">
-						{% url 'Referrals' as referrals_url %}
-						<a class="nav-link {% if request.path == referrals_url %}active{% endif %}" href="{{ referrals_url }}">Referrals</a>
-					</li>
-				{% endif %}
-
-				<!-- Only show the case load link if the user is logged in -->
-				{% if user.is_staff %}
-					<li class="nav-item">
-						{% url 'Case Load' as case_load_url %} 
-						<a class="nav-link {% if request.path == case_load_url %}active{% endif %}" href="{{ case_load_url }}">Case Load</a>
-					</li>
-				{% endif %}
-
-				<!-- Only show the dashboard link if the user is logged in and an admin -->
-				{% if user.is_superuser %}
-					<li class="nav-item">
-						{% url 'Dashboard' as dashboard_url %}
-						<a class="nav-link {% if request.path == dashboard_url %}active{% endif %}" href="{{ dashboard_url }}">Dashboard</a>
-					</li>
-				{% endif %}
-
 				<!-- Only show the log out link if the user is logged in -->
 				{% if user.is_authenticated %}
 					<li class="nav-item">
