@@ -11,21 +11,28 @@ from django.contrib import messages
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from inventory.forms import LoginForm
-from inventory.forms import RegistrationForm
-from inventory.forms import AddItemForm, AddItemOutForm, CheckOutForm
+from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
+from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
 
-# BASIC VIEWS
+from datetime import date, datetime, timedelta
+
+DEFAULT_PAGINATION_SIZE = 25
+
+
+######################### BASIC VIEWS #########################
+
 def home(request): 
 	return render(request, 'inventory/home.html')
 
 def about(request):
 	return render(request, 'inventory/about.html')
 
-# AUTH VIEWS
+
+######################### AUTH VIEWS ##########################
+
 def login_action(request):
     context = {}
 
@@ -75,6 +82,44 @@ def register_action(request):
     login(request, new_user)
     return redirect(reverse('Home'))
 
+
+######################### REPORT GENERATION #########################
+
+def generate_report(request):
+    context = {}
+
+    if 'start-date' in request.POST \
+        and 'end-date' in request.POST \
+        and 'tx-type' in request.POST \
+        and (request.POST['tx-type'] in ['Checkin', 'Checkout']):
+
+        context['endDate'] = request.POST['end-date']
+        context['startDate'] = request.POST['start-date']
+        context['tx'] = request.POST['tx-type']
+
+        endDatetime = datetime.strptime('{} 23:59:59'.format(context['endDate']), '%Y-%m-%d %H:%M:%S')
+
+        if request.POST['tx-type'] == 'Checkin':
+            context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+        else:
+            context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+
+        context['totalValue'] = 0 
+        for result in context['results']:
+            context['totalValue'] = result.getValue() + context['totalValue']
+
+        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+
+        return render(request, 'inventory/generate_report.html', context)
+
+    today = date.today()
+    weekAgo = today - timedelta(days=7)
+    context['endDate'] = today.strftime('%Y-%m-%d')
+    context['startDate'] = weekAgo.strftime('%Y-%m-%d')
+    return render(request, 'inventory/generate_report.html', context)
+
+  
+###################### CHECKIN/CHECKOUT VIEWS ######################
 
 # Add item to cart
 def addtocart_action(request, location):
@@ -131,7 +176,7 @@ def removeitem_action(request, index, location):
     return redirect(reverse('Check' + location))
 
 
-# Checkout view
+# Checkin view
 def checkin_action(request):
     context = {}
         
@@ -174,7 +219,7 @@ def checkin_action(request):
     messages.success(request, 'Checkin created')
     return redirect(reverse('Checkin'))
 
-
+  
 # Checkout view
 def checkout_action(request):
     context = {}
@@ -225,7 +270,7 @@ def checkout_action(request):
     messages.success(request, 'Checkout created')
     return redirect(reverse('Checkout'))
 
-
+  
 def autocomplete(request):
     if 'term' in request.GET:
         qs = Item.objects.filter(name__icontains=request.GET.get('term'))
@@ -233,7 +278,9 @@ def autocomplete(request):
         for item in qs:
             names.append(item.name)
         return JsonResponse(names, safe=False)
-
+  
+  
+######################### DATABASE VIEWS #########################
 
 # DATABASE VIEWS
 class FamilyIndexView(SingleTableView):
@@ -260,3 +307,18 @@ class CheckoutIndexView(SingleTableView):
     model = Checkout
     table_class = CheckoutTable
     template_name = "inventory/checkouts/index.html"
+
+
+######################### VIEW HELPERS #########################
+
+def getPagination(request, objects, count):
+    page = request.POST.get('page', 1)
+    paginator = Paginator(objects, count)
+    
+    try:
+        paginationOut = paginator.page(page)
+    except PageNotAnInteger:
+        paginationOut = paginator.page(1)
+    except EmptyPage:
+        paginationOut = paginator.page(paginator.num_pages)
+    return paginationOut
