@@ -14,7 +14,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
-from inventory.models import Checkin, Checkout
 
 from datetime import date, datetime, timedelta
 
