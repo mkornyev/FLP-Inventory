@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inventory',
     'django_tables2',
-    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -154,16 +153,4 @@ EMAIL_HOST_PASSWORD = 'xygkqkwxjqmyurbe'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'flpinventory@gmail.com'
-TO_EMAIL = 'xinglydia@gmail.com'
-
-CRONTAB_PYTHON_EXECUTABLE = '/usr/bin/python3'
-CRONTAB_COMMAND_SUFFIX = '2>&1'
-
-CRONJOBS = [
-    # Every minute, for testing only
-    ('* * * * *', 'django.core.management.call_command', ['csv', '>> ~/help.log']),
-
-    # 23:45 (11:45 PM) every Saturday
-    # ('45 23 * * 6', 'django.core.management.call_command', ['csv']),
-]
-
+TO_EMAIL = ''
