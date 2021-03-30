@@ -45,7 +45,7 @@ class Checkin(models.Model):
   def getValue(self):
     val = 0
     for tx in self.items.all().select_related("item"):
-      val += (tx.item.price * tx.quantity)
+      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
     return val
 
   def __str__(self):
@@ -65,7 +65,7 @@ class Checkout(models.Model):
   def getValue(self):
     val = 0
     for tx in self.items.all().select_related("item"):
-      val += (tx.item.price * tx.quantity)
+      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
     return val
 
   def __str__(self):

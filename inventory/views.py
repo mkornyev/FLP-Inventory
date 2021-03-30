@@ -5,7 +5,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django_tables2 import SingleTableView
 from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
-# from django.http import HttpResponse
+from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -18,6 +18,7 @@ from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTran
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
 
 from datetime import date, datetime, timedelta
+import csv
 
 DEFAULT_PAGINATION_SIZE = 25
 
@@ -108,8 +109,26 @@ def generate_report(request):
         for result in context['results']:
             context['totalValue'] = result.getValue() + context['totalValue']
 
-        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+        if 'export' in request.POST:
+            qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
+            response = HttpResponse()
+            response['Content-Disposition'] = 'attachment; filename=data.csv'
+            writer = csv.writer(response)
+            if qs is not None:
+                writer.writerow(["date", "family", "item", "quantity", "price", "total value"])
+                for c in qs:
+                    for tx in c.items.all():
+                        writer.writerow([
+                            c.datetime,
+                            c.family,
+                            tx.item.name,
+                            tx.quantity,
+                            tx.item.price, 
+                            0 if tx.item.price is None else tx.quantity*tx.item.price
+                        ])
+            return response
 
+        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/generate_report.html', context)
 
     today = date.today()
