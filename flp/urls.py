@@ -18,18 +18,24 @@ from django.urls import path
 from inventory import views
 
 urlpatterns = [
+    # GENERIC ROUTES 
+    path('admin/', admin.site.urls),
     path('', views.home, name="Home"),
     path('autocomplete/', views.autocomplete, name="autocomplete"),
     path('about/', views.about, name="About"),  
+
+    # AUTH ROUTES 
     path('login/', views.login_action, name='Login'),
     path('logout/', views.logout_action, name='Logout'),
     path('register/', views.register_action, name='Register'),
-    path('checkin/', views.checkin_action, name='Checkin'),
-    path('additem/', views.additem_action, name='AddItem'),
-    path('admin/', admin.site.urls),
 
+    # ACTION ROUTES
+    path('report/', views.generate_report, name='Report'),
+    path('checkin/', views.checkin_action, name='Checkin'),
     path('checkout/', views.checkout_action, name='Checkout'),
-    path('additemout/', views.additemout_action, name='AddItemout'),
+    path('additem/<str:location>/', views.addtocart_action, name='AddItem'),
+    path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
+
     path('families/index/', views.FamilyIndexView.as_view(), name="Families"),
     path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
     path('items/index/', views.ItemIndexView.as_view(), name="Items"),
