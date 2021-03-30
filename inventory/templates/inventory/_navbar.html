@@ -43,6 +43,7 @@
             <a class="nav-link {% if request.path == report_url %}active{% endif %}" href="{{ report_url }}">Generate Report</span></a>
           </li>
 				{% endif %}
+
         
 				<!-- Only show the log out link if the user is logged in -->
 				{% if user.is_authenticated %}
