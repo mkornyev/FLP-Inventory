@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand
+from django.core.mail import EmailMessage
 from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
-import csv
+import csv, os
 
+MODELS_TO_BACKUP = [Family, Category, Item, ItemTransaction, Checkin, Checkout]
 
 class Command(BaseCommand):
     args = '<this func takes no args>'
@@ -18,7 +20,23 @@ class Command(BaseCommand):
             row = [str(getattr(i, f)) for f in field_names]
             writer.writerow(row)
 
+    def send_email(self):
+        email = EmailMessage(
+            'Database backup CSV\'s',
+            'Please find attached CSV backups of the FLP inventory system.',
+            'flpinventory@gmail.com',
+            ['xinglydia@gmail.com'],
+            [],
+            reply_to=['flpinventory@gmail.com'],
+            headers={},
+        )
+        path = './db_csv_backups/'
+        for fname in os.listdir(path):
+            email.attach(fname, open(path+fname, 'r').read())
+        email.send()
+
+
     def handle(self, *args, **options):
-        for model in [Family, Category, Item, ItemTransaction, Checkin, Checkout]:
+        for model in MODELS_TO_BACKUP:
             self.write_model_to_csv(model)
-        
+        self.send_email()
