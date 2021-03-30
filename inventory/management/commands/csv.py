@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import EmailMessage
-from django.conf import settings
 from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
 import csv, os
 
