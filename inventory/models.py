@@ -42,10 +42,19 @@ class Checkin(models.Model):
   datetime = models.DateTimeField(default=datetime.now)
   items = models.ManyToManyField(ItemTransaction, blank=False)
 
+  def getValue(self):
+    val = 0
+    for tx in self.items.all().select_related("item"):
+      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
+    return val
+
   def __str__(self):
     return "({}, {})".format(self.datetime, self.in_items())
   def in_items(self):
         return ", ".join([str(i) for i in self.items.all()])
+  
+  class Meta:
+    ordering = ['-datetime']
 
 class Checkout(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
@@ -53,7 +62,17 @@ class Checkout(models.Model):
   items = models.ManyToManyField(ItemTransaction, blank=False)
   datetime = models.DateTimeField(default=datetime.now)
 
+  def getValue(self):
+    val = 0
+    for tx in self.items.all().select_related("item"):
+      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
+    return val
+
   def __str__(self):
     return "({}, {})".format(self.family, self.out_items())
+  
   def out_items(self):
         return ", ".join([str(i) for i in self.items.all()])
+  
+  class Meta:
+    ordering = ['-datetime']

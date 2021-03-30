@@ -5,6 +5,23 @@
     .about-spacer {
       padding-bottom: 5vh;
     }
+
+    .split {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .checkin-form {
+      display: flex;
+      align-items: last baseline;
+    }
+
+    .checkin-form .fieldWrapper{
+      padding-right: 20px;
+    }
+
   </style>
 {% endblock %}
 
@@ -12,48 +29,65 @@
   Check Out
 {% endblock %}{% endblock %}
 
-
-
 {% block content %}
 
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <h1>Check Out:</h1>
-
-            <table>
-              <tr>
-                  <th>Item</th>
-                  <th>Quantity</th>
-              </tr>
-              {% for tx in transactions %}
-                <tr> 
-                    <td>{{ tx.item}}</td>
-                    <td>{{ tx.quantity }}</td>
-                </tr>
-              {% endfor %}
-            </table>
-
-            <form method="POST" action="{% url 'AddItemout' %}">
-                <table>
-                    {{form}}
-                </table>
-                {% csrf_token %}
-                <br>
-                <button class="btn btn-primary" type="submit">Submit</button>
-            </form>
-
-            <form method="POST" action="{% url 'Checkout' %}">
-                <table>
-                    {{formcheckout}}
-                </table>
-                {% csrf_token %}
-                <br>
-                <button class="btn btn-primary" type="submit">Submit</button>
-            </form>
-
-        </div>
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      <p class="mb-0">{{ message }}</p>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+  {% endfor %}
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="split">
+        <h1>Check Out Items:</h1>
+        <a class="btn btn-primary" href="{% url 'AddItem' location='out' %}">Add Item +</a>
+      </div>
+        <form class="checkin-form" method="POST" action="{% url 'Checkout' %}">
+            {% for field in formcheckout %}
+            <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                  {% for error in field.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% csrf_token %}
+            <button class="btn btn-success" type="submit">Check Out Items</button>
+        </form>
+
+      <table class="table">
+        <thead>
+          <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in transactions %}
+            <tr> 
+                <th scope="row">{{ tx.item}}</td>
+                <td>{{ tx.quantity }}</td>
+                <td>
+                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger">
+                    Remove
+                  </a>
+                </td
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not transactions %}
+        <p style="font-style: italic;">No items added...</p>
+      {% endif %}
+    </div>
+  </div>
 </div>
 
 {% endblock %}

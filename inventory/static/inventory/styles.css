@@ -19,3 +19,22 @@ a:hover {
   margin-top: 5%;
   width: 80%;
 }
+
+.pagination li {
+  padding: 5px;
+  margin-bottom: 10%;
+}
+
+/* Report Generation: */
+
+form.check-report-form {
+  width: 80%;
+}
+
+form.check-report-form input.date-input {
+  max-width: 225px;
+}
+
+span.monetary-value {
+  color: #0275d8;
+}
