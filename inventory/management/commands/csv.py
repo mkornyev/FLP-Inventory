@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import EmailMessage
+from django.conf import settings
 from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
 import csv, os
 
@@ -25,7 +26,7 @@ class Command(BaseCommand):
             'Database backup CSV\'s',
             'Please find attached CSV backups of the FLP inventory system.',
             'flpinventory@gmail.com',
-            ['xinglydia@gmail.com'],
+            [settings.TO_EMAIL],
             [],
             reply_to=['flpinventory@gmail.com'],
             headers={},
