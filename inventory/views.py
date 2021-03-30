@@ -9,21 +9,30 @@ from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, Checkou
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from inventory.forms import LoginForm
-from inventory.forms import RegistrationForm
-from inventory.forms import AddItemForm, AddItemOutForm, CheckOutForm
+from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
+from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
 
-# BASIC VIEWS
+from datetime import date, datetime, timedelta
+
+DEFAULT_PAGINATION_SIZE = 25
+
+
+######################### BASIC VIEWS #########################
+
 def home(request): 
 	return render(request, 'inventory/home.html')
 
 def about(request):
 	return render(request, 'inventory/about.html')
 
-# AUTH VIEWS
+
+######################### AUTH VIEWS ##########################
+
 def login_action(request):
     context = {}
 
@@ -73,7 +82,45 @@ def register_action(request):
     login(request, new_user)
     return redirect(reverse('Home'))
 
-# CHECKIN VIEWS
+
+######################### REPORT GENERATION #########################
+@login_required
+def generate_report(request):
+    context = {}
+
+    if 'start-date' in request.POST \
+        and 'end-date' in request.POST \
+        and 'tx-type' in request.POST \
+        and (request.POST['tx-type'] in ['Checkin', 'Checkout']):
+
+        context['endDate'] = request.POST['end-date']
+        context['startDate'] = request.POST['start-date']
+        context['tx'] = request.POST['tx-type']
+
+        endDatetime = datetime.strptime('{} 23:59:59'.format(context['endDate']), '%Y-%m-%d %H:%M:%S')
+
+        if request.POST['tx-type'] == 'Checkin':
+            context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+        else:
+            context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+
+        context['totalValue'] = 0 
+        for result in context['results']:
+            context['totalValue'] = result.getValue() + context['totalValue']
+
+        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+
+        return render(request, 'inventory/generate_report.html', context)
+
+    today = date.today()
+    weekAgo = today - timedelta(days=7)
+    context['endDate'] = today.strftime('%Y-%m-%d')
+    context['startDate'] = weekAgo.strftime('%Y-%m-%d')
+    return render(request, 'inventory/generate_report.html', context)
+
+  
+######################### CHECKIN VIEWS #########################
+@login_required
 def additem_action(request):
     context = {}
 
@@ -107,7 +154,7 @@ def additem_action(request):
 
         return redirect(reverse('Checkin'))
 
-
+@login_required
 def checkin_action(request):
     context = {}
         
@@ -153,7 +200,7 @@ def autocomplete(request):
             names.append(item.name)
         return JsonResponse(names, safe=False)
 
-# CHECKOUT VIEWS
+@login_required
 def additemout_action(request):
     context = {}
 
@@ -184,7 +231,7 @@ def additemout_action(request):
 
         return redirect(reverse('Checkout'))
 
-
+@login_required
 def checkout_action(request):
     context = {}
         
@@ -230,29 +277,45 @@ def checkout_action(request):
 
     return redirect(reverse('Home'))
 
-# DATABASE VIEWS
+  
+######################### DATABASE VIEWS #########################
 
-class FamilyIndexView(SingleTableView):
+class FamilyIndexView(LoginRequiredMixin, SingleTableView):
     model = Family
     table_class = FamilyTable
     template_name = "inventory/families/index.html"
 
-class CategoryIndexView(SingleTableView):
+class CategoryIndexView(LoginRequiredMixin, SingleTableView):
     model = Category
     table_class = CategoryTable
     template_name = "inventory/categories/index.html"
 
-class ItemIndexView(SingleTableView):
+class ItemIndexView(LoginRequiredMixin, SingleTableView):
     model = Item
     table_class = ItemTable
     template_name = "inventory/items/index.html"
 
-class CheckinIndexView(SingleTableView):
+class CheckinIndexView(LoginRequiredMixin, SingleTableView):
     model = Checkin
     table_class = CheckinTable
     template_name = "inventory/checkins/index.html"
 
-class CheckoutIndexView(SingleTableView):
+class CheckoutIndexView(LoginRequiredMixin, SingleTableView):
     model = Checkout
     table_class = CheckoutTable
     template_name = "inventory/checkouts/index.html"
+
+
+######################### VIEW HELPERS #########################
+
+def getPagination(request, objects, count):
+    page = request.POST.get('page', 1)
+    paginator = Paginator(objects, count)
+    
+    try:
+        paginationOut = paginator.page(page)
+    except PageNotAnInteger:
+        paginationOut = paginator.page(1)
+    except EmptyPage:
+        paginationOut = paginator.page(paginator.num_pages)
+    return paginationOut
