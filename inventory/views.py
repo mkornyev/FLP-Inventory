@@ -126,6 +126,7 @@ def addtocart_action(request, location):
     context = {}
 
     context['location'] = location
+
     if request.method == 'GET':
         if location == 'in':
             context['form'] = AddItemForm()
@@ -143,10 +144,7 @@ def addtocart_action(request, location):
         context['form'] = form
 
         if not form.is_valid():
-            if location == 'in':
-                return render(request, 'inventory/additem.html', context)
-            else:
-                return render(request, 'inventory/additemout.html', context)
+            return render(request, 'inventory/additem.html', context)
 
         # category = form.cleaned_data['category']
         name = form.cleaned_data['name']
