@@ -128,6 +128,26 @@ def generate_report(request):
                         ])
             return response
 
+        if 'export_table' in request.POST:
+            qs = context['results']
+            response = HttpResponse()
+            response['Content-Disposition'] = 'attachment; filename=data.csv'
+            writer = csv.writer(response)
+
+            if len(qs) is not 0:
+                field_names = [f.name for f in qs.model._meta.get_fields()]
+                writer.writerow(field_names)
+                for i in qs:
+                    row = []
+                    for f in field_names:
+                        if f == "items":
+                            txs = ''.join([str(tx) for tx in i.items.all()])
+                            row.append(txs)
+                        else:
+                            row.append(getattr(i, f))
+                    writer.writerow(row)
+            return response
+
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/generate_report.html', context)
 
