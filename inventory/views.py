@@ -134,7 +134,7 @@ def generate_report(request):
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
 
-            if len(qs) is not 0:
+            if len(qs) != 0:
                 field_names = [f.name for f in qs.model._meta.get_fields()]
                 writer.writerow(field_names)
                 for i in qs:
