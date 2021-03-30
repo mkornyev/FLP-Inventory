@@ -7,8 +7,11 @@ import csv, os
 MODELS_TO_BACKUP = [Family, Category, Item, ItemTransaction, Checkin, Checkout]
 
 class Command(BaseCommand):
-    args = '<this func takes no args>'
-    help = 'Run this script to email CSV backup of db.'
+    args = 'this function takes one argument, which is the email you want to send the backups to'
+    help = 'Try `python3 manage.py csv EMAIL_ADDRESS`'
+
+    def add_arguments(self, parser):
+        parser.add_argument('email')
 
     def write_model_to_csv(self, model):
         qs = model.objects
@@ -21,12 +24,12 @@ class Command(BaseCommand):
             row = [str(getattr(i, f)) for f in field_names]
             writer.writerow(row)
 
-    def send_email(self):
+    def send_email(self, to_email_addr):
         email = EmailMessage(
             'Database backup CSV\'s',
             'Please find attached CSV backups of the FLP inventory system.',
             'flpinventory@gmail.com',
-            [settings.TO_EMAIL],
+            [to_email_addr],
             [],
             reply_to=['flpinventory@gmail.com'],
             headers={},
@@ -38,6 +41,7 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+        addr = options['email']
         for model in MODELS_TO_BACKUP:
             self.write_model_to_csv(model)
-        self.send_email()
+        self.send_email(addr)

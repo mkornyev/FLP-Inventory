@@ -153,4 +153,3 @@ EMAIL_HOST_PASSWORD = 'xygkqkwxjqmyurbe'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'flpinventory@gmail.com'
-TO_EMAIL = ''
