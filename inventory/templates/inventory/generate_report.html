@@ -113,6 +113,18 @@
           </nav>
           {% endif %}
 
+          <div class="row">
+            <div class="col mt-2"><br>
+              <button class="btn btn-lg btn-warning" name="export_table" type="submit">Download Current Table</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col mt-2"><br>
+              <button class="btn btn-lg btn-warning" name="export" type="submit">Download Price Adjustment CSV</button>
+            </div>
+          </div>
+          <br>
+
         {% elif results|length == 0 %}
           <p>No results for the specified filters.</p>
         {% else %}
@@ -120,17 +132,6 @@
         {% endif %}
       </div>
     </div>
-    <div class="row">
-      <div class="col mt-2"><br>
-        <button class="btn btn-lg btn-warning" name="export_table" type="submit">Download Current Table</button>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col mt-2"><br>
-        <button class="btn btn-lg btn-warning" name="export" type="submit">Download Price Adjustment CSV</button>
-      </div>
-    </div>
-    <br>
 </div>
 </form>
 
