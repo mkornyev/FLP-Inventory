@@ -113,23 +113,22 @@
           </nav>
           {% endif %}
 
-          <div class="row">
-            <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning" name="export_table" type="submit">Download Current Table</button>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning" name="export" type="submit">Download Price Adjustment CSV</button>
-            </div>
-          </div>
-          <br>
-
-        {% elif results|length == 0 %}
-          <p>No results for the specified filters.</p>
         {% else %}
-          <p>Generate a report to see it below.</p>
+          <p>No results for the specified filters.</p>
         {% endif %}
+
+        <div class="row">
+          <div class="col mt-2"><br>
+            <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Download Current Table</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col mt-2"><br>
+            <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Download Price Adjustment CSV</button>
+          </div>
+        </div>
+        <br>
+
       </div>
     </div>
 </div>
