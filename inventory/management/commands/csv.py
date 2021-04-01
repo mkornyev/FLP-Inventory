@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from django.core.mail import EmailMessage
 from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
 import csv, os
+from datetime import datetime
 
 MODELS_TO_BACKUP = [Family, Category, Item, ItemTransaction, Checkin, Checkout]
 
@@ -31,9 +32,10 @@ class Command(BaseCommand):
             writer.writerow(row)
 
     def send_email(self, to_email_addr):
+        date = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         email = EmailMessage(
-            'Database backup CSV\'s',
-            'Please find attached CSV backups of the FLP inventory system.',
+            f'Database backup CSV\'s: {date}',
+            f'Please find attached CSV backups of the FLP inventory system as of {date}',
             'flpinventory@gmail.com',
             [to_email_addr],
             [],
@@ -43,7 +45,7 @@ class Command(BaseCommand):
         path = './db_csv_backups/'
         for fname in os.listdir(path):
             email.attach(fname, open(path+fname, 'r').read())
-        # email.send()
+        email.send()
 
 
     def handle(self, *args, **options):
