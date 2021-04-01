@@ -50,6 +50,8 @@ class Checkin(models.Model):
 
   def __str__(self):
     return "({}, {})".format(self.datetime, self.in_items())
+
+  @property
   def in_items(self):
         return ", ".join([str(i) for i in self.items.all()])
   
@@ -71,6 +73,7 @@ class Checkout(models.Model):
   def __str__(self):
     return "({}, {})".format(self.family, self.out_items())
   
+  @property
   def out_items(self):
         return ", ".join([str(i) for i in self.items.all()])
   
