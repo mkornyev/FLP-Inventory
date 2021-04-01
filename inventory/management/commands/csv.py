@@ -13,14 +13,21 @@ class Command(BaseCommand):
         parser.add_argument('email')
 
     def write_model_to_csv(self, model):
-        qs = model.objects
+        qs = model.objects.all()
         filename = f'./db_csv_backups/{model.__name__}.csv'
         outfile = open(filename,'w')
-        field_names = [f.name for f in model._meta.local_fields]
+        field_names = [f.name for f in qs.model._meta.get_fields()]
         writer = csv.writer(outfile)
         writer.writerow(field_names)
-        for i in qs.all():
-            row = [str(getattr(i, f)) for f in field_names]
+        for i in qs:
+            row = []
+            for f in field_names:
+                if hasattr(i, f):
+                    if f == "items":
+                        txs = ', '.join([str(tx) for tx in i.items.all()])
+                        row.append(txs)
+                    else:
+                        row.append(getattr(i, f))
             writer.writerow(row)
 
     def send_email(self, to_email_addr):
@@ -36,7 +43,7 @@ class Command(BaseCommand):
         path = './db_csv_backups/'
         for fname in os.listdir(path):
             email.attach(fname, open(path+fname, 'r').read())
-        email.send()
+        # email.send()
 
 
     def handle(self, *args, **options):

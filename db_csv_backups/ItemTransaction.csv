@@ -1,4 +1,4 @@
-id,item,quantity
+checkin,checkout,id,item,quantity
 6,stroller,1
 7,jacket,5
 8,formula,3
