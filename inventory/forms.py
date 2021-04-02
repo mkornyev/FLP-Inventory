@@ -1,6 +1,6 @@
 from django import forms
 
-from inventory.models import Family, Item
+from inventory.models import Item
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
