@@ -167,7 +167,7 @@ def analytics(request):
 
     one_week_ago = date.today()-timedelta(days=7)
     context['one_week_ago'] = one_week_ago
-    all_checkouts = Checkout.objects.filter(datetime__gte=one_week_ago).all()
+    all_checkouts = Checkout.objects.filter(datetime__date__gte=one_week_ago).all()
 
     # Get checkouts grouped by items, sorted by quantity checked out
     item_checkout_quantities = defaultdict(int)
