@@ -28,7 +28,11 @@
                 <th scope="row">{{ i.id }}</th>
                 <td>{{ i.name }}</td>
                 <td>{{ quantity_checked_out }}</td>
-                <td>{{ i.quantity }}</td>
+                {% if i.quantity > 5 %}
+                    <td>{{ i.quantity }}</td>
+                {% else %}
+                    <td style='color:red'>{{ i.quantity }}</td>
+                {% endif %}
                 </td>
             </tr>
             {% endfor %}
