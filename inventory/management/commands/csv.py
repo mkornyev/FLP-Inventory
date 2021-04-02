@@ -19,7 +19,12 @@ class Command(BaseCommand):
         outfile = open(filename,'w')
         field_names = [f.name for f in qs.model._meta.get_fields()]
         writer = csv.writer(outfile)
-        writer.writerow(field_names)
+        heading = []
+        if len(qs) != 0:
+            for f in field_names:
+                if hasattr(qs[0], f):
+                    heading.append(f)
+        rows = []
         for i in qs:
             row = []
             for f in field_names:
@@ -29,7 +34,9 @@ class Command(BaseCommand):
                         row.append(txs)
                     else:
                         row.append(getattr(i, f))
-            writer.writerow(row)
+            rows.append(row)
+        writer.writerow(heading)
+        writer.writerows(rows)
 
     def send_email(self, to_email_addr):
         date = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
