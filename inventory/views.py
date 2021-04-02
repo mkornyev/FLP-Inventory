@@ -172,8 +172,7 @@ def analytics(request):
     # Get checkouts grouped by items, sorted by quantity checked out
     item_checkout_quantities = defaultdict(int)
     for checkout in all_checkouts:
-        items = getattr(checkout, 'items')
-        for itemTransaction in items.all():
+        for itemTransaction in checkout.items.all():
             item_obj = itemTransaction.item
             quantity = itemTransaction.quantity
             item_checkout_quantities[item_obj] += quantity
