@@ -20,9 +20,10 @@ from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTran
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
 
 from datetime import date, datetime, timedelta
+from collections import defaultdict
 import csv
 
-DEFAULT_PAGINATION_SIZE = 25
+DEFAULT_PAGINATION_SIZE = 2
 
 
 ######################### BASIC VIEWS #########################
@@ -164,8 +165,20 @@ def generate_report(request):
 def analytics(request):
     context = {}
 
-    context['results'] = Checkout.objects.all()
-    context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+    all_checkouts = Checkout.objects.all()
+
+    # Get checkouts grouped by items, sorted by quantity checked out
+    item_checkout_quantities = defaultdict(int)
+    for checkout in all_checkouts:
+        items = getattr(checkout, 'items')
+        for itemTransaction in items.all():
+            item_obj = itemTransaction.item
+            quantity = itemTransaction.quantity
+            item_checkout_quantities[item_obj] += quantity
+
+    item_quant_tuples = item_checkout_quantities.items()
+    context['most_checked_out'] = sorted(item_quant_tuples, key=lambda i_quantity: i_quantity[1], reverse=True)
+    context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
 
     return render(request, 'inventory/analytics.html', context)
 
