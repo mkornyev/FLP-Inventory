@@ -160,7 +160,7 @@ def generate_report(request):
     context['startDate'] = weekAgo.strftime('%Y-%m-%d')
     return render(request, 'inventory/generate_report.html', context)
 
-######################### REPORT GENERATION #########################
+######################### ANALYTICS #########################
 @login_required
 def analytics(request):
     context = {}
