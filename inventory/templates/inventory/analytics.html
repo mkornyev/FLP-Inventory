@@ -30,7 +30,7 @@
                         <th scope="row">{{ i.id }}</th>
                         <td>{{ i.name }}</td>
                         <td>{{ quantity_checked_out }}</td>
-                        {% if i.quantity > 5 %}
+                        {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
                             <td>{{ i.quantity }}</td>
                         {% else %}
                             <td style='color:red'>{{ i.quantity }}</td>

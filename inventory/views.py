@@ -24,7 +24,7 @@ from collections import defaultdict
 import csv
 
 DEFAULT_PAGINATION_SIZE = 25
-
+LOW_QUANTITY_THRESHOLD = 5 # this number or below is considered low quantity
 
 ######################### BASIC VIEWS #########################
 
@@ -180,6 +180,8 @@ def analytics(request):
     item_quant_tuples = item_checkout_quantities.items()
     context['most_checked_out'] = sorted(item_quant_tuples, key=lambda i_quantity: i_quantity[1], reverse=True)
     context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
+
+    context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
 
     return render(request, 'inventory/analytics.html', context)
 
