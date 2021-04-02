@@ -165,6 +165,7 @@ def analytics(request):
     context = {}
 
     context['results'] = Checkout.objects.all()
+    context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
 
     return render(request, 'inventory/analytics.html', context)
 
@@ -188,46 +189,8 @@ def analytics(request):
         for result in context['results']:
             context['totalValue'] = result.getValue() + context['totalValue']
 
-        if 'export' in request.POST:
-            qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
-            response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
-            writer = csv.writer(response)
-            if qs is not None:
-                writer.writerow(["date", "family", "item", "quantity", "price", "total value"])
-                for c in qs:
-                    for tx in c.items.all():
-                        writer.writerow([
-                            c.datetime,
-                            c.family,
-                            tx.item.name,
-                            tx.quantity,
-                            tx.item.price, 
-                            0 if tx.item.price is None else tx.quantity*tx.item.price
-                        ])
-            return response
-
-        if 'export_table' in request.POST:
-            qs = context['results']
-            response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
-            writer = csv.writer(response)
-
-            if len(qs) != 0:
-                field_names = [f.name for f in qs.model._meta.fields]
-                writer.writerow(field_names)
-                for i in qs:
-                    row = []
-                    for f in field_names:
-                        if f == "items":
-                            txs = ', '.join([str(tx) for tx in i.items.all()])
-                            row.append(txs)
-                        else:
-                            row.append(getattr(i, f))
-                    writer.writerow(row)
-            return response
-
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+
         return render(request, 'inventory/generate_report.html', context)
 
     today = date.today()
