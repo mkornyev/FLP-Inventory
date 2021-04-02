@@ -151,13 +151,13 @@ def generate_report(request):
             return response
 
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
-        return render(request, 'inventory/generate_report.html', context)
+        return render(request, 'inventory/reports/generate_report.html', context)
 
     today = date.today()
     weekAgo = today - timedelta(days=7)
     context['endDate'] = today.strftime('%Y-%m-%d')
     context['startDate'] = weekAgo.strftime('%Y-%m-%d')
-    return render(request, 'inventory/generate_report.html', context)
+    return render(request, 'inventory/reports/generate_report.html', context)
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
