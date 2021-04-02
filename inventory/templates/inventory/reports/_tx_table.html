@@ -1,0 +1,32 @@
+{% block tx_table %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Date</th>
+      {% if results.0.family %}
+        <th scope="col">Family</th>
+      {% endif %}
+      <th scope="col">Value</th>
+      <th scope="col">Items</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in results %}
+    <tr>
+      <th scope="row">{{ c.id }}</th>
+      <td>{{ c.datetime }}</td>
+      {% if c.family %}
+        <td>{{ c.family.name }}</td>
+      {% endif %}
+      <td>{{ c.getValue }}</td>
+      <td>
+      {% for tx in c.items.all %}
+        {{ tx.item.name }}({{ tx.quantity }}){% if not forloop.last %}, {% endif %}
+      {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
