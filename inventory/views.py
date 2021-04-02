@@ -117,17 +117,27 @@ def generate_report(request):
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
             if qs is not None:
-                writer.writerow(["date", "family", "item", "quantity", "price", "total value"])
+                writer.writerow(["item", "category", "quantity", "price", "total value"])
+
+                uniqueItems = {} 
+
                 for c in qs:
                     for tx in c.items.all():
-                        writer.writerow([
-                            c.datetime,
-                            c.family,
-                            tx.item.name,
-                            tx.quantity,
-                            tx.item.price, 
-                            0 if tx.item.price is None else tx.quantity*tx.item.price
-                        ])
+                        if tx.item.id not in uniqueItems: 
+                            uniqueItems[tx.item.id] = [
+                                tx.item.name,
+                                tx.item.category.name,
+                                tx.quantity,
+                                tx.item.price,
+                                0 if tx.item.price is None else tx.quantity*tx.item.price
+                            ]
+                        else: 
+                            uniqueItems[tx.item.id][2] += tx.quantity
+                            uniqueItems[tx.item.id][4] += (0 if tx.item.price is None else tx.quantity*tx.item.price)
+                
+                for item in uniqueItems.values():
+                    writer.writerow(item)
+
             return response
 
         if 'export_table' in request.POST:
@@ -149,6 +159,31 @@ def generate_report(request):
                             row.append(getattr(i, f))
                     writer.writerow(row)
             return response
+
+        if 'itemizedOutput' in request.POST:
+            context['itemizedOutput'] = request.POST['itemizedOutput']
+
+            newResults = []
+            newUniqueItems = {}
+            for res in context['results']: 
+                for tx in res.items.all(): 
+                    if tx.item.id not in newUniqueItems:
+                        newUniqueItems[tx.item.id] = {
+                            'item': tx.item.name,
+                            'category': tx.item.category.name,
+                            'quantity': tx.quantity,
+                            'price': tx.item.price,
+                            'value': 0 if tx.item.price is None else tx.quantity*tx.item.price
+                        }
+                    else: 
+                        newUniqueItems[tx.item.id]['quantity'] += tx.quantity
+                        newUniqueItems[tx.item.id]['value'] += 0 if tx.item.price is None else tx.quantity*tx.item.price
+
+                    # newResults.append(row)
+            
+
+            context['results'] = list(newUniqueItems.values())
+            print(context['results'])
 
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/reports/generate_report.html', context)
