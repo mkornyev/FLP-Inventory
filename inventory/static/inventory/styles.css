@@ -28,7 +28,7 @@ a:hover {
 /* Report Generation: */
 
 form.check-report-form {
-  width: 80%;
+  width: 100%;
 }
 
 form.check-report-form input.date-input {
@@ -37,4 +37,9 @@ form.check-report-form input.date-input {
 
 span.monetary-value {
   color: #0275d8;
+}
+
+span#reportGroupingTooltip {
+  position: relative;
+  top: 6px;
 }

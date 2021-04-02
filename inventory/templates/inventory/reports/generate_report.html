@@ -19,7 +19,12 @@
         {% if results %}
 
           <h4>Filtered {{ tx }}s | <span class="monetary-value">${{ totalValue }}</span>:</h4>
-          {% include 'inventory/reports/_tx_table.html' %}
+
+          {% if itemizedOutput %}
+            {% include 'inventory/reports/_item_table.html' %}
+          {% else %}
+            {% include 'inventory/reports/_tx_table.html' %}
+          {% endif %}
 
           <!-- Pagination -->
           {% if results.has_other_pages %}
@@ -32,16 +37,19 @@
           <p>No results for the specified filters.</p>
         {% endif %}
 
-        <div class="row">
-          <div class="col mt-2"><br>
-            <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Download Current Table</button>
+        {% if itemizedOutput and tx == "Checkout" %}
+          <div class="row">
+            <div class="col mt-2"><br>
+              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export (By Item)</button>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col mt-2"><br>
-            <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Download Price Adjustment CSV</button>
+        {% else %}
+          <div class="row">
+            <div class="col mt-2"><br>
+              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export (By {{tx}})</button>
+            </div>
           </div>
-        </div>
+        {% endif %}
         <br>
 
       </div>
