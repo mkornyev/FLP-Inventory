@@ -11,67 +11,72 @@
     <br>
 
     {% if most_checked_out %}
-        <h4>Most Checked Out Items in last week (since {{ one_week_ago }})</h4>
+        <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
+            <div class="container">
+                <h4>Most Checked Out Items in Last Week (since {{ one_week_ago }})</h4>
 
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Item</th>
-                <th scope="col">Quantity Checked Out</th>
-                <th scope="col">Quantity left</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for i, quantity_checked_out in most_checked_out %}
-            <tr>
-                <th scope="row">{{ i.id }}</th>
-                <td>{{ i.name }}</td>
-                <td>{{ quantity_checked_out }}</td>
-                {% if i.quantity > 5 %}
-                    <td>{{ i.quantity }}</td>
-                {% else %}
-                    <td style='color:red'>{{ i.quantity }}</td>
-                {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- Pagination -->
-        {% if most_checked_out.has_other_pages %}
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    {% if most_checked_out.has_previous %}
-                        <li class="page-item">
-                            <button type="submit" name="page" value="{{ most_checked_out.previous_page_number }}" class="page-link" aria-label="Previous">Previous</button>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
-                    {% endif %}
-
-                    {% for i in most_checked_out.paginator.page_range %}
-                        {% if most_checked_out.number == i %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ i }}</span>
-                            </li>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Quantity Checked Out</th>
+                        <th scope="col">Quantity left</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i, quantity_checked_out in most_checked_out %}
+                    <tr>
+                        <th scope="row">{{ i.id }}</th>
+                        <td>{{ i.name }}</td>
+                        <td>{{ quantity_checked_out }}</td>
+                        {% if i.quantity > 5 %}
+                            <td>{{ i.quantity }}</td>
                         {% else %}
-                            <li class="page-item">
-                                <button type="submit" name="page" value="{{ i }}" class="page-link">{{ i }}</button>
-                            </li>
+                            <td style='color:red'>{{ i.quantity }}</td>
                         {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
+                    </tbody>
+                </table>
 
-                    {% if most_checked_out.has_next %}
-                        <li class="page-item">
-                            <button type="submit" name="page" value="{{ most_checked_out.next_page_number }}" class="page-link" aria-label="Previous">Next</button>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><span class="page-link">Next</span></li>
-                    {% endif %}
-                </ul>
-            </nav>
+                <!-- Pagination -->
+                {% if most_checked_out.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if most_checked_out.has_previous %}
+                                <li class="page-item">
+                                    <button type="submit" name="page" value="{{ most_checked_out.previous_page_number }}" class="page-link" aria-label="Previous">Previous</button>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                            {% endif %}
+
+                            {% for i in most_checked_out.paginator.page_range %}
+                                {% if most_checked_out.number == i %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ i }}</span>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <button type="submit" name="page" value="{{ i }}" class="page-link">{{ i }}</button>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if most_checked_out.has_next %}
+                                <li class="page-item">
+                                    <button type="submit" name="page" value="{{ most_checked_out.next_page_number }}" class="page-link" aria-label="Next">Next</button>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% csrf_token %}
+                </div>
+            </form>
         {% endif %}
 
     {% else %}
