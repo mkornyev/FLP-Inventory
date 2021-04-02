@@ -8,9 +8,10 @@
 
 {% block content %}
     <h1>Analytics</h1>
+    <br>
 
     {% if most_checked_out %}
-        <h4>Most Checked Out Items</h4>
+        <h4>Most Checked Out Items in last week (since {{ one_week_ago }})</h4>
 
         <table class="table">
             <thead>

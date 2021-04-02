@@ -23,7 +23,7 @@ from datetime import date, datetime, timedelta
 from collections import defaultdict
 import csv
 
-DEFAULT_PAGINATION_SIZE = 2
+DEFAULT_PAGINATION_SIZE = 25
 
 
 ######################### BASIC VIEWS #########################
@@ -165,7 +165,9 @@ def generate_report(request):
 def analytics(request):
     context = {}
 
-    all_checkouts = Checkout.objects.all()
+    one_week_ago = date.today()-timedelta(days=7)
+    context['one_week_ago'] = one_week_ago
+    all_checkouts = Checkout.objects.filter(datetime__gte=one_week_ago).all()
 
     # Get checkouts grouped by items, sorted by quantity checked out
     item_checkout_quantities = defaultdict(int)
@@ -181,36 +183,6 @@ def analytics(request):
     context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
 
     return render(request, 'inventory/analytics.html', context)
-
-    if 'start-date' in request.POST \
-        and 'end-date' in request.POST \
-        and 'tx-type' in request.POST \
-        and (request.POST['tx-type'] in ['Checkin', 'Checkout']):
-
-        context['endDate'] = request.POST['end-date']
-        context['startDate'] = request.POST['start-date']
-        context['tx'] = request.POST['tx-type']
-
-        endDatetime = datetime.strptime('{} 23:59:59'.format(context['endDate']), '%Y-%m-%d %H:%M:%S')
-
-        if request.POST['tx-type'] == 'Checkin':
-            context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
-        else:
-            context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
-
-        context['totalValue'] = 0 
-        for result in context['results']:
-            context['totalValue'] = result.getValue() + context['totalValue']
-
-        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
-
-        return render(request, 'inventory/generate_report.html', context)
-
-    today = date.today()
-    weekAgo = today - timedelta(days=7)
-    context['endDate'] = today.strftime('%Y-%m-%d')
-    context['startDate'] = weekAgo.strftime('%Y-%m-%d')
-    return render(request, 'inventory/generate_report.html', context)
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
