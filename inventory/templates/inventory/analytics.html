@@ -19,14 +19,16 @@
                 <th scope="col">#</th>
                 <th scope="col">Item</th>
                 <th scope="col">Quantity Checked Out</th>
+                <th scope="col">Quantity left</th>
             </tr>
             </thead>
             <tbody>
-            {% for i, quantity in most_checked_out %}
+            {% for i, quantity_checked_out in most_checked_out %}
             <tr>
                 <th scope="row">{{ i.id }}</th>
                 <td>{{ i.name }}</td>
-                <td>{{ quantity }}</td>
+                <td>{{ quantity_checked_out }}</td>
+                <td>{{ i.quantity }}</td>
                 </td>
             </tr>
             {% endfor %}
