@@ -139,8 +139,8 @@ class AddItemOutForm(forms.Form):
         return name 
 
 class CheckOutForm(forms.Form):
-    family = forms.ModelChoiceField(queryset=Family.objects.all(),
-                                    widget=forms.Select(attrs={'class': 'form-select'}))
+    family = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.

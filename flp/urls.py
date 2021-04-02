@@ -21,7 +21,8 @@ urlpatterns = [
     # GENERIC ROUTES 
     path('admin/', admin.site.urls),
     path('', views.home, name="Home"),
-    path('autocomplete/', views.autocomplete, name="autocomplete"),
+    path('autocomplete_item/', views.autocomplete_item, name="autocomplete_item"),
+    path('autocomplete_family/', views.autocomplete_family, name="autocomplete_family"),
     path('about/', views.about, name="About"),  
 
     # AUTH ROUTES 
