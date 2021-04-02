@@ -35,6 +35,7 @@ urlpatterns = [
     path('checkout/', views.checkout_action, name='Checkout'),
     path('additem/<str:location>/', views.addtocart_action, name='AddItem'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
+    path('analytics/', views.analytics, name='Analytics'),
 
     path('families/index/', views.FamilyIndexView.as_view(), name="Families"),
     path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
