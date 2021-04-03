@@ -1,5 +1,12 @@
 {% extends "inventory/base.html" %}
 
+{% block page_specific_scripts %}
+  {% if tx == 'Checkout' and itemizedOutput %}
+  {% load static %}
+    <script src="{% static 'inventory/price_adjust_scripts.js' %}"></script>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 <form class="check-report-form" method="POST" action="{% url 'Report' %}">
 <div class="container">
@@ -19,6 +26,12 @@
         {% if results %}
 
           <h4>Filtered {{ tx }}s | <span class="monetary-value">${{ totalValue }}</span>:</h4>
+          {% if tx == 'Checkout' and itemizedOutput %}
+          <p>To make a price adjustment: click the price field, and update.
+            <br>Saved adjustments appear in <span style="color: #095cb5;">blue</span>.
+            <br>Once you refresh the page your changes will be lost.
+          </p>
+          {% endif %}
 
           {% if itemizedOutput %}
             {% include 'inventory/reports/_item_table.html' %}
@@ -46,7 +59,7 @@
         {% else %}
           <div class="row">
             <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export (By {{tx}})</button>
+              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export {% if tx %}(By {{tx}}){% endif %}</button>
             </div>
           </div>
         {% endif %}

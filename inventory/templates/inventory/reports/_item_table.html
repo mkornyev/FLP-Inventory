@@ -14,9 +14,12 @@
     <tr>
       <td>{{ c.item }}</td>
       <td>{{ c.category }}</td>
-      <td>{{ c.quantity }}</td>
-      <td>{{ c.price }}</td>
-      <td>{{ c.value }}</td>
+      <td id="{{c.id}}-quantity">{{ c.quantity }}</td>
+      <td id="{{c.id}}-price" class="edit-in-place">{{ c.price }}</td>
+
+      <input id="{{c.id}}-adjustment" hidden type="number" name="{{c.id}}-adjustment" value="{{ c.price }}">
+
+      <td id="{{c.id}}-value">{{ c.value }}</td>
     </tr>
     {% endfor %}
   </tbody>

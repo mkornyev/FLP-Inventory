@@ -123,17 +123,20 @@ def generate_report(request):
 
                 for c in qs:
                     for tx in c.items.all():
+                        adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', tx.item.price))
+
                         if tx.item.id not in uniqueItems: 
                             uniqueItems[tx.item.id] = [
                                 tx.item.name,
                                 tx.item.category.name,
                                 tx.quantity,
-                                tx.item.price,
-                                0 if tx.item.price is None else tx.quantity*tx.item.price
+                                adjustedPrice,
+                                0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
                             ]
                         else: 
                             uniqueItems[tx.item.id][2] += tx.quantity
-                            uniqueItems[tx.item.id][4] += (0 if tx.item.price is None else tx.quantity*tx.item.price)
+                            uniqueItems[tx.item.id][4] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                            round(uniqueItems[tx.item.id][4], 2)
                 
                 for item in uniqueItems.values():
                     writer.writerow(item)
@@ -169,6 +172,7 @@ def generate_report(request):
                 for tx in res.items.all(): 
                     if tx.item.id not in newUniqueItems:
                         newUniqueItems[tx.item.id] = {
+                            'id': tx.item.id,
                             'item': tx.item.name,
                             'category': tx.item.category.name,
                             'quantity': tx.quantity,
@@ -183,7 +187,6 @@ def generate_report(request):
             
 
             context['results'] = list(newUniqueItems.values())
-            print(context['results'])
 
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/reports/generate_report.html', context)
