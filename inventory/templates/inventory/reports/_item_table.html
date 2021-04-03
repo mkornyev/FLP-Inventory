@@ -15,9 +15,9 @@
       <td>{{ c.item }}</td>
       <td>{{ c.category }}</td>
       <td id="{{c.id}}-quantity">{{ c.quantity }}</td>
-      <td id="{{c.id}}-price" class="edit-in-place">{{ c.price }}</td>
+      <td id="{{c.id}}-price" class="edit-in-place">{% if c.price %}{{ c.price }}{% else %}0{% endif %}</td>
 
-      <input id="{{c.id}}-adjustment" hidden type="number" name="{{c.id}}-adjustment" value="{{ c.price }}">
+      <input id="{{c.id}}-adjustment" hidden type="number" name="{{c.id}}-adjustment" value="{% if c.price %}{{ c.price }}{% else %}0.00{% endif %}">
 
       <td id="{{c.id}}-value">{{ c.value }}</td>
     </tr>
