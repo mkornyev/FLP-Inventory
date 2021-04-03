@@ -166,7 +166,6 @@ def generate_report(request):
         if 'itemizedOutput' in request.POST:
             context['itemizedOutput'] = request.POST['itemizedOutput']
 
-            newResults = []
             newUniqueItems = {}
             for res in context['results']: 
                 for tx in res.items.all(): 
@@ -182,9 +181,6 @@ def generate_report(request):
                     else: 
                         newUniqueItems[tx.item.id]['quantity'] += tx.quantity
                         newUniqueItems[tx.item.id]['value'] += 0 if tx.item.price is None else tx.quantity*tx.item.price
-
-                    # newResults.append(row)
-            
 
             context['results'] = list(newUniqueItems.values())
 
