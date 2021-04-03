@@ -25,6 +25,12 @@ a:hover {
   margin-bottom: 10%;
 }
 
+/* Text Styles */
+
+.bold { font-weight: 800; }
+
+.blue { color: #095cb5; }
+
 /* Report Generation: */
 
 form.check-report-form {

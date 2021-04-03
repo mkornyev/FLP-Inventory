@@ -27,8 +27,8 @@
 
           <h4>Filtered {{ tx }}s | <span id="report_total" class="monetary-value">${{ totalValue }}</span>:</h4>
           {% if tx == 'Checkout' and itemizedOutput %}
-          <p>To make a price adjustment: click the price field, and update.
-            <br>Saved adjustments appear in <span style="color: #095cb5;">blue</span>.
+          <p>To make a price adjustment: click the <span class="bold">Price</span> field, update it, and Export.
+            <br>Temporary adjustments appear in <span class="bold blue">blue</span>.
             <br>Once you refresh the page your changes will be lost.
           </p>
           {% endif %}
