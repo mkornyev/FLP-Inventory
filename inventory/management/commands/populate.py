@@ -49,6 +49,8 @@ class Command(BaseCommand):
         item3.save()
         item4 = Item.objects.create(category=category2, name="formula", price=5.56, quantity=15)
         item4.save()
+        item5 = Item.objects.create(category=category1, name="t shirt girls 4", quantity=3) # No Price 
+        item5.save()
         print("Item has been created.")
 
         tx2 = ItemTransaction.objects.create(item=item3, quantity=1)
@@ -59,6 +61,10 @@ class Command(BaseCommand):
         tx4.save()
         tx1 = ItemTransaction.objects.create(item=item1, quantity=2)
         tx1.save()
+        tx5 = ItemTransaction.objects.create(item=item5, quantity=3)
+        tx5.save()
+        tx6 = ItemTransaction.objects.create(item=item5, quantity=1)
+        tx6.save()
         
         print("Transaction has been created.")
 
@@ -70,6 +76,10 @@ class Command(BaseCommand):
 
         checkin = Checkin.objects.create(user=staffUsr, datetime=ten_days_ago)
         checkin.items.add(tx2)
+        checkin.save()
+
+        checkin = Checkin.objects.create(user=staffUsr, datetime=today)
+        checkin.items.add(tx5)
         checkin.save()
         print("Checkin has been created.")
 
@@ -90,6 +100,14 @@ class Command(BaseCommand):
 
         checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=ten_days_ago)
         checkout.items.add(tx3)
+        checkout.save()
+        
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today)
+        checkout.items.add(tx5)
+        checkout.save()
+        
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today)
+        checkout.items.add(tx5)
         checkout.save()
         print("Checkout has been created.")
     
