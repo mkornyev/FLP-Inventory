@@ -126,7 +126,7 @@ def generate_report(request):
                     for tx in c.items.all():
                         try: 
                             adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', tx.item.price))
-                        except: 
+                        except ValueError:
                             adjustedPrice = 0
 
                         if tx.item.id not in uniqueItems: 
