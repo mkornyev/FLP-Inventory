@@ -33,6 +33,7 @@ $(document).ready(function() {
         td.innerText = i.value
         td.onclick = replaceWithInput
         td.style.color = UPDATED_COLOR
+        td.style.fontWeight = '800'
 
         i.parentNode.replaceChild(td, i)
 
@@ -41,12 +42,12 @@ $(document).ready(function() {
         var quantity = $('#'+itemId+'-quantity').first().text()
         var newValue = (parseFloat(quantity) * parseFloat(i.value)).toFixed(2)
         var oldValue = $('#'+itemId+'-value').text()
-        $('#'+itemId+'-value').text(newValue).css('color', UPDATED_COLOR)
+        $('#'+itemId+'-value').text(newValue).css('color', UPDATED_COLOR).css('font-weight', '800')
 
         var oldStrTotal = $('#report_total').text()
         var oldNumTotal = parseFloat(oldStrTotal.substring(oldStrTotal.indexOf('$')+1, oldStrTotal.length))
         var newNumTotal = oldNumTotal + parseFloat(newValue) - parseFloat(oldValue)
-        $('#report_total').text(newNumTotal.toFixed(2))
+        $('#report_total').text('$'+newNumTotal.toFixed(2))
 
         // Update Hidden Input
         $('#'+itemId+'-adjustment').attr('value', i.value)
