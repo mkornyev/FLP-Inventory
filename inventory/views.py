@@ -178,7 +178,27 @@ def analytics(request):
             item_checkout_quantities[item_obj] += quantity
 
     item_quant_tuples = item_checkout_quantities.items()
-    context['most_checked_out'] = sorted(item_quant_tuples, key=lambda i_quantity: i_quantity[1], reverse=True)
+
+    ### Sorting columns when pressed
+    default_order = 'checkout_quantity'
+    order_field = request.GET.get('order_by', default_order)
+
+    # switch sorting order each time
+    # the default sorting is "desc" ("asc" initially b/c "not" always happens)
+    non_default_sorting = "asc"
+    sort_type = request.GET.get('sort_type', non_default_sorting)
+    new_sort_type = "asc" if sort_type == "desc" else "desc" # switches sort_type
+    sort_reverse = new_sort_type == "desc"
+    context['sort_type'] = new_sort_type
+
+    order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
+    if order_field == 'item_quantity':
+        order_lambda = lambda i_quantity: i_quantity[0].quantity
+    elif order_field == 'name':
+        order_lambda = lambda i_quantity: i_quantity[0].name.lower()
+
+
+    context['most_checked_out'] = sorted(item_quant_tuples, key=order_lambda, reverse=sort_reverse)
     context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
 
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
