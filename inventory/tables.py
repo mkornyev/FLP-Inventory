@@ -35,6 +35,7 @@ class ItemTable(NameTable):
         order_by = 'name'
 
 class CheckinTable(tables.Table):   
+    in_items = tables.Column(accessor='in_items', orderable=False)
     class Meta:
         model = Checkin
         template_name = "django_tables2/bootstrap.html"
@@ -42,6 +43,7 @@ class CheckinTable(tables.Table):
         order_by = '-datetime'
 
 class CheckoutTable(tables.Table):
+    out_items = tables.Column(accessor='out_items', orderable=False)
     class Meta:
         model = Checkout
         template_name = "django_tables2/bootstrap.html"
