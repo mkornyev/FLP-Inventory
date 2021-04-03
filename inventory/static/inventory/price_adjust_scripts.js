@@ -40,7 +40,13 @@ $(document).ready(function() {
         var itemId = i.id.substring(0, i.id.indexOf('-'))
         var quantity = $('#'+itemId+'-quantity').first().text()
         var newValue = (parseFloat(quantity) * parseFloat(i.value)).toFixed(2)
+        var oldValue = $('#'+itemId+'-value').text()
         $('#'+itemId+'-value').text(newValue).css('color', UPDATED_COLOR)
+
+        var oldStrTotal = $('#report_total').text()
+        var oldNumTotal = parseFloat(oldStrTotal.substring(oldStrTotal.indexOf('$')+1, oldStrTotal.length))
+        var newNumTotal = oldNumTotal + parseFloat(newValue) - parseFloat(oldValue)
+        $('#report_total').text(newNumTotal.toFixed(2))
 
         // Update Hidden Input
         $('#'+itemId+'-adjustment').attr('value', i.value)
