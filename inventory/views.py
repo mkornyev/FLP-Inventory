@@ -21,6 +21,7 @@ from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOut
 
 from datetime import date, datetime, timedelta
 from collections import defaultdict
+import json
 import csv
 
 DEFAULT_PAGINATION_SIZE = 25
@@ -202,6 +203,10 @@ def analytics(request):
     context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
 
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
+
+    # Data for charts
+    context['labels'] = json.dumps([2,3,4,5,6,7,8])
+    context['data'] = json.dumps([65, 59, 80, 81, 56, 55, 40])
 
     return render(request, 'inventory/analytics.html', context)
 
