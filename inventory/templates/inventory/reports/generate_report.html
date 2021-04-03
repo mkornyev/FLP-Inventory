@@ -25,7 +25,7 @@
       <div class="col">
         {% if results %}
 
-          <h4>Filtered {{ tx }}s | <span class="monetary-value">${{ totalValue }}</span>:</h4>
+          <h4>Filtered {{ tx }}s | <span id="report_total" class="monetary-value">${{ totalValue }}</span>:</h4>
           {% if tx == 'Checkout' and itemizedOutput %}
           <p>To make a price adjustment: click the price field, and update.
             <br>Saved adjustments appear in <span style="color: #095cb5;">blue</span>.
