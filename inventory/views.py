@@ -253,6 +253,8 @@ def analytics(request):
         count=Count('datetime')
     ).order_by('year', 'month')
 
+    # Note: technically if a month has no checkouts, it will not show up as 0,
+    # but instead be omitted, but hoping that's not something that might happen # for now
     labels_by_week, data_by_week = [], []
     for week_count in checkouts_by_week:
         month = calendar.month_name[week_count['month']]
