@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
-from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
+from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm, CreateFamilyForm
 
 from datetime import date, datetime, timedelta
 from collections import defaultdict
@@ -298,6 +298,15 @@ def removeitem_action(request, index, location):
     messages.success(request, 'Item Removed')
     return redirect(reverse('Check' + location))
 
+# Create Family View 
+@login_required
+def createFamily_action(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = CreateFamilyForm()
+        
+        return render(request, 'inventory/createFamily.html', context)
 
 # Checkin view
 @login_required
