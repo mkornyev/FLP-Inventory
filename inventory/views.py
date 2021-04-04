@@ -308,6 +308,22 @@ def createFamily_action(request):
         
         return render(request, 'inventory/createFamily.html', context)
 
+    if request.method == 'POST':
+        form = CreateFamilyForm(request.POST)
+
+        context['form'] = form
+
+        if not form.is_valid():
+            return render(request, 'inventory/createFamily.html', context)
+
+        # category = form.cleaned_data['category']
+        name = form.cleaned_data['name']
+
+        family = Family(name=name)
+        family.save()
+        messages.success(request, 'Family created')
+        return redirect(reverse('Checkout'))
+
 # Checkin view
 @login_required
 def checkin_action(request):
