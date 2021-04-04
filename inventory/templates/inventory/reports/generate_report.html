@@ -1,0 +1,73 @@
+{% extends "inventory/base.html" %}
+
+{% block page_specific_scripts %}
+  {% if tx == 'Checkout' and itemizedOutput %}
+  {% load static %}
+    <script src="{% static 'inventory/price_adjust_scripts.js' %}"></script>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<form class="check-report-form" method="POST" action="{% url 'Report' %}">
+<div class="container">
+    <div class="row">
+        <div class="col">
+
+          {% include 'inventory/reports/_controls.html' %}
+
+          {% csrf_token %}
+          <hr>
+
+        </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col">
+        {% if results %}
+
+          <h4>Filtered {{ tx }}s | <span id="report_total" class="monetary-value">${{ totalValue }}</span>:</h4>
+          {% if tx == 'Checkout' and itemizedOutput %}
+          <p>To make a price adjustment: click the <span class="bold">Price</span> field, update it, and Export.
+            <br>Temporary adjustments appear in <span class="bold blue">blue</span>.
+            <br>Once you refresh the page your changes will be lost.
+          </p>
+          {% endif %}
+
+          {% if itemizedOutput %}
+            {% include 'inventory/reports/_item_table.html' %}
+          {% else %}
+            {% include 'inventory/reports/_tx_table.html' %}
+          {% endif %}
+
+          <!-- Pagination -->
+          {% if results.has_other_pages %}
+
+            {% include 'inventory/reports/_tx_table.html' %}_pagination.html
+          
+          {% endif %}
+
+        {% else %}
+          <p>No results for the specified filters.</p>
+        {% endif %}
+
+        {% if itemizedOutput and tx == "Checkout" %}
+          <div class="row">
+            <div class="col mt-2"><br>
+              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export (By Item)</button>
+            </div>
+          </div>
+        {% else %}
+          <div class="row">
+            <div class="col mt-2"><br>
+              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export {% if tx %}(By {{tx}}){% endif %}</button>
+            </div>
+          </div>
+        {% endif %}
+        <br>
+
+      </div>
+    </div>
+</div>
+</form>
+
+{% endblock %}

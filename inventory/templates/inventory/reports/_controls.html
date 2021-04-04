@@ -1,0 +1,44 @@
+{% block controls %} 
+<h1>Generate Report:</h1><br>
+
+<div class="row">
+
+  <div class="col">
+    <label class="mb-3">Report Type:&nbsp;&nbsp;</label><br>
+
+    <div class="btn-group" role="group" aria-label="Transaction toggle group">
+      <input type="radio" class="btn-check" name="tx-type" value="Checkout" id="radio1" autocomplete="off" {% if tx == 'Checkout' %}checked{% endif %} required>
+      <label class="btn btn-outline-primary" for="radio1">CheckOut</label>
+
+      <input type="radio" class="btn-check" name="tx-type" value="Checkin" id="radio2" autocomplete="off" {% if tx == 'Checkin' %}checked{% endif %} required>
+      <label class="btn btn-outline-primary" for="radio2">CheckIn</label>
+    </div><br><br>
+  </div>
+
+  <div class="col">
+    <label for="date1" class="mb-3">Start Date:</label>
+    <input class="form-control date-input" name="start-date" type="date" value="{{ startDate }}" id="date1"><br>
+  </div>
+
+  <div class="col mb-4">
+    <label for="date2" class="mb-3">End Date:</label>
+    <input class="form-control date-input" name="end-date" type="date" value="{{ endDate }}" id="date2">
+  </div>
+
+  <div class="col">
+    <label class="mb-3">Group:</label>
+    <br>
+    
+    <input class="form-check-input mt-2" type="checkbox" value="itemized" name="itemizedOutput" id="itemizedOutput" {% if itemizedOutput %}checked{% endif %}>
+    <label class="form-check-label mt-0" for="itemizedOutput" >
+      By Item
+    </label>
+    <span id="reportGroupingTooltip" class="material-icons" data-bs-toggle="tooltip" data-bs-placement="top" title="By {{tx}} on Default">info</span>
+  </div>
+
+  <div class="col mt-2"><br>
+    <button class="btn btn-lg btn-warning" type="submit">Generate</button>
+  </div>
+
+</div>
+{% endblock %}

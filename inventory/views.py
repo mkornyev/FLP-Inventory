@@ -15,15 +15,20 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models.functions import ExtractYear, ExtractMonth
+from django.db.models import Count
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
 
 from datetime import date, datetime, timedelta
+from collections import defaultdict
+import json
+import calendar
 import csv
 
 DEFAULT_PAGINATION_SIZE = 25
-
+LOW_QUANTITY_THRESHOLD = 5 # this number or below is considered low quantity
 
 ######################### BASIC VIEWS #########################
 
@@ -117,17 +122,33 @@ def generate_report(request):
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
             if qs is not None:
-                writer.writerow(["date", "family", "item", "quantity", "price", "total value"])
+                writer.writerow(["item", "category", "quantity", "price", "total value"])
+
+                uniqueItems = {} 
+
                 for c in qs:
                     for tx in c.items.all():
-                        writer.writerow([
-                            c.datetime,
-                            c.family,
-                            tx.item.name,
-                            tx.quantity,
-                            tx.item.price, 
-                            0 if tx.item.price is None else tx.quantity*tx.item.price
-                        ])
+                        try: 
+                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', tx.item.price))
+                        except ValueError:
+                            adjustedPrice = 0
+
+                        if tx.item.id not in uniqueItems: 
+                            uniqueItems[tx.item.id] = [
+                                tx.item.name,
+                                tx.item.category.name,
+                                tx.quantity,
+                                adjustedPrice,
+                                0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
+                            ]
+                        else: 
+                            uniqueItems[tx.item.id][2] += tx.quantity
+                            uniqueItems[tx.item.id][4] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                            round(uniqueItems[tx.item.id][4], 2)
+                
+                for item in uniqueItems.values():
+                    writer.writerow(item)
+
             return response
 
         if 'export_table' in request.POST:
@@ -137,27 +158,111 @@ def generate_report(request):
             writer = csv.writer(response)
 
             if len(qs) != 0:
-                field_names = [f.name for f in qs.model._meta.get_fields()]
+                field_names = [f.name for f in qs.model._meta.fields]
                 writer.writerow(field_names)
                 for i in qs:
                     row = []
                     for f in field_names:
                         if f == "items":
-                            txs = ''.join([str(tx) for tx in i.items.all()])
+                            txs = ', '.join([str(tx) for tx in i.items.all()])
                             row.append(txs)
                         else:
                             row.append(getattr(i, f))
                     writer.writerow(row)
             return response
 
+        if 'itemizedOutput' in request.POST:
+            context['itemizedOutput'] = request.POST['itemizedOutput']
+
+            newUniqueItems = {}
+            for res in context['results']: 
+                for tx in res.items.all(): 
+                    if tx.item.id not in newUniqueItems:
+                        newUniqueItems[tx.item.id] = {
+                            'id': tx.item.id,
+                            'item': tx.item.name,
+                            'category': tx.item.category.name,
+                            'quantity': tx.quantity,
+                            'price': tx.item.price,
+                            'value': 0 if tx.item.price is None else tx.quantity*tx.item.price
+                        }
+                    else: 
+                        newUniqueItems[tx.item.id]['quantity'] += tx.quantity
+                        newUniqueItems[tx.item.id]['value'] += 0 if tx.item.price is None else tx.quantity*tx.item.price
+
+            context['results'] = list(newUniqueItems.values())
+
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
-        return render(request, 'inventory/generate_report.html', context)
+        return render(request, 'inventory/reports/generate_report.html', context)
 
     today = date.today()
     weekAgo = today - timedelta(days=7)
     context['endDate'] = today.strftime('%Y-%m-%d')
     context['startDate'] = weekAgo.strftime('%Y-%m-%d')
-    return render(request, 'inventory/generate_report.html', context)
+    return render(request, 'inventory/reports/generate_report.html', context)
+
+######################### ANALYTICS #########################
+@login_required
+def analytics(request):
+    context = {}
+
+    one_week_ago = date.today()-timedelta(days=7)
+    context['one_week_ago'] = one_week_ago
+    all_checkouts = Checkout.objects
+    past_week_checkouts = all_checkouts.filter(datetime__date__gte=one_week_ago).all()
+
+    # Get checkouts grouped by items, sorted by quantity checked out
+    item_checkout_quantities = defaultdict(int)
+    for checkout in past_week_checkouts:
+        for itemTransaction in checkout.items.all():
+            item_obj = itemTransaction.item
+            quantity = itemTransaction.quantity
+            item_checkout_quantities[item_obj] += quantity
+
+    item_quant_tuples = item_checkout_quantities.items()
+
+    ### Sorting columns when pressed
+    default_order = 'checkout_quantity'
+    order_field = request.GET.get('order_by', default_order)
+
+    # switch sorting order each time
+    # the default sorting is "desc" ("asc" initially b/c "not" always happens)
+    non_default_sorting = "asc"
+    sort_type = request.GET.get('sort_type', non_default_sorting)
+    new_sort_type = "asc" if sort_type == "desc" else "desc" # switches sort_type
+    sort_reverse = new_sort_type == "desc"
+    context['sort_type'] = new_sort_type
+
+    order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
+    if order_field == 'item_quantity':
+        order_lambda = lambda i_quantity: i_quantity[0].quantity
+    elif order_field == 'name':
+        order_lambda = lambda i_quantity: i_quantity[0].name.lower()
+
+
+    context['most_checked_out'] = sorted(item_quant_tuples, key=order_lambda, reverse=sort_reverse)
+    context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
+
+    context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
+
+    ###  Data for charts
+    checkouts_by_week = all_checkouts.annotate(   
+        month=ExtractMonth('datetime'),
+        year=ExtractYear('datetime') 
+    ).values('year', 'month').annotate(
+        count=Count('datetime')
+    ).order_by('year', 'month')
+
+    labels_by_week, data_by_week = [], []
+    for week_count in checkouts_by_week:
+        month = calendar.month_name[week_count['month']]
+        labels_by_week.append(month + ' ' + str(week_count['year']))
+        data_by_week.append(week_count['count'])
+
+    context['labels'] = json.dumps(labels_by_week)
+    context['data'] = json.dumps(data_by_week)
+
+    return render(request, 'inventory/analytics.html', context)
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
