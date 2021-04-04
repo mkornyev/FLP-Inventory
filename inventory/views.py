@@ -397,12 +397,16 @@ def checkout_action(request):
         return render(request, 'inventory/checkout.html', context)
 
     family = form.cleaned_data['family']
+    qs = Family.objects.filter(name__exact=family)
+    if not qs:
+        messages.warning(request, 'Could not create checkout: Family doesn\'t exist')
+        return redirect(reverse('Checkout'))
 
     if not transactions:
         messages.warning(request, 'Could not create checkout: No items added')
         return redirect(reverse('Checkout'))
 
-    checkout = Checkout(family=family, user=request.user)
+    checkout = Checkout(family=qs[0], user=request.user)
     checkout.save()
 
     for tx in transactions:
@@ -420,7 +424,7 @@ def checkout_action(request):
     return redirect(reverse('Checkout'))
 
   
-def autocomplete(request):
+def autocomplete_item(request):
     if 'term' in request.GET:
         qs = Item.objects.filter(name__icontains=request.GET.get('term'))
         names = list()
@@ -428,6 +432,13 @@ def autocomplete(request):
             names.append(item.name)
         return JsonResponse(names, safe=False)
   
+def autocomplete_family(request):
+    if 'term' in request.GET:
+        qs = Family.objects.filter(name__icontains=request.GET.get('term'))
+        names = list()
+        for fam in qs:
+            names.append(fam.name)
+        return JsonResponse(names, safe=False)
   
 ######################### DATABASE VIEWS #########################
 
