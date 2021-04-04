@@ -96,19 +96,19 @@
 
 <script>
 	$(document).ready(function() {
-      $("#id_family").val(function () {
-        return localStorage.getItem("family");
-      });
-      $("#id_family").on("change", function () {
-        localStorage.setItem("family", $(this).val());
-      });
-      $("#id_family").on("click", function () {
-        $(this).val("");
-      });
-    	$("#id_family").autocomplete({
-    		source: '{% url 'autocomplete_family' %}',
-    		minLength: 2
-    	});
+    $("#id_family").val(function () {
+      return localStorage.getItem("family");
+    });
+    $("#id_family").on("change", function () {
+      localStorage.setItem("family", $(this).val());
+    });
+    $("#id_family").on("click", function () {
+      $(this).val("");
+    });
+    $("#id_family").autocomplete({
+      source: '{% url 'autocomplete_family' %}',
+      minLength: 2
+    });
 	});
 </script>
 
