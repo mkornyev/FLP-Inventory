@@ -15,12 +15,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models.functions import ExtractYear, ExtractMonth
+from django.db.models import Count
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm
 
 from datetime import date, datetime, timedelta
 from collections import defaultdict
+import json
+import calendar
 import csv
 
 DEFAULT_PAGINATION_SIZE = 25
@@ -204,11 +208,12 @@ def analytics(request):
 
     one_week_ago = date.today()-timedelta(days=7)
     context['one_week_ago'] = one_week_ago
-    all_checkouts = Checkout.objects.filter(datetime__date__gte=one_week_ago).all()
+    all_checkouts = Checkout.objects
+    past_week_checkouts = all_checkouts.filter(datetime__date__gte=one_week_ago).all()
 
     # Get checkouts grouped by items, sorted by quantity checked out
     item_checkout_quantities = defaultdict(int)
-    for checkout in all_checkouts:
+    for checkout in past_week_checkouts:
         for itemTransaction in checkout.items.all():
             item_obj = itemTransaction.item
             quantity = itemTransaction.quantity
@@ -239,6 +244,23 @@ def analytics(request):
     context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
 
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
+
+    ###  Data for charts
+    checkouts_by_week = all_checkouts.annotate(   
+        month=ExtractMonth('datetime'),
+        year=ExtractYear('datetime') 
+    ).values('year', 'month').annotate(
+        count=Count('datetime')
+    ).order_by('year', 'month')
+
+    labels_by_week, data_by_week = [], []
+    for week_count in checkouts_by_week:
+        month = calendar.month_name[week_count['month']]
+        labels_by_week.append(month + ' ' + str(week_count['year']))
+        data_by_week.append(week_count['count'])
+
+    context['labels'] = json.dumps(labels_by_week)
+    context['data'] = json.dumps(data_by_week)
 
     return render(request, 'inventory/analytics.html', context)
 
