@@ -15,6 +15,8 @@ class Command(BaseCommand):
 
     def write_model_to_csv(self, model):
         qs = model.objects.all()
+        if not os.path.exists('db_csv_backups'):
+            os.makedirs('db_csv_backups')
         filename = f'./db_csv_backups/{model.__name__}.csv'
         outfile = open(filename,'w')
         field_names = [f.name for f in qs.model._meta.get_fields()]
