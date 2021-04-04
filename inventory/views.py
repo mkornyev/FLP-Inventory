@@ -290,7 +290,8 @@ def checkout_action(request):
         return render(request, 'inventory/checkout.html', context)
 
     family = form.cleaned_data['family']
-    if not Family.objects.filter(name__exact=family):
+    qs = Family.objects.filter(name__exact=family)
+    if not qs:
         messages.warning(request, 'Could not create checkout: Family doesn\'t exist')
         return redirect(reverse('Checkout'))
 
@@ -298,7 +299,7 @@ def checkout_action(request):
         messages.warning(request, 'Could not create checkout: No items added')
         return redirect(reverse('Checkout'))
 
-    checkout = Checkout(family=family, user=request.user)
+    checkout = Checkout(family=qs[0], user=request.user)
     checkout.save()
 
     for tx in transactions:
