@@ -154,13 +154,13 @@ def generate_report(request):
             writer = csv.writer(response)
 
             if len(qs) != 0:
-                field_names = [f.name for f in qs.model._meta.get_fields()]
+                field_names = [f.name for f in qs.model._meta.fields]
                 writer.writerow(field_names)
                 for i in qs:
                     row = []
                     for f in field_names:
                         if f == "items":
-                            txs = ''.join([str(tx) for tx in i.items.all()])
+                            txs = ', '.join([str(tx) for tx in i.items.all()])
                             row.append(txs)
                         else:
                             row.append(getattr(i, f))
