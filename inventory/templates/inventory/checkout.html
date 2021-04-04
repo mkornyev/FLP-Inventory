@@ -95,7 +95,7 @@
 {% block page_specific_scripts %}
 
 <script>
-	$(document).ready(function() {
+  $(document).ready(function() {
     $("#id_family").val(function () {
       return localStorage.getItem("family");
     });
@@ -109,7 +109,7 @@
       source: '{% url 'autocomplete_family' %}',
       minLength: 2
     });
-	});
+  });
 </script>
 
 {% endblock %}
