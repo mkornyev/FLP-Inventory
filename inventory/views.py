@@ -384,21 +384,19 @@ def checkout_action(request):
         return render(request, 'inventory/checkout.html', context)
 
     form = CheckOutForm(request.POST)
+    context['formcheckout'] = form
 
     if not form.is_valid():
         return render(request, 'inventory/checkout.html', context, status=400)
 
     family = form.cleaned_data['family']
-    qs = Family.objects.filter(name__exact=family)
-    if not qs:
-        messages.warning(request, 'Could not create checkout: Family doesn\'t exist')
-        return render(request, 'inventory/checkout.html', context, status=400)
+    family_object = Family.objects.filter(name__exact=family)
 
     if not transactions:
         messages.warning(request, 'Could not create checkout: No items added')
         return render(request, 'inventory/checkout.html', context, status=400)
 
-    checkout = Checkout(family=qs[0], user=request.user)
+    checkout = Checkout(family=family_object[0], user=request.user)
     checkout.save()
 
     for tx in transactions:
