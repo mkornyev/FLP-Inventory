@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.test import Client
 
 from inventory.models import Item, Checkin
 
@@ -24,7 +23,7 @@ class CheckinTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_get(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         response = self.client.get("/checkin/")
 
@@ -32,7 +31,7 @@ class CheckinTestCase(TestCase):
         self.assertContains(response, "<h1>Check In Items:</h1>")
 
     def test_invalid_no_items(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         response = self.client.post('/checkin/')
 
@@ -48,7 +47,7 @@ class CheckinTestCase(TestCase):
         self.assertEqual(str(messages[0]), 'Could not create checkin: No items added')
 
     def test_post_success(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         # Add item transaction
         session = self.client.session
