@@ -1,0 +1,72 @@
+from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import Client
+
+from inventory.models import Item, Checkout, Family
+
+class CheckoutTestCase(TestCase):
+    def setUp(self):
+        user = User.objects.create_superuser(username='testuser', password='12345')
+        user.save()
+
+        family = Family.objects.create(name="ValidFamily")
+        family.save()
+
+        item = Item.objects.create(name="ValidItem", quantity=5)
+        item.save()
+
+    def test_invalid_not_logged_in(self):
+        response = self.client.get("/checkout/")
+
+        # Check for redirect
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.post('/checkout/')
+
+        # Check for redirect
+        self.assertEqual(response.status_code, 302)
+
+    def test_get(self):
+        logged_in = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get("/checkout/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<h1>Check Out Items:</h1>")
+
+    def test_invalid_no_items(self):
+        logged_in = self.client.login(username='testuser', password='12345')
+
+        response = self.client.post('/checkout/', data={"family":"ValidFamily"})
+
+        # Check if invalid
+        self.assertEqual(response.status_code, 400)
+
+        # Check if created
+        self.assertEqual(Checkout.objects.filter().count(), 0)
+
+        # Check for error message
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Could not create checkout: No items added')
+
+    def test_post_success(self):
+        logged_in = self.client.login(username='testuser', password='12345')
+
+        # Add item transaction
+        session = self.client.session
+        session['transactions-out'] = ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2}}]']
+        session.save()
+
+        response = self.client.post('/checkout/', data={"family": "ValidFamily"}, follow=True)
+
+        # Check if valid
+        self.assertEqual(response.status_code, 200)
+
+        # Check if created
+        self.assertEqual(Checkout.objects.filter().count(), 1)
+
+        # Check for message
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Checkout created.')
