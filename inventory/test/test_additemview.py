@@ -1,8 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.test import Client
 
-from inventory.forms import AddItemForm
 from inventory.models import Item
 
 class AddItemTestCase(TestCase):
@@ -35,7 +33,7 @@ class AddItemTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_get(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         response = self.client.get("/additem/in/")
 
@@ -48,7 +46,7 @@ class AddItemTestCase(TestCase):
         self.assertContains(response, "<h1>Add Item:</h1>")
 
     def test_post_success(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         response = self.client.post(
             "/additem/in/", data={"name": "ValidItem",
@@ -72,7 +70,7 @@ class AddItemTestCase(TestCase):
                          ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 1}}]'])
 
     def test_post_error(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         response = self.client.post(
             "/additem/in/", data={"name": "InvalidItem",

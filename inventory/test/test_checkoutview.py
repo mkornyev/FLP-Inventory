@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.test import Client
 
 from inventory.models import Item, Checkout, Family
 
@@ -27,7 +26,7 @@ class CheckoutTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_get(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         response = self.client.get("/checkout/")
 
@@ -35,7 +34,7 @@ class CheckoutTestCase(TestCase):
         self.assertContains(response, "<h1>Check Out Items:</h1>")
 
     def test_invalid_no_items(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         response = self.client.post('/checkout/', data={"family":"ValidFamily"})
 
@@ -51,7 +50,7 @@ class CheckoutTestCase(TestCase):
         self.assertEqual(str(messages[0]), 'Could not create checkout: No items added')
 
     def test_post_success(self):
-        logged_in = self.client.login(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
 
         # Add item transaction
         session = self.client.session
