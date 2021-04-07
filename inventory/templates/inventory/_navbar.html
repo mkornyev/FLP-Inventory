@@ -39,6 +39,11 @@
 					</li>
 
 					<li class="nav-item">
+						{%  url 'CreateFamily' as createFamily_url %}
+						<a class="nav-link {% if request.path == createFamily_url %}active{% endif %}" href="{{ createFamily_url }}">Create Family</span></a>
+					</li>
+
+					<li class="nav-item">
 						{%  url 'Report' as report_url %}
 						<a class="nav-link {% if request.path == report_url %}active{% endif %}" href="{{ report_url }}">Generate Report</span></a>
 					</li>
