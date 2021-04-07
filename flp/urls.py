@@ -21,7 +21,8 @@ urlpatterns = [
     # GENERIC ROUTES 
     path('admin/', admin.site.urls),
     path('', views.home, name="Home"),
-    path('autocomplete/', views.autocomplete, name="autocomplete"),
+    path('autocomplete_item/', views.autocomplete_item, name="autocomplete_item"),
+    path('autocomplete_family/', views.autocomplete_family, name="autocomplete_family"),
     path('about/', views.about, name="About"),  
 
     # AUTH ROUTES 
@@ -34,7 +35,9 @@ urlpatterns = [
     path('checkin/', views.checkin_action, name='Checkin'),
     path('checkout/', views.checkout_action, name='Checkout'),
     path('additem/<str:location>/', views.addtocart_action, name='AddItem'),
+    path('createFamily/', views.createFamily_action, name='CreateFamily'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
+    path('analytics/', views.analytics, name='Analytics'),
 
     path('families/index/', views.FamilyIndexView.as_view(), name="Families"),
     path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
