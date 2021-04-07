@@ -1,6 +1,6 @@
 from django import forms
 
-from inventory.models import Item
+from inventory.models import Item, Family
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -39,7 +39,6 @@ class RegistrationForm(forms.Form):
                                  label='Confirm password',  
                                  widget = forms.PasswordInput())
 
-
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):
@@ -56,7 +55,6 @@ class RegistrationForm(forms.Form):
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
-
 
     # Customizes form validation for the username field.
     def clean_username(self):
@@ -112,44 +110,16 @@ class AddItemForm(forms.Form):
         # dictionary
         return name 
 
+    def clean_quantity(self):
+        # Confirms the quantity is above zero
+        quantity = self.cleaned_data.get('quantity')
 
-class AddItemOutForm(forms.Form):
-    # category   = forms.ModelChoiceField(queryset=Category.objects.all(),
-    #                                     widget=forms.Select(attrs={'class': 'form-select'}))
-    name = forms.CharField(max_length=50,
-                           widget=forms.TextInput(attrs={'class': 'form-control'}))
-    quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-
-    # Customizes form validation for properties that apply to more
-    # than one field.  Overrides the forms.Form.clean function.
-    def clean(self):
-        # Calls our parent (forms.Form) .clean function, gets a dictionary
-        # of cleaned data as a result
-        cleaned_data = super().clean()
-
-        if cleaned_data.get('name'):
-            item_name = cleaned_data.get('name')
-            item = Item.objects.get(name__exact=item_name)
-
-            quantity = cleaned_data.get('quantity')
-
-            if item.quantity < quantity:
-                raise forms.ValidationError({'quantity': ["Not enough stock of item.",]})
-
-        # We must return the cleaned data we got from our parent.
-        return cleaned_data
-
-    # Customizes form validation for the name field.
-    def clean_name(self):
-        # Confirms that the username is already present in the
-        # Item model database.
-        name = self.cleaned_data.get('name')
-        if not Item.objects.filter(name__exact=name):
-            raise forms.ValidationError("Item does not exist.")
+        if quantity <= 0:
+            raise forms.ValidationError("Quantity must be above zero.")
 
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
-        return name 
+        return quantity
 
 class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,
@@ -164,3 +134,15 @@ class CheckOutForm(forms.Form):
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
+
+    def clean_family(self):
+        # Confirms the family exists
+        family = self.cleaned_data.get('family')
+
+
+        if not Family.objects.filter(name__exact=family):
+            raise forms.ValidationError("Family does not exist.")
+
+        # We must return the cleaned data we got from the cleaned_data
+        # dictionary
+        return family

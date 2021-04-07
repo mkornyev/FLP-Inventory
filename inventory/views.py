@@ -19,7 +19,7 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from django.db.models import Count
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
-from inventory.forms import LoginForm, RegistrationForm, AddItemForm, AddItemOutForm, CheckOutForm, CreateFamilyForm
+from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
 
 from datetime import date, datetime, timedelta
 from collections import defaultdict
@@ -268,7 +268,6 @@ def analytics(request):
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
-
 # Add item to cart
 @login_required
 def addtocart_action(request, location):
@@ -277,18 +276,12 @@ def addtocart_action(request, location):
     context['location'] = location
 
     if request.method == 'GET':
-        if location == 'in':
-            context['form'] = AddItemForm()
-        else:
-            context['form'] = AddItemOutForm()
+        context['form'] = AddItemForm()
         
         return render(request, 'inventory/additem.html', context)
 
     if request.method == 'POST':
-        if location == 'in':
-            form = AddItemForm(request.POST)
-        else:
-            form = AddItemOutForm(request.POST)
+        form = AddItemForm(request.POST)
 
         context['form'] = form
 
@@ -303,19 +296,20 @@ def addtocart_action(request, location):
     
         tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
         if not 'transactions-' + location in request.session or not request.session['transactions-' + location]:
-            request.session['transactions-' + location] = [tx]
+            saved_list = []
         else:
             saved_list = request.session['transactions-' + location]
-            saved_list.append(tx)
-            request.session['transactions-' + location] = saved_list
+
+        saved_list.append(tx)
+        request.session['transactions-' + location] = saved_list
 
         messages.success(request, 'Item Added')
         return redirect(reverse('Check' + location))
 
-
 # Remove item from cart
 def removeitem_action(request, index, location):
     saved_list = request.session['transactions-' + location]
+
     saved_list.pop(index)
     request.session['transactions-' + location] = saved_list
 
@@ -373,7 +367,7 @@ def checkin_action(request):
 
     if not transactions:
         messages.warning(request, 'Could not create checkin: No items added')
-        return redirect(reverse('Checkin'))
+        return render(request, 'inventory/checkin.html', context, status=400)
 
     checkin = Checkin(user=request.user)
     checkin.save()
@@ -389,10 +383,9 @@ def checkin_action(request):
     del request.session['transactions-in']
     request.session.modified = True
 
-    messages.success(request, 'Checkin created')
+    messages.success(request, 'Checkin created.')
     return redirect(reverse('Checkin'))
 
-  
 # Checkout view
 @login_required
 def checkout_action(request):
@@ -417,21 +410,19 @@ def checkout_action(request):
         return render(request, 'inventory/checkout.html', context)
 
     form = CheckOutForm(request.POST)
+    context['formcheckout'] = form
 
     if not form.is_valid():
-        return render(request, 'inventory/checkout.html', context)
+        return render(request, 'inventory/checkout.html', context, status=400)
 
     family = form.cleaned_data['family']
-    qs = Family.objects.filter(name__exact=family)
-    if not qs:
-        messages.warning(request, 'Could not create checkout: Family doesn\'t exist')
-        return redirect(reverse('Checkout'))
+    family_object = Family.objects.filter(name__exact=family)
 
     if not transactions:
         messages.warning(request, 'Could not create checkout: No items added')
-        return redirect(reverse('Checkout'))
+        return render(request, 'inventory/checkout.html', context, status=400)
 
-    checkout = Checkout(family=qs[0], user=request.user)
+    checkout = Checkout(family=family_object[0], user=request.user)
     checkout.save()
 
     for tx in transactions:
@@ -445,7 +436,7 @@ def checkout_action(request):
     del request.session['transactions-out']
     request.session.modified = True
 
-    messages.success(request, 'Checkout created')
+    messages.success(request, 'Checkout created.')
     return redirect(reverse('Checkout'))
 
   

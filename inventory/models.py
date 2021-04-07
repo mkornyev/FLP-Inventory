@@ -4,7 +4,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from datetime import datetime
+from django.utils import timezone
 
 # MODELS 
 
@@ -39,7 +39,7 @@ class ItemTransaction(models.Model):
 
 class Checkin(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
-  datetime = models.DateTimeField(default=datetime.now)
+  datetime = models.DateTimeField(default=timezone.now)
   items = models.ManyToManyField(ItemTransaction, blank=False)
 
   def getValue(self):
@@ -62,7 +62,7 @@ class Checkout(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
   family = models.ForeignKey(Family, on_delete=models.PROTECT, blank=True, null=True)
   items = models.ManyToManyField(ItemTransaction, blank=False)
-  datetime = models.DateTimeField(default=datetime.now)
+  datetime = models.DateTimeField(default=timezone.now)
 
   def getValue(self):
     val = 0
