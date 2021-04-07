@@ -35,6 +35,7 @@ urlpatterns = [
     path('checkin/', views.checkin_action, name='Checkin'),
     path('checkout/', views.checkout_action, name='Checkout'),
     path('additem/<str:location>/', views.addtocart_action, name='AddItem'),
+    path('createFamily/', views.createFamily_action, name='CreateFamily'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
     path('analytics/', views.analytics, name='Analytics'),
 

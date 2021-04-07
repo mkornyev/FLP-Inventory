@@ -19,7 +19,7 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from django.db.models import Count
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
-from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm
+from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
 
 from datetime import date, datetime, timedelta
 from collections import defaultdict
@@ -315,6 +315,32 @@ def removeitem_action(request, index, location):
 
     messages.success(request, 'Item Removed')
     return redirect(reverse('Check' + location))
+
+# Create Family View 
+@login_required
+def createFamily_action(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = CreateFamilyForm()
+        
+        return render(request, 'inventory/createFamily.html', context)
+
+    if request.method == 'POST':
+        form = CreateFamilyForm(request.POST)
+
+        context['form'] = form
+
+        if not form.is_valid():
+            return render(request, 'inventory/createFamily.html', context)
+
+        # category = form.cleaned_data['category']
+        name = form.cleaned_data['name']
+
+        family = Family(name=name)
+        family.save()
+        messages.success(request, 'Family created')
+        return redirect(reverse('Checkout'))
 
 # Checkin view
 @login_required
