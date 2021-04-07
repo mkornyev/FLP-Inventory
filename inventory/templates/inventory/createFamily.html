@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block title %}{% block navtitle %}
-  Check In
+  Create Family
 {% endblock %}{% endblock %}
 
 
@@ -19,9 +19,9 @@
 <div class="container">
     <div class="row">
       <div class="col-md-5">
-        <h1>Add Item:</h1>
+        <h1>Create Family:</h1>
 
-            <form method="POST" action="{% url 'AddItem' location=location %}">
+            <form method="POST" action="{% url 'CreateFamily' %}">
                 {% for field in form %}
                 <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
                     {{ field.label_tag }}
@@ -35,7 +35,7 @@
                 {% endfor %}
                 {% csrf_token %}
                 <br>
-                <button class="btn btn-primary" type="submit">Add Item</button>
+                <button class="btn btn-primary" type="submit">Create Family</button>
             </form>
         </div>
     </div>
@@ -48,7 +48,7 @@
 <script>
 	$(document).ready(function() {
     	$("#id_name").autocomplete({
-    		source: '{% url 'autocomplete_item' %}',
+    		source: '{% url "autocomplete_family" %}',
     		minLength: 2
     	});
 	});
