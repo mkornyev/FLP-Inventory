@@ -281,7 +281,12 @@ def addtocart_action(request, location):
         return render(request, 'inventory/additem.html', context)
 
     if request.method == 'POST':
-        form = AddItemForm(request.POST)
+        if location == 'in':
+            form = AddItemForm(request.POST)
+        else:
+            form = AddItemOutForm(request.POST)
+
+        context['form'] = form
 
         context['form'] = form
 

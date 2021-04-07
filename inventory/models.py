@@ -70,6 +70,12 @@ class Checkout(models.Model):
       val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
     return val
 
+  def getValue(self):
+    val = 0
+    for tx in self.items.all().select_related("item"):
+      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
+    return val
+
   def __str__(self):
     return "({}, {})".format(self.family, self.out_items())
   
