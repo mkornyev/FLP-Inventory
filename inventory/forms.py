@@ -70,6 +70,19 @@ class RegistrationForm(forms.Form):
         # dictionary
         return username
 
+class CreateFamilyForm(forms.Form):
+    name = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}))
+    # Customizes form validation for properties that apply to more
+    # than one field.  Overrides the forms.Form.clean function.
+    def clean(self):
+        # Calls our parent (forms.Form) .clean function, gets a dictionary
+        # of cleaned data as a result
+        cleaned_data = super().clean()
+
+        # We must return the cleaned data we got from our parent.
+        return cleaned_data
+
 class AddItemForm(forms.Form):
     # category   = forms.ModelChoiceField(queryset=Category.objects.all(),
     #                                     widget=forms.Select(attrs={'class': 'form-select'}))
