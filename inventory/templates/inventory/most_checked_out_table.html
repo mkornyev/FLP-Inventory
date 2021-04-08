@@ -1,69 +1,73 @@
-<div class="table_div" id="{{ date_period }}">
-    {% if date_since == all_time %}
-        <h4>Items Checked Out ({{ date_since }})</h4>
-    {% else %}
-        <h4>Items Checked Out (from {{ date_since }})</h4>
-    {% endif %}
+{% if checkouts %}
+    <div class="table_div" id="{{ date_period }}">
+        {% if date_since == all_time %}
+            <h4>Items Checked Out ({{ date_since }})</h4>
+        {% else %}
+            <h4>Items Checked Out (from {{ date_since }})</h4>
+        {% endif %}
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
-            <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
-            <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for i, quantity_checked_out in checkouts %}
-        <tr>
-            <th scope="row">{{ i.id }}</th>
-            <td>{{ i.name }}</td>
-            <td>{{ quantity_checked_out }}</td>
-            {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
-                <td>{{ i.quantity }}</td>
-            {% else %}
-                <td style='color:red'>{{ i.quantity }}</td>
-            {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Pagination -->
-    {% if checkouts.has_other_pages %}
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                {% if checkouts.has_previous %}
-                    <li class="page-item">
-                        <button type="submit" name="page" value="{{ checkouts.previous_page_number }}" class="page-link" aria-label="Previous">Previous</button>
-                    </li>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
+                <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
+                <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i, quantity_checked_out in checkouts %}
+            <tr>
+                <th scope="row">{{ i.id }}</th>
+                <td>{{ i.name }}</td>
+                <td>{{ quantity_checked_out }}</td>
+                {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
+                    <td>{{ i.quantity }}</td>
                 {% else %}
-                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    <td style='color:red'>{{ i.quantity }}</td>
                 {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
-                {% for i in checkouts.paginator.page_range %}
-                    {% if checkouts.number == i %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ i }}</span>
+        <!-- Pagination -->
+        {% if checkouts.has_other_pages %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if checkouts.has_previous %}
+                        <li class="page-item">
+                            <button type="submit" name="page" value="{{ checkouts.previous_page_number }}" class="page-link" aria-label="Previous">Previous</button>
                         </li>
                     {% else %}
-                        <li class="page-item">
-                            <button type="submit" name="page" value="{{ i }}" class="page-link">{{ i }}</button>
-                        </li>
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
                     {% endif %}
-                {% endfor %}
 
-                {% if checkouts.has_next %}
-                    <li class="page-item">
-                        <button type="submit" name="page" value="{{ checkouts.next_page_number }}" class="page-link" aria-label="Next">Next</button>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled"><span class="page-link">Next</span></li>
-                {% endif %}
-            </ul>
-        </nav>
-    {% endif %}
-    {% csrf_token %}
-</div>
+                    {% for i in checkouts.paginator.page_range %}
+                        {% if checkouts.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <button type="submit" name="page" value="{{ i }}" class="page-link">{{ i }}</button>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if checkouts.has_next %}
+                        <li class="page-item">
+                            <button type="submit" name="page" value="{{ checkouts.next_page_number }}" class="page-link" aria-label="Next">Next</button>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+        {% csrf_token %}
+    </div>
+{% else %}
+    <p>No items have been checked out for this period.</p>
+{% endif %}

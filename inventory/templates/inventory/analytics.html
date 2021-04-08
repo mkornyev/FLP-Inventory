@@ -14,26 +14,22 @@
     <br>
     <div class="row">
         <div class="col-sm">
-            {% if week_checkouts %}
-                <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
-                        <select class="form-select" id="date-period">
-                            <option value="last_week" selected>Last Week</option>
-                            <option value="last_month">Last Month</option>
-                            <option value="last_six_months">Last 6 Months</option>
-                            <option value="all_time">All Time</option>
-                          </select>
-                        <br>
+            <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
+                    <select class="form-select" id="date-period">
+                        <option value="last_week" selected>Last Week</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="last_six_months">Last 6 Months</option>
+                        <option value="all_time">All Time</option>
+                    </select>
+                    <br>
 
-                        {% include "inventory/most_checked_out_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=week_checkouts %}
-                        {% include "inventory/most_checked_out_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=month_checkouts %}
-                        {% include "inventory/most_checked_out_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=six_month_checkouts %}
-                        {% include "inventory/most_checked_out_table.html" with date_period='all_time_table' date_since=all_time checkouts=all_time_checkouts %}
-                        
-                    </form>
-                    {% csrf_token %}
-            {% else %}
-                <p>No items have been checked out.</p>
-            {% endif %}
+                    {% include "inventory/most_checked_out_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=week_checkouts %}
+                    {% include "inventory/most_checked_out_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=month_checkouts %}
+                    {% include "inventory/most_checked_out_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=six_month_checkouts %}
+                    {% include "inventory/most_checked_out_table.html" with date_period='all_time_table' date_since=all_time checkouts=all_time_checkouts %}
+                    
+            </form>
+            {% csrf_token %}
         </div>
         <div class="col-sm">
             <canvas id="chart" width=150 height=100></canvas>

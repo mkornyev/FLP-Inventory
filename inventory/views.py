@@ -271,7 +271,8 @@ def analytics(request):
             order_lambda = lambda i_quantity: i_quantity[0].name.lower()
         return order_lambda
 
-    def sort_checkouts_paginated(item_quantities, order_func=order_function(), sort_rev=sort_reverse):
+    order_by_field = order_function()
+    def sort_checkouts_paginated(item_quantities, order_func=order_by_field, sort_rev=sort_reverse):
         '''
         Sort the objects based on an order function and whether to reverse sort it.
         Return a paginated object of the sorted items and quantities.
