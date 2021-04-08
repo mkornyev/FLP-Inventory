@@ -206,63 +206,93 @@ def generate_report(request):
 def analytics(request):
     context = {}
 
+    all_checkouts = Checkout.objects
+
+    ###  Most checked out items tables
     one_week_ago = date.today()-timedelta(days=7)
     context['one_week_ago'] = one_week_ago
-    all_checkouts = Checkout.objects
-    past_week_checkouts = all_checkouts.filter(datetime__date__gte=one_week_ago).all()
 
-    # Get checkouts grouped by items, sorted by quantity checked out
-    item_checkout_quantities = defaultdict(int)
-    for checkout in past_week_checkouts:
-        for itemTransaction in checkout.items.all():
-            item_obj = itemTransaction.item
-            quantity = itemTransaction.quantity
-            item_checkout_quantities[item_obj] += quantity
+    def most_checked_out(checkout_objects, date_gte):
+        '''
+        Generate most checked out items as tuples of item and quantity for all dates greater than or equal to date_gte (e.g. from one week ago).
+        '''
+        past_week_checkouts = checkout_objects.filter(datetime__date__gte=one_week_ago).all()
 
-    item_quant_tuples = item_checkout_quantities.items()
+        # Get checkouts grouped by items, sorted by quantity checked out
+        item_checkout_quantities = defaultdict(int)
+        for checkout in past_week_checkouts:
+            for itemTransaction in checkout.items.all():
+                item_obj = itemTransaction.item
+                quantity = itemTransaction.quantity
+                item_checkout_quantities[item_obj] += quantity
+        
+        return item_checkout_quantities.items()
 
-    ### Sorting columns when pressed
-    default_order = 'checkout_quantity'
-    order_field = request.GET.get('order_by', default_order)
+    item_quant_tuples = most_checked_out(all_checkouts, one_week_ago)
 
-    # switch sorting order each time
-    # the default sorting is "desc" ("asc" initially b/c "not" always happens)
-    non_default_sorting = "asc"
-    sort_type = request.GET.get('sort_type', non_default_sorting)
-    new_sort_type = "asc" if sort_type == "desc" else "desc" # switches sort_type
+    ### Sorting columns for most checkout items tables when pressed
+
+    def new_sort_type():
+        '''
+        Returns new sort type based on a column, switching the sorting order each time. 
+        The default sorting is "desc" for descending.
+        '''
+        # non_default instead of default b/c we always use "not" on sort_type
+        non_default_sorting = "asc"
+        sort_type = request.GET.get('sort_type', non_default_sorting)
+        # switch sort_type
+        new_sort_type = "asc" if sort_type == "desc" else "desc"
+        
+        return new_sort_type
+
+    context['sort_type'] = new_sort_type()
     sort_reverse = new_sort_type == "desc"
-    context['sort_type'] = new_sort_type
 
-    order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
-    if order_field == 'item_quantity':
-        order_lambda = lambda i_quantity: i_quantity[0].quantity
-    elif order_field == 'name':
-        order_lambda = lambda i_quantity: i_quantity[0].name.lower()
+    def order_function():
+        '''
+        Returns function with order field to sort by. Defaulted to 'checkout_quantity'.
+        '''
+        default_order = 'checkout_quantity'
+        order_field = request.GET.get('order_by', default_order)
+
+        order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
+        if order_field == 'item_quantity':
+            order_lambda = lambda i_quantity: i_quantity[0].quantity
+        elif order_field == 'name':
+            order_lambda = lambda i_quantity: i_quantity[0].name.lower()
+        return order_lambda
 
 
-    context['most_checked_out'] = sorted(item_quant_tuples, key=order_lambda, reverse=sort_reverse)
+    context['most_checked_out'] = sorted(item_quant_tuples, key=order_function(), reverse=sort_reverse)
     context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
 
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
 
     ###  Data for charts
-    checkouts_by_week = all_checkouts.annotate(   
-        month=ExtractMonth('datetime'),
-        year=ExtractYear('datetime') 
-    ).values('year', 'month').annotate(
-        count=Count('datetime')
-    ).order_by('year', 'month')
+    def chart_info_by_month(objects):
+        '''
+        Returns a tuple of chart's labels and data both as lists based on the objects grouped by year/month. 
+        A label is a year + month as a string and data is an integer value for how many occurred in that month.
+        '''
+        checkouts_by_month = objects.annotate(   
+            month=ExtractMonth('datetime'),
+            year=ExtractYear('datetime') 
+        ).values('year', 'month').annotate(
+            count=Count('datetime')
+        ).order_by('year', 'month')
 
-    # Note: technically if a month has no checkouts, it will not show up as 0,
-    # but instead be omitted, but hoping that's not something that might happen # for now
-    labels_by_week, data_by_week = [], []
-    for week_count in checkouts_by_week:
-        month = calendar.month_name[week_count['month']]
-        labels_by_week.append(month + ' ' + str(week_count['year']))
-        data_by_week.append(week_count['count'])
+        # Note: technically if a month has no checkouts, it will not show up as 0,
+        # but instead be omitted, but hoping that's not something that might happen # for now
+        labels_by_month, data_by_month = [], []
+        for month_count in checkouts_by_month:
+            month = calendar.month_name[month_count['month']]
+            labels_by_month.append(month + ' ' + str(month_count['year']))
+            data_by_month.append(month_count['count'])
+        
+        return (labels_by_month, data_by_month)
 
-    context['labels'] = json.dumps(labels_by_week)
-    context['data'] = json.dumps(data_by_week)
+    labels, data = chart_info_by_month(all_checkouts)
+    context['labels'], context['data'] = json.dumps(labels), json.dumps(data)
 
     return render(request, 'inventory/analytics.html', context)
 
