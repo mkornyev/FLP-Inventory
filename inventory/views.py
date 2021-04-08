@@ -28,7 +28,7 @@ import calendar
 import csv
 
 DEFAULT_PAGINATION_SIZE = 25
-LOW_QUANTITY_THRESHOLD = 5 # this number or below is considered low quantity
+LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
 
 ######################### BASIC VIEWS #########################
 
