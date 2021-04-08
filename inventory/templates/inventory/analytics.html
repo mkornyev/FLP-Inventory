@@ -16,22 +16,27 @@
         <div class="col-sm">
             {% if week_checkouts %}
                 <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
-                        <h4>Most Checked Out Items in Last Week (since {{ one_week_ago }})</h4>
-
-                          <div class="dropdown">
+                        <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                              Date Period
+                                Date Period
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                              <li><a class="dropdown-item" href="#last_week" value="last_week">Last Week</a></li>
-                              <li><a class="dropdown-item" href="#last_month" value="last_month">Last Month</a></li>
-                              <li><a class="dropdown-item" href="#last_six_months" value="last_six_months">Last 6 Months</a></li>
-                              <li><a class="dropdown-item" href="#all_time" value="all_time">All Time</a></li>
+                                <li><a class="dropdown-item" href="#last_week" value="last_week">Last Week</a></li>
+                                <li><a class="dropdown-item" href="#last_month" value="last_month">Last Month</a></li>
+                                <li><a class="dropdown-item" href="#last_six_months" value="last_six_months">Last 6 Months</a></li>
+                                <li><a class="dropdown-item" href="#all_time" value="all_time">All Time</a></li>
                             </ul>
-                          </div>
+                        </div>
+                        <br>
 
-                        <table class="table" id="last_week_table">
-                            <thead>
+                        {% include "inventory/most_checked_out_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=week_checkouts %}
+                        {% include "inventory/most_checked_out_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=month_checkouts %}
+                        {% include "inventory/most_checked_out_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=six_month_checkouts %}
+                        {% include "inventory/most_checked_out_table.html" with date_period='all_time_table' date_since=all_time checkouts=all_time_checkouts %}
+
+
+                        <!-- <table class="table" id="last_week_table"> -->
+                            <!-- <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
@@ -132,45 +137,11 @@
                             </tr>
                             {% endfor %}
                             </tbody>
-                        </table>
+                        </table> -->
 
-                        <!-- Pagination -->
-                        {% if week_checkouts.has_other_pages %}
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center">
-                                    {% if week_checkouts.has_previous %}
-                                        <li class="page-item">
-                                            <button type="submit" name="page" value="{{ week_checkouts.previous_page_number }}" class="page-link" aria-label="Previous">Previous</button>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
-                                    {% endif %}
-
-                                    {% for i in week_checkouts.paginator.page_range %}
-                                        {% if week_checkouts.number == i %}
-                                            <li class="page-item active">
-                                                <span class="page-link">{{ i }}</span>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item">
-                                                <button type="submit" name="page" value="{{ i }}" class="page-link">{{ i }}</button>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if week_checkouts.has_next %}
-                                        <li class="page-item">
-                                            <button type="submit" name="page" value="{{ week_checkouts.next_page_number }}" class="page-link" aria-label="Next">Next</button>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled"><span class="page-link">Next</span></li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
-                            {% csrf_token %}
+                        
                     </form>
-                {% endif %}
-
+                    {% csrf_token %}
             {% else %}
                 <p>No items have been checked out.</p>
             {% endif %}
@@ -220,30 +191,30 @@
     });
 
     $(document).ready(function() {
-        $(".table").not("#last_week_table").hide();
+        $(".table_div").not("#last_week_table").hide();
         $('#last_week_table').show();
 
         $(".dropdown-menu li a").click(function() {
             var date_period = $(this).attr("value");
             console.log(date_period)
             if (date_period == 'last_week') {
-                $(".table").not("#last_week_table").hide();
+                $(".table_div").not("#last_week_table").hide();
                 $('#last_week_table').show();
             }
             else if (date_period == 'last_month') {
-                $(".table").not("#last_month_table").hide();
+                $(".table_div").not("#last_month_table").hide();
                 $('#last_month_table').show();
             }
             else if (date_period == 'last_six_months') {
-                $(".table").not("#last_six_months_table").hide();
+                $(".table_div").not("#last_six_months_table").hide();
                 $('#last_six_months_table').show();
             }
             else if (date_period == 'all_time') {
-                $(".table").not("#all_time_table").hide();
+                $(".table_div").not("#all_time_table").hide();
                 $('#all_time_table').show();
             }
             else {
-                $(".table").hide();
+                $(".table_div").hide();
             }
         });
     });
