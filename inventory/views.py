@@ -22,6 +22,7 @@ from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTran
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
 
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import *
 from collections import defaultdict
 import json
 import calendar
@@ -211,12 +212,17 @@ def analytics(request):
     ###  Most checked out items tables
     one_week_ago = date.today()-timedelta(days=7)
     context['one_week_ago'] = one_week_ago
+    one_month_ago = date.today()-relativedelta(months=1)
+    context['one_month_ago'] = one_month_ago
+    six_months_ago = date.today()-relativedelta(months=6)
+    context['six_months_ago'] = six_months_ago
+    context['all_time'] = 'all time'
 
     def most_checked_out(checkout_objects, date_gte):
         '''
         Generate most checked out items as tuples of item and quantity for all dates greater than or equal to date_gte (e.g. from one week ago).
         '''
-        past_week_checkouts = checkout_objects.filter(datetime__date__gte=one_week_ago).all()
+        past_week_checkouts = checkout_objects.filter(datetime__date__gte=date_gte).all()
 
         # Get checkouts grouped by items, sorted by quantity checked out
         item_checkout_quantities = defaultdict(int)
@@ -228,7 +234,10 @@ def analytics(request):
         
         return item_checkout_quantities.items()
 
-    item_quant_tuples = most_checked_out(all_checkouts, one_week_ago)
+    item_quant_week = most_checked_out(all_checkouts, one_week_ago)
+    item_quant_month = most_checked_out(all_checkouts, one_month_ago)
+    item_quant_six_months = most_checked_out(all_checkouts, six_months_ago)
+    item_quant_all_time = most_checked_out(all_checkouts, datetime.min)
 
     ### Sorting columns for most checkout items tables when pressed
 
@@ -262,9 +271,18 @@ def analytics(request):
             order_lambda = lambda i_quantity: i_quantity[0].name.lower()
         return order_lambda
 
+    def sort_checkouts_paginated(item_quantities, order_func=order_function(), sort_rev=sort_reverse):
+        '''
+        Sort the objects based on an order function and whether to reverse sort it.
+        Return a paginated object of the sorted items and quantities.
+        '''
+        sorted_item_quants = sorted(item_quantities, key=order_func, reverse=sort_rev)
+        return getPagination(request, sorted_item_quants, DEFAULT_PAGINATION_SIZE)
 
-    context['most_checked_out'] = sorted(item_quant_tuples, key=order_function(), reverse=sort_reverse)
-    context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
+    context['week_checkouts'] = sort_checkouts_paginated(item_quant_week)
+    context['month_checkouts'] = sort_checkouts_paginated(item_quant_month)
+    context['six_month_checkouts'] = sort_checkouts_paginated(item_quant_six_months)
+    context['all_time_checkouts'] = sort_checkouts_paginated(item_quant_all_time)
 
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
 
