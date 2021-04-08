@@ -117,7 +117,7 @@ def generate_report(request):
             context['totalValue'] = result.getValue() + context['totalValue']
 
         if 'export' in request.POST:
-            qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=context['endDate']).all()
+            qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
             response = HttpResponse()
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
