@@ -22,7 +22,7 @@ from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTran
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
 
 from datetime import date, datetime, timedelta
-from dateutil.relativedelta import *
+from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 import json
 import calendar
@@ -280,6 +280,8 @@ def analytics(request):
         order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
         if order_field == 'item_quantity':
             order_lambda = lambda i_quantity: i_quantity[0].quantity
+        elif order_field == 'cat_quantity':
+            order_lambda = lambda i_quantity: i_quantity[0].item_quantity_total
         elif order_field == 'name':
             order_lambda = lambda i_quantity: i_quantity[0].name.lower()
         return order_lambda
