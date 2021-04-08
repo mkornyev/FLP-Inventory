@@ -15,12 +15,23 @@
     <div class="row">
         <div class="col-sm">
             <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
-                    <select class="form-select" id="date-period">
-                        <option value="last_week" selected>Last Week</option>
-                        <option value="last_month">Last Month</option>
-                        <option value="last_six_months">Last 6 Months</option>
-                        <option value="all_time">All Time</option>
-                    </select>
+                    <div class="row">
+                        <div class="col-sm">
+                            <select class="form-select" id="date-period">
+                                <option value="last_week" selected>Last Week</option>
+                                <option value="last_month">Last Month</option>
+                                <option value="last_six_months">Last 6 Months</option>
+                                <option value="all_time">All Time</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm">
+                            <select class="form-select" id="group-by">
+                                <option value="category" selected>By Category</option>
+                                <option value="item">By Item</option>
+                            </select>
+                        </div>
+                    </div>
                     <br>
 
                     {% include "inventory/checkout_quantities_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=item_week_checkouts group_by="Item" %}
