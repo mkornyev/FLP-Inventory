@@ -218,28 +218,41 @@ def analytics(request):
     context['six_months_ago'] = six_months_ago
     context['all_time'] = 'All Time'
 
-    def item_checkout_quantities(checkout_objects, date_gte):
+    def item_checkout_quantities(checkout_objects, date_gte, group_by):
         '''
-        Generate item checkout quantities as tuples of item and quantity for all dates greater than or equal to date_gte (e.g. from one week ago).
+        Generate checkout quantities as tuples of what's being grouped by and 
+        quantity for all dates greater than or equal to date_gte (e.g. from one week ago).
+        group_by should be either "item" or "category".
         '''
-        past_week_checkouts = checkout_objects.filter(datetime__date__gte=date_gte).all()
+        if group_by not in {'item', 'category'}:
+            raise Exception("Invalid group by: must be item or category")
+        filtered_checkouts = checkout_objects.filter(datetime__date__gte=date_gte).all()
 
-        # Get checkouts grouped by items, sorted by quantity checked out
-        item_checkout_quantities = defaultdict(int)
-        for checkout in past_week_checkouts:
+        # Get checkouts grouped by group_by, sorted by quantity checked out
+        checkout_quantities = defaultdict(int)
+        for checkout in filtered_checkouts:
             for itemTransaction in checkout.items.all():
-                item_obj = itemTransaction.item
+                if group_by == 'item':
+                    group_by_obj = itemTransaction.item
+                else: # category
+                    group_by_obj = itemTransaction.item.category
+
                 quantity = itemTransaction.quantity
-                item_checkout_quantities[item_obj] += quantity
+                checkout_quantities[group_by_obj] += quantity
         
-        return item_checkout_quantities.items()
+        return checkout_quantities.items()
 
-    item_quant_week = item_checkout_quantities(all_checkouts, one_week_ago)
-    item_quant_month = item_checkout_quantities(all_checkouts, one_month_ago)
-    item_quant_six_months = item_checkout_quantities(all_checkouts, six_months_ago)
-    item_quant_all_time = item_checkout_quantities(all_checkouts, datetime.min)
+    item_quant_week = item_checkout_quantities(all_checkouts, one_week_ago, 'item')
+    item_quant_month = item_checkout_quantities(all_checkouts, one_month_ago, 'item')
+    item_quant_six_months = item_checkout_quantities(all_checkouts, six_months_ago, 'item')
+    item_quant_all_time = item_checkout_quantities(all_checkouts, datetime.min, 'item')
 
-    ### Sorting columns for most checkout items tables when pressed
+    cat_quant_week = item_checkout_quantities(all_checkouts, one_week_ago, 'category')
+    cat_quant_month = item_checkout_quantities(all_checkouts, one_month_ago, 'category')
+    cat_quant_six_months = item_checkout_quantities(all_checkouts, six_months_ago, 'category')
+    cat_quant_all_time = item_checkout_quantities(all_checkouts, datetime.min, 'category')
+
+    ### Sorting columns for checkout quantities tables when pressed
 
     def new_sort_type():
         '''
@@ -280,10 +293,15 @@ def analytics(request):
         sorted_item_quants = sorted(item_quantities, key=order_func, reverse=sort_rev)
         return getPagination(request, sorted_item_quants, DEFAULT_PAGINATION_SIZE)
 
-    context['week_checkouts'] = sort_checkouts_paginated(item_quant_week)
-    context['month_checkouts'] = sort_checkouts_paginated(item_quant_month)
-    context['six_month_checkouts'] = sort_checkouts_paginated(item_quant_six_months)
-    context['all_time_checkouts'] = sort_checkouts_paginated(item_quant_all_time)
+    context['item_week_checkouts'] = sort_checkouts_paginated(item_quant_week)
+    context['item_month_checkouts'] = sort_checkouts_paginated(item_quant_month)
+    context['item_six_month_checkouts'] = sort_checkouts_paginated(item_quant_six_months)
+    context['item_all_time_checkouts'] = sort_checkouts_paginated(item_quant_all_time)
+
+    context['cat_week_checkouts'] = sort_checkouts_paginated(cat_quant_week)
+    context['cat_month_checkouts'] = sort_checkouts_paginated(cat_quant_month)
+    context['cat_six_month_checkouts'] = sort_checkouts_paginated(cat_quant_six_months)
+    context['cat_all_time_checkouts'] = sort_checkouts_paginated(cat_quant_all_time)
 
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
 
