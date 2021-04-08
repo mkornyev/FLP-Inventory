@@ -16,129 +16,18 @@
         <div class="col-sm">
             {% if week_checkouts %}
                 <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                Date Period
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#last_week" value="last_week">Last Week</a></li>
-                                <li><a class="dropdown-item" href="#last_month" value="last_month">Last Month</a></li>
-                                <li><a class="dropdown-item" href="#last_six_months" value="last_six_months">Last 6 Months</a></li>
-                                <li><a class="dropdown-item" href="#all_time" value="all_time">All Time</a></li>
-                            </ul>
-                        </div>
+                        <select class="form-select" id="date-period">
+                            <option value="last_week" selected>Last Week</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="last_six_months">Last 6 Months</option>
+                            <option value="all_time">All Time</option>
+                          </select>
                         <br>
 
                         {% include "inventory/most_checked_out_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=week_checkouts %}
                         {% include "inventory/most_checked_out_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=month_checkouts %}
                         {% include "inventory/most_checked_out_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=six_month_checkouts %}
                         {% include "inventory/most_checked_out_table.html" with date_period='all_time_table' date_since=all_time checkouts=all_time_checkouts %}
-
-
-                        <!-- <table class="table" id="last_week_table"> -->
-                            <!-- <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
-                                <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
-                                <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for i, quantity_checked_out in week_checkouts %}
-                            <tr>
-                                <th scope="row">{{ i.id }}</th>
-                                <td>{{ i.name }}</td>
-                                <td>{{ quantity_checked_out }}</td>
-                                {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
-                                    <td>{{ i.quantity }}</td>
-                                {% else %}
-                                    <td style='color:red'>{{ i.quantity }}</td>
-                                {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-
-                        <table class="table" id="last_month_table">
-                            <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
-                                <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
-                                <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for i, quantity_checked_out in month_checkouts %}
-                            <tr>
-                                <th scope="row">{{ i.id }}</th>
-                                <td>{{ i.name }}</td>
-                                <td>{{ quantity_checked_out }}</td>
-                                {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
-                                    <td>{{ i.quantity }}</td>
-                                {% else %}
-                                    <td style='color:red'>{{ i.quantity }}</td>
-                                {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-
-                        <table class="table" id="last_six_months_table">
-                            <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
-                                <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
-                                <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for i, quantity_checked_out in six_month_checkouts %}
-                            <tr>
-                                <th scope="row">{{ i.id }}</th>
-                                <td>{{ i.name }}</td>
-                                <td>{{ quantity_checked_out }}</td>
-                                {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
-                                    <td>{{ i.quantity }}</td>
-                                {% else %}
-                                    <td style='color:red'>{{ i.quantity }}</td>
-                                {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-
-                        <table class="table" id="all_time_table">
-                            <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
-                                <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
-                                <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for i, quantity_checked_out in all_time_checkouts %}
-                            <tr>
-                                <th scope="row">{{ i.id }}</th>
-                                <td>{{ i.name }}</td>
-                                <td>{{ quantity_checked_out }}</td>
-                                {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
-                                    <td>{{ i.quantity }}</td>
-                                {% else %}
-                                    <td style='color:red'>{{ i.quantity }}</td>
-                                {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table> -->
-
                         
                     </form>
                     {% csrf_token %}
@@ -194,8 +83,8 @@
         $(".table_div").not("#last_week_table").hide();
         $('#last_week_table').show();
 
-        $(".dropdown-menu li a").click(function() {
-            var date_period = $(this).attr("value");
+        $("#date-period").on('change', function() {
+            var date_period = this.value
             console.log(date_period)
             if (date_period == 'last_week') {
                 $(".table_div").not("#last_week_table").hide();
