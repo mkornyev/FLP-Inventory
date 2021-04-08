@@ -1,16 +1,24 @@
 {% if checkouts %}
     <div class="table_div" id="{{ date_period }}">
         {% if date_since == all_time %}
-            <h4>Items Checked Out ({{ date_since }})</h4>
+            {% if group_by == "Item" %}
+                <h4>Items Checked Out ({{ date_since }})</h4>
+            {% elif group_by == "Category" %}
+                <h4>Categories Checked Out ({{ date_since }})</h4>
+            {% endif %}
         {% else %}
-            <h4>Items Checked Out (from {{ date_since }})</h4>
+            {% if group_by == "Item" %}
+                <h4>Items Checked Out (from {{ date_since }})</h4>
+            {% elif group_by == "Category" %}
+                <h4>Categories Checked Out (from {{ date_since }})</h4>
+            {% endif %}
         {% endif %}
 
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">Item</a></th>
+                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">{{ group_by }}</a></th>
                 <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
                 <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
             </tr>

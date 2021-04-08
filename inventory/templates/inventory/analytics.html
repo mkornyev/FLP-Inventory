@@ -23,15 +23,15 @@
                     </select>
                     <br>
 
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=item_week_checkouts %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=item_month_checkouts %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=item_six_month_checkouts %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time_table' date_since=all_time checkouts=item_all_time_checkouts %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=item_week_checkouts group_by="Item" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=item_month_checkouts group_by="Item" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=item_six_month_checkouts group_by="Item" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time_table' date_since=all_time checkouts=item_all_time_checkouts group_by="Item" %}
 
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=cat_week_checkouts %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=cat_month_checkouts %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=cat_six_month_checkouts %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time_table' date_since=all_time checkouts=cat_all_time_checkouts %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=cat_week_checkouts group_by="Category" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=cat_month_checkouts group_by="Category" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=cat_six_month_checkouts group_by="Category" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time_table' date_since=all_time checkouts=cat_all_time_checkouts group_by="Category" %}
                     
             </form>
             {% csrf_token %}
