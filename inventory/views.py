@@ -209,18 +209,18 @@ def analytics(request):
 
     all_checkouts = Checkout.objects
 
-    ###  Most checked out items tables
-    one_week_ago = date.today()-timedelta(days=7)
+    ###  Item Checkout Quantities tables
+    one_week_ago = date.today() - timedelta(days=7)
     context['one_week_ago'] = one_week_ago
-    one_month_ago = date.today()-relativedelta(months=1)
+    one_month_ago = date.today() - relativedelta(months=1)
     context['one_month_ago'] = one_month_ago
-    six_months_ago = date.today()-relativedelta(months=6)
+    six_months_ago = date.today() - relativedelta(months=6)
     context['six_months_ago'] = six_months_ago
-    context['all_time'] = 'all time'
+    context['all_time'] = 'All Time'
 
-    def most_checked_out(checkout_objects, date_gte):
+    def item_checkout_quantities(checkout_objects, date_gte):
         '''
-        Generate most checked out items as tuples of item and quantity for all dates greater than or equal to date_gte (e.g. from one week ago).
+        Generate item checkout quantities as tuples of item and quantity for all dates greater than or equal to date_gte (e.g. from one week ago).
         '''
         past_week_checkouts = checkout_objects.filter(datetime__date__gte=date_gte).all()
 
@@ -234,10 +234,10 @@ def analytics(request):
         
         return item_checkout_quantities.items()
 
-    item_quant_week = most_checked_out(all_checkouts, one_week_ago)
-    item_quant_month = most_checked_out(all_checkouts, one_month_ago)
-    item_quant_six_months = most_checked_out(all_checkouts, six_months_ago)
-    item_quant_all_time = most_checked_out(all_checkouts, datetime.min)
+    item_quant_week = item_checkout_quantities(all_checkouts, one_week_ago)
+    item_quant_month = item_checkout_quantities(all_checkouts, one_month_ago)
+    item_quant_six_months = item_checkout_quantities(all_checkouts, six_months_ago)
+    item_quant_all_time = item_checkout_quantities(all_checkouts, datetime.min)
 
     ### Sorting columns for most checkout items tables when pressed
 

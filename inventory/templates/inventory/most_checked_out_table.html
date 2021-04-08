@@ -1,5 +1,9 @@
 <div class="table_div" id="{{ date_period }}">
-    <h4>Most Checked Out Items in Last Week (since {{ date_since }})</h4>
+    {% if date_since == all_time %}
+        <h4>Items Checked Out ({{ date_since }})</h4>
+    {% else %}
+        <h4>Items Checked Out (from {{ date_since }})</h4>
+    {% endif %}
 
     <table class="table">
         <thead>
