@@ -29,11 +29,19 @@
                 <th scope="row">{{ i.id }}</th>
                 <td>{{ i.name }}</td>
                 <td>{{ quantity_checked_out }}</td>
-                {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
-                    <td>{{ i.quantity }}</td>
-                {% else %}
-                    <td style='color:red'>{{ i.quantity }}</td>
-                {% endif %}
+                    {% if group_by == "Item" %}
+                        {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
+                            <td>{{ i.quantity }}</td>
+                        {% else %}
+                            <td style='color:red'>{{ i.quantity }}</td>
+                        {% endif %}
+                    {% elif group_by == "Category" %}
+                        {% if i.itemQuantity > LOW_QUANTITY_THRESHOLD %}
+                            <td>{{ i.itemQuantity }}</td>
+                        {% else %}
+                            <td style='color:red'>{{ i.itemQuantity }}</td>
+                        {% endif %}
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
