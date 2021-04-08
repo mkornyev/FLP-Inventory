@@ -246,7 +246,7 @@ def analytics(request):
         return new_sort_type
 
     context['sort_type'] = new_sort_type()
-    sort_reverse = new_sort_type == "desc"
+    sort_reverse = context['sort_type'] == "desc"
 
     def order_function():
         '''
