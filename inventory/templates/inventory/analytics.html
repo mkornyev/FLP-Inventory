@@ -1,7 +1,5 @@
 {% extends "inventory/base.html" %}
 
-
-
 {% block title %}
     {% block navtitle %}
         Analytics
@@ -34,15 +32,15 @@
                     </div>
                     <br>
 
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=item_week_checkouts group_by="Item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=item_month_checkouts group_by="Item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=item_six_month_checkouts group_by="Item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time_table' date_since=all_time checkouts=item_all_time_checkouts group_by="Item" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=item_week_checkouts group_by="item" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=item_month_checkouts group_by="item" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=item_six_month_checkouts group_by="item" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=item_all_time_checkouts group_by="item" %}
 
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week_table' date_since=one_week_ago checkouts=cat_week_checkouts group_by="Category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month_table' date_since=one_month_ago checkouts=cat_month_checkouts group_by="Category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months_table' date_since=six_months_ago checkouts=cat_six_month_checkouts group_by="Category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time_table' date_since=all_time checkouts=cat_all_time_checkouts group_by="Category" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=cat_week_checkouts group_by="category" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=cat_month_checkouts group_by="category" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=cat_six_month_checkouts group_by="category" %}
+                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=cat_all_time_checkouts group_by="category" %}
                     
             </form>
             {% csrf_token %}
@@ -92,31 +90,17 @@
     });
 
     $(document).ready(function() {
-        $(".table_div").not("#last_week_table").hide();
-        $('#last_week_table').show();
+        var initial_table_selector = "#last_week_category"
+        $(".table_div").not(initial_table_selector).hide();
+        $(initial_table_selector).show();
 
-        $("#date-period").on('change', function() {
-            var date_period = this.value
-            console.log(date_period)
-            if (date_period == 'last_week') {
-                $(".table_div").not("#last_week_table").hide();
-                $('#last_week_table').show();
-            }
-            else if (date_period == 'last_month') {
-                $(".table_div").not("#last_month_table").hide();
-                $('#last_month_table').show();
-            }
-            else if (date_period == 'last_six_months') {
-                $(".table_div").not("#last_six_months_table").hide();
-                $('#last_six_months_table').show();
-            }
-            else if (date_period == 'all_time') {
-                $(".table_div").not("#all_time_table").hide();
-                $('#all_time_table').show();
-            }
-            else {
-                $(".table_div").hide();
-            }
+        $("#date-period").add("#group-by").on('change', function() {
+            var date_period = $("#date-period").val();
+            var group_by = $("#group-by").val();
+            show_table_id = "#" + date_period + "_" + group_by
+
+            $(".table_div").not(show_table_id).hide();
+            $(show_table_id).show();
         });
     });
 </script>

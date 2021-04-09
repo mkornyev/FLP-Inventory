@@ -1,15 +1,15 @@
 {% if checkouts %}
-    <div class="table_div" id="{{ date_period }}">
+    <div class="table_div" id="{{ date_period }}_{{ group_by }}">
         {% if date_since == all_time %}
-            {% if group_by == "Item" %}
+            {% if group_by == "item" %}
                 <h4>Items Checked Out ({{ date_since }})</h4>
-            {% elif group_by == "Category" %}
+            {% elif group_by == "category" %}
                 <h4>Categories Checked Out ({{ date_since }})</h4>
             {% endif %}
         {% else %}
-            {% if group_by == "Item" %}
+            {% if group_by == "item" %}
                 <h4>Items Checked Out (from {{ date_since }})</h4>
-            {% elif group_by == "Category" %}
+            {% elif group_by == "category" %}
                 <h4>Categories Checked Out (from {{ date_since }})</h4>
             {% endif %}
         {% endif %}
@@ -18,11 +18,13 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">{{ group_by }}</a></th>
+                <th scope="col"><a href="?order_by=name&sort_type={{ sort_type }}">
+                    {% if group_by == "item" %} Item {% elif group_by == "category" %} Category {% endif %}
+                </a></th>
                 <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
-                {% if group_by == "Item" %}
+                {% if group_by == "item" %}
                     <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-                {% elif group_by == "Category" %}
+                {% elif group_by == "category" %}
                     <th scope="col"><a href="?order_by=cat_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
                 {% endif %}
             </tr>
@@ -33,13 +35,13 @@
                 <th scope="row">{{ i.id }}</th>
                 <td>{{ i.name }}</td>
                 <td>{{ quantity_checked_out }}</td>
-                    {% if group_by == "Item" %}
+                    {% if group_by == "item" %}
                         {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
                             <td>{{ i.quantity }}</td>
                         {% else %}
                             <td style='color:red'>{{ i.quantity }}</td>
                         {% endif %}
-                    {% elif group_by == "Category" %}
+                    {% elif group_by == "category" %}
                         {% if i.item_quantity_total > LOW_QUANTITY_THRESHOLD %}
                             <td>{{ i.item_quantity_total }}</td>
                         {% else %}
