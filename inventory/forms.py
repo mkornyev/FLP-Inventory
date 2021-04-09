@@ -69,8 +69,12 @@ class RegistrationForm(forms.Form):
         return username
 
 class CreateFamilyForm(forms.Form):
-    name = forms.CharField(max_length=50,
+    first_name = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    last_name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
+    phone = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control', 'type':'tel'}), required=False)
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):

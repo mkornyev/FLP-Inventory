@@ -335,9 +335,11 @@ def createFamily_action(request):
             return render(request, 'inventory/createFamily.html', context)
 
         # category = form.cleaned_data['category']
-        name = form.cleaned_data['name']
+        fname = form.cleaned_data['first_name']
+        lname = form.cleaned_data['last_name']
+        phone = form.cleaned_data['phone']
 
-        family = Family(name=name)
+        family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
         messages.success(request, 'Family created')
         return redirect(reverse('Checkout'))
