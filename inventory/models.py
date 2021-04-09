@@ -9,8 +9,25 @@ from django.utils import timezone
 # MODELS 
 
 class Family(models.Model):
+  fname = models.CharField(max_length=50, blank=True, null=True)
+  lname = models.CharField(max_length=50, blank=False, null=False) # Only the last_name is required
+  phone = models.CharField(max_length=11, blank=True, null=True)
+  # created_at = models.DateTimeField(default=timezone.now)
+  # USE Family.child_set OR .children TO GET QuerySet<Child>
+
+  @property
+  def childNames(self):
+    return ','.join(map(lambda c: c.name, self.children.all()))
+  
+  def __str__(self):
+    if self.fname: 
+      return "{}, {}".format(self.lname, self.fname)
+    return "{}".format(self.lname)
+
+
+class Child(models.Model): 
   name = models.CharField(max_length=50, blank=False, null=False)
-  # first_seen = models.DateTimeField(default=datetime.now)
+  family = models.ForeignKey(Family, related_name='children', on_delete=models.CASCADE, blank=False, null=False)
 
   def __str__(self):
     return "{}".format(self.name)
