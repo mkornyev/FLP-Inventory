@@ -278,10 +278,8 @@ def analytics(request):
         order_field = request.GET.get('order_by', default_order)
 
         order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
-        if order_field == 'item_quantity':
+        if order_field == 'quantity':
             order_lambda = lambda i_quantity: i_quantity[0].quantity
-        elif order_field == 'cat_quantity':
-            order_lambda = lambda i_quantity: i_quantity[0].item_quantity_total
         elif order_field == 'name':
             order_lambda = lambda i_quantity: i_quantity[0].name.lower()
         return order_lambda

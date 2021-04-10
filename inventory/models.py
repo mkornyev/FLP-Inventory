@@ -18,7 +18,9 @@ class Family(models.Model):
 class Category(models.Model):
   name = models.CharField(max_length=50, blank=False, null=False)
 
-  def item_quantity_total(self):
+  # name being same as Item 'quantity' field is important so they can be sorted the same way
+  @property
+  def quantity(self):
     return Item.objects.filter(category=self).aggregate(models.Sum('quantity'))['quantity__sum']
   
   def __str__(self):

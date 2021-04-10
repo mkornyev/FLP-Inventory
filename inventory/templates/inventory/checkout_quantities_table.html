@@ -22,11 +22,7 @@
                     {% if group_by == "item" %} Item {% elif group_by == "category" %} Category {% endif %}
                 </a></th>
                 <th scope="col"><a href="?order_by=checkout_quantity&sort_type={{ sort_type }}">Quantity Checked Out</a></th>
-                {% if group_by == "item" %}
-                    <th scope="col"><a href="?order_by=item_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-                {% elif group_by == "category" %}
-                    <th scope="col"><a href="?order_by=cat_quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
-                {% endif %}
+                <th scope="col"><a href="?order_by=quantity&sort_type={{ sort_type }}">Quantity Left</a></th>
             </tr>
             </thead>
             <tbody>
@@ -35,18 +31,10 @@
                 <th scope="row">{{ i.id }}</th>
                 <td>{{ i.name }}</td>
                 <td>{{ quantity_checked_out }}</td>
-                    {% if group_by == "item" %}
-                        {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
-                            <td>{{ i.quantity }}</td>
-                        {% else %}
-                            <td style='color:red'>{{ i.quantity }}</td>
-                        {% endif %}
-                    {% elif group_by == "category" %}
-                        {% if i.item_quantity_total > LOW_QUANTITY_THRESHOLD %}
-                            <td>{{ i.item_quantity_total }}</td>
-                        {% else %}
-                            <td style='color:red'>{{ i.item_quantity_total }}</td>
-                        {% endif %}
+                    {% if i.quantity > LOW_QUANTITY_THRESHOLD %}
+                        <td>{{ i.quantity }}</td>
+                    {% else %}
+                        <td style='color:red'>{{ i.quantity }}</td>
                     {% endif %}
                 </td>
             </tr>
