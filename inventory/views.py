@@ -318,8 +318,8 @@ def analytics(request):
             count=Count('datetime')
         ).order_by('year', 'month')
 
-        # Note: technically if a month has no checkouts, it will not show up as 0,
-        # but instead be omitted, but hoping that's not something that might happen # for now
+        # Note: technically if a month has no checkouts, it will not show up as 0, 
+        # but instead be omitted, but hoping that's not something that might happen for now
         labels_by_month, data_by_month = [], []
         for month_count in checkouts_by_month:
             month = calendar.month_name[month_count['month']]
