@@ -35,7 +35,7 @@ class Command(BaseCommand):
             item_name = r[1].value
             quantity = r[4].value
             print(f"updating quantity {item_name} w {quantity}")
-            qs = Item.objects.filter(name_exact=item_name)
+            qs = Item.objects.filter(name__exact=item_name)
             if len(qs) != 0:
                 qs[0].quantity = quantity
                 qs[0].save()
