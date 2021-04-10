@@ -1,6 +1,5 @@
 #!/usr/bin/python
 from django.core.management.base import BaseCommand
-from bs4 import BeautifulSoup
 from inventory.models import Item, Category
 import openpyxl
 
