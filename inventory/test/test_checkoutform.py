@@ -5,7 +5,7 @@ from inventory.models import Family
 
 class CheckoutFormTestCase(TestCase):
     def setUp(self):
-        family = Family.objects.create(name="ValidFamily")
+        family = Family.objects.create(lname="ValidFamily")
         family.save()
 
     def test_invalid_required_fields(self):
