@@ -115,8 +115,8 @@ class CreateItemForm(forms.Form):
         # Confirms the quantity is above zero
         quantity = self.cleaned_data.get('quantity')
 
-        if quantity <= 0:
-            raise forms.ValidationError("Quantity must be above zero.")
+        if quantity < 0:
+            raise forms.ValidationError("Quantity must be zero or above.")
 
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
