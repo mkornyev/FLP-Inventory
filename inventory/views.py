@@ -16,7 +16,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models.functions import ExtractYear, ExtractMonth
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
@@ -417,8 +417,18 @@ def checkout_action(request):
     if not form.is_valid():
         return render(request, 'inventory/checkout.html', context, status=400)
 
-    family = form.cleaned_data['family']
-    family_object = Family.objects.filter(name__exact=family)
+    family = form.cleaned_data['family'].strip()
+
+    if ',' in family: 
+        comma = family.index(',')
+        lname = family[0:comma]
+        fname = family[comma+2:]
+
+        family_object = Family.objects.filter(
+            Q(fname__exact=fname) and Q(lname__exact=lname)
+        )
+    else: 
+        family_object = Family.objects.filter(lname__exact=family)
 
     if not transactions:
         messages.warning(request, 'Could not create checkout: No items added')
@@ -452,10 +462,15 @@ def autocomplete_item(request):
   
 def autocomplete_family(request):
     if 'term' in request.GET:
-        qs = Family.objects.filter(name__icontains=request.GET.get('term'))
+        qs = Family.objects.filter(
+            Q(fname__icontains=request.GET.get('term')) | Q(lname__icontains=request.GET.get('term'))
+        )
         names = list()
         for fam in qs:
-            names.append(fam.name)
+            if fam.fname:                
+                names.append('{}, {}'.format(fam.lname, fam.fname))
+            else: 
+                names.append(fam.lname)
         return JsonResponse(names, safe=False)
   
 ######################### DATABASE VIEWS #########################
