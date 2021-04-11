@@ -22,13 +22,14 @@ from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTran
 from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
 
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 import json
 import calendar
 import csv
 
 DEFAULT_PAGINATION_SIZE = 25
-LOW_QUANTITY_THRESHOLD = 5 # this number or below is considered low quantity
+LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
 
 ######################### BASIC VIEWS #########################
 
@@ -206,63 +207,129 @@ def generate_report(request):
 def analytics(request):
     context = {}
 
-    one_week_ago = date.today()-timedelta(days=7)
-    context['one_week_ago'] = one_week_ago
     all_checkouts = Checkout.objects
-    past_week_checkouts = all_checkouts.filter(datetime__date__gte=one_week_ago).all()
 
-    # Get checkouts grouped by items, sorted by quantity checked out
-    item_checkout_quantities = defaultdict(int)
-    for checkout in past_week_checkouts:
-        for itemTransaction in checkout.items.all():
-            item_obj = itemTransaction.item
-            quantity = itemTransaction.quantity
-            item_checkout_quantities[item_obj] += quantity
+    ###  Item Checkout Quantities tables
+    one_week_ago = date.today() - timedelta(days=7)
+    context['one_week_ago'] = one_week_ago
+    one_month_ago = date.today() - relativedelta(months=1)
+    context['one_month_ago'] = one_month_ago
+    six_months_ago = date.today() - relativedelta(months=6)
+    context['six_months_ago'] = six_months_ago
+    context['all_time'] = 'All Time'
 
-    item_quant_tuples = item_checkout_quantities.items()
+    def item_checkout_quantities(checkout_objects, date_gte, group_by):
+        '''
+        Generate checkout quantities as tuples of what's being grouped by and 
+        quantity for all dates greater than or equal to date_gte (e.g. from one week ago).
+        group_by should be either "item" or "category".
+        '''
+        if group_by not in {'item', 'category'}:
+            raise Exception("Invalid group by: must be item or category")
+        filtered_checkouts = checkout_objects.filter(datetime__date__gte=date_gte).all()
 
-    ### Sorting columns when pressed
-    default_order = 'checkout_quantity'
-    order_field = request.GET.get('order_by', default_order)
+        # Get checkouts grouped by group_by, sorted by quantity checked out
+        checkout_quantities = defaultdict(int)
+        for checkout in filtered_checkouts:
+            for itemTransaction in checkout.items.all():
+                if group_by == 'item':
+                    group_by_obj = itemTransaction.item
+                else: # category
+                    group_by_obj = itemTransaction.item.category
 
-    # switch sorting order each time
-    # the default sorting is "desc" ("asc" initially b/c "not" always happens)
-    non_default_sorting = "asc"
-    sort_type = request.GET.get('sort_type', non_default_sorting)
-    new_sort_type = "asc" if sort_type == "desc" else "desc" # switches sort_type
-    sort_reverse = new_sort_type == "desc"
-    context['sort_type'] = new_sort_type
+                quantity = itemTransaction.quantity
+                checkout_quantities[group_by_obj] += quantity
+        
+        return checkout_quantities.items()
 
-    order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
-    if order_field == 'item_quantity':
-        order_lambda = lambda i_quantity: i_quantity[0].quantity
-    elif order_field == 'name':
-        order_lambda = lambda i_quantity: i_quantity[0].name.lower()
+    item_quant_week = item_checkout_quantities(all_checkouts, one_week_ago, 'item')
+    item_quant_month = item_checkout_quantities(all_checkouts, one_month_ago, 'item')
+    item_quant_six_months = item_checkout_quantities(all_checkouts, six_months_ago, 'item')
+    item_quant_all_time = item_checkout_quantities(all_checkouts, datetime.min, 'item')
 
+    cat_quant_week = item_checkout_quantities(all_checkouts, one_week_ago, 'category')
+    cat_quant_month = item_checkout_quantities(all_checkouts, one_month_ago, 'category')
+    cat_quant_six_months = item_checkout_quantities(all_checkouts, six_months_ago, 'category')
+    cat_quant_all_time = item_checkout_quantities(all_checkouts, datetime.min, 'category')
 
-    context['most_checked_out'] = sorted(item_quant_tuples, key=order_lambda, reverse=sort_reverse)
-    context['most_checked_out'] = getPagination(request, context['most_checked_out'], DEFAULT_PAGINATION_SIZE)
+    ### Sorting columns for checkout quantities tables when pressed
+
+    def new_sort_type():
+        '''
+        Returns new sort type based on a column, switching the sorting order each time. 
+        The default sorting is "desc" for descending.
+        '''
+        # non_default instead of default b/c we always use "not" on sort_type
+        non_default_sorting = "asc"
+        sort_type = request.GET.get('sort_type', non_default_sorting)
+        # switch sort_type
+        new_sort_type = "asc" if sort_type == "desc" else "desc"
+        
+        return new_sort_type
+
+    context['sort_type'] = new_sort_type()
+    sort_reverse = context['sort_type'] == "desc"
+
+    def order_function():
+        '''
+        Returns function with order field to sort by. Defaulted to 'checkout_quantity'.
+        '''
+        default_order = 'checkout_quantity'
+        order_field = request.GET.get('order_by', default_order)
+
+        order_lambda = lambda i_quantity: i_quantity[1] # default_order is checkout quantity
+        if order_field == 'quantity':
+            order_lambda = lambda i_quantity: i_quantity[0].quantity
+        elif order_field == 'name':
+            order_lambda = lambda i_quantity: i_quantity[0].name.lower()
+        return order_lambda
+
+    order_by_field = order_function()
+    def sort_checkouts_paginated(item_quantities, order_func=order_by_field, sort_rev=sort_reverse):
+        '''
+        Sort the objects based on an order function and whether to reverse sort it.
+        Return a paginated object of the sorted items and quantities.
+        '''
+        sorted_item_quants = sorted(item_quantities, key=order_func, reverse=sort_rev)
+        return getPagination(request, sorted_item_quants, DEFAULT_PAGINATION_SIZE)
+
+    context['item_week_checkouts'] = sort_checkouts_paginated(item_quant_week)
+    context['item_month_checkouts'] = sort_checkouts_paginated(item_quant_month)
+    context['item_six_month_checkouts'] = sort_checkouts_paginated(item_quant_six_months)
+    context['item_all_time_checkouts'] = sort_checkouts_paginated(item_quant_all_time)
+
+    context['cat_week_checkouts'] = sort_checkouts_paginated(cat_quant_week)
+    context['cat_month_checkouts'] = sort_checkouts_paginated(cat_quant_month)
+    context['cat_six_month_checkouts'] = sort_checkouts_paginated(cat_quant_six_months)
+    context['cat_all_time_checkouts'] = sort_checkouts_paginated(cat_quant_all_time)
 
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
 
     ###  Data for charts
-    checkouts_by_week = all_checkouts.annotate(   
-        month=ExtractMonth('datetime'),
-        year=ExtractYear('datetime') 
-    ).values('year', 'month').annotate(
-        count=Count('datetime')
-    ).order_by('year', 'month')
+    def chart_info_by_month(objects):
+        '''
+        Returns a tuple of chart's labels and data both as lists based on the objects grouped by year/month. 
+        A label is a year + month as a string and data is an integer value for how many occurred in that month.
+        '''
+        checkouts_by_month = objects.annotate(   
+            month=ExtractMonth('datetime'),
+            year=ExtractYear('datetime') 
+        ).values('year', 'month').annotate(
+            count=Count('datetime')
+        ).order_by('year', 'month')
 
-    # Note: technically if a month has no checkouts, it will not show up as 0,
-    # but instead be omitted, but hoping that's not something that might happen # for now
-    labels_by_week, data_by_week = [], []
-    for week_count in checkouts_by_week:
-        month = calendar.month_name[week_count['month']]
-        labels_by_week.append(month + ' ' + str(week_count['year']))
-        data_by_week.append(week_count['count'])
+        # Note: technically if a month has no checkouts, it will not show up as 0, 
+        # but instead be omitted, but hoping that's not something that might happen for now
+        labels_by_month, data_by_month = [], []
+        for month_count in checkouts_by_month:
+            month = calendar.month_name[month_count['month']]
+            labels_by_month.append(month + ' ' + str(month_count['year']))
+            data_by_month.append(month_count['count'])
+        
+        return (labels_by_month, data_by_month)
 
-    context['labels'] = json.dumps(labels_by_week)
-    context['data'] = json.dumps(data_by_week)
+    labels, data = chart_info_by_month(all_checkouts)
+    context['labels'], context['data'] = json.dumps(labels), json.dumps(data)
 
     return render(request, 'inventory/analytics.html', context)
 
