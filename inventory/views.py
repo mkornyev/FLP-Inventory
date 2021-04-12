@@ -19,7 +19,7 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from django.db.models import Count
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
-from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
+from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm, CreateItemForm
 
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -407,6 +407,35 @@ def createFamily_action(request):
         family = Family(name=name)
         family.save()
         messages.success(request, 'Family created')
+        return redirect(reverse('Checkout'))
+
+# Create Item View
+@login_required
+def createItem_action(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = CreateItemForm()
+        
+        return render(request, 'inventory/createitem.html', context)
+
+    if request.method == 'POST':
+        form = CreateItemForm(request.POST)
+
+        context['form'] = form
+
+        if not form.is_valid():
+            return render(request, 'inventory/createitem.html', context)
+
+        category = form.cleaned_data['category']
+        name = form.cleaned_data['name']
+        price = form.cleaned_data['price']
+        quantity = form.cleaned_data['quantity']
+
+        item = Item(category=category, name=name, price=price, quantity=quantity)
+        item.save()
+
+        messages.success(request, 'Item created')
         return redirect(reverse('Checkout'))
 
 # Checkin view
