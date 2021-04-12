@@ -1,6 +1,6 @@
 from django import forms
 
-from inventory.models import Item, Family
+from inventory.models import Item, Family, Category
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -80,6 +80,59 @@ class CreateFamilyForm(forms.Form):
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
+
+class CreateItemForm(forms.Form):
+    category   = forms.ModelChoiceField(queryset=Category.objects.all(),
+                                        widget=forms.Select(attrs={'class': 'form-select'}))
+    name = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}))
+    quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    price = forms.DecimalField(max_digits=6, decimal_places=2, required=False) 
+    # Customizes form validation for properties that apply to more
+    # than one field.  Overrides the forms.Form.clean function.
+    def clean(self):
+        # Calls our parent (forms.Form) .clean function, gets a dictionary
+        # of cleaned data as a result
+        cleaned_data = super().clean()
+
+        # We must return the cleaned data we got from our parent.
+        return cleaned_data
+
+    # Customizes form validation for the name field.
+    def clean_name(self):
+        # Confirms that the username is already present in the
+        # Item model database.
+        name = self.cleaned_data.get('name')
+        if Item.objects.filter(name__exact=name):
+            raise forms.ValidationError("Item already exists.")
+
+        # We must return the cleaned data we got from the cleaned_data
+        # dictionary
+        return name 
+
+    # Customizes form validation for the quantity field.
+    def clean_quantity(self):
+        # Confirms the quantity is above zero
+        quantity = self.cleaned_data.get('quantity')
+
+        if quantity < 0:
+            raise forms.ValidationError("Quantity must be zero or above.")
+
+        # We must return the cleaned data we got from the cleaned_data
+        # dictionary
+        return quantity
+
+    # Customizes form validation for the quantity field.
+    def clean_price(self):
+        # Confirms the quantity is above zero
+        price = self.cleaned_data.get('price')
+
+        if price < 0:
+            raise forms.ValidationError("Price must be above zero.")
+
+        # We must return the cleaned data we got from the cleaned_data
+        # dictionary
+        return price
 
 class AddItemForm(forms.Form):
     # category   = forms.ModelChoiceField(queryset=Category.objects.all(),
