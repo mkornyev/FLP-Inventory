@@ -308,7 +308,7 @@ def analytics(request):
     ###  Data for charts
     def chart_info_by_month(objects):
         '''
-        Returns a tuple of chart's labels and data both as lists based on the objects grouped by year/month. 
+        Returns a tuple of chart's labels and data both as json-lists based on the objects grouped by year/month. 
         A label is a year + month as a string and data is an integer value for how many occurred in that month.
         '''
         checkouts_by_month = objects.annotate(   
@@ -326,10 +326,10 @@ def analytics(request):
             labels_by_month.append(month + ' ' + str(month_count['year']))
             data_by_month.append(month_count['count'])
         
-        return (labels_by_month, data_by_month)
+        return (json.dumps(labels_by_month), json.dumps(data_by_month))
 
-    labels, data = chart_info_by_month(all_checkouts)
-    context['labels'], context['data'] = json.dumps(labels), json.dumps(data)
+    context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts)
+
 
     return render(request, 'inventory/analytics.html', context)
 
