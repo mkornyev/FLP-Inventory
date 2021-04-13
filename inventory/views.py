@@ -311,17 +311,39 @@ def analytics(request):
         Returns a tuple of chart's labels and data both as json-lists based on the objects grouped by year/month. 
         A label is a year + month as a string and data is an integer value for how many occurred in that month.
         '''
-        checkouts_by_month = objects.annotate(   
+        by_month = objects.annotate(   
             month=ExtractMonth('datetime'),
             year=ExtractYear('datetime') 
         ).values('year', 'month').annotate(
-            count=Count('datetime')
+            count=Count('id', distinct=True)
         ).order_by('year', 'month')
 
         # Note: technically if a month has no checkouts, it will not show up as 0, 
         # but instead be omitted, but hoping that's not something that might happen for now
         labels_by_month, data_by_month = [], []
-        for month_count in checkouts_by_month:
+        for month_count in by_month:
+            month = calendar.month_name[month_count['month']]
+            labels_by_month.append(month + ' ' + str(month_count['year']))
+            data_by_month.append(month_count['count'])
+        
+        return (json.dumps(labels_by_month), json.dumps(data_by_month))
+
+    def chart_info_by_monthZ(objects):
+        '''
+        Returns a tuple of chart's labels and data both as json-lists based on the objects grouped by year/month. 
+        A label is a year + month as a string and data is an integer value for how many occurred in that month.
+        '''
+        by_month = objects.values('family').annotate(   
+            month=ExtractMonth('datetime'),
+            year=ExtractYear('datetime')
+        ).values('year', 'month').annotate(
+            count=Count('family', distinct=True)
+        ).order_by('year', 'month')
+
+        # Note: technically if a month has no checkouts, it will not show up as 0, 
+        # but instead be omitted, but hoping that's not something that might happen for now
+        labels_by_month, data_by_month = [], []
+        for month_count in by_month:
             month = calendar.month_name[month_count['month']]
             labels_by_month.append(month + ' ' + str(month_count['year']))
             data_by_month.append(month_count['count'])
@@ -329,6 +351,7 @@ def analytics(request):
         return (json.dumps(labels_by_month), json.dumps(data_by_month))
 
     context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts)
+    context['labels_fams'], context['data_fams'] = chart_info_by_monthZ(all_checkouts)
 
 
     return render(request, 'inventory/analytics.html', context)

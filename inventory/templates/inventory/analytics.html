@@ -46,7 +46,8 @@
             {% csrf_token %}
         </div>
         <div class="col-sm">
-            <canvas id="chart" width=150 height=100></canvas>
+            <canvas id="cout_chart" width=150 height=100></canvas>
+            <canvas id="fam_chart" width=150 height=100></canvas>
         </div>
     </div>
 </div>
@@ -58,17 +59,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script type="text/javascript">
-    var labelsJson = '{{ labels_couts|safe }}';
-    var dataJson = '{{ data_couts|safe }}';
+    var labelsCoutJson = '{{ labels_couts|safe }}';
+    var dataCoutJson = '{{ data_couts|safe }}';
 
-    var ctx = document.getElementById('chart').getContext('2d');
+    var ctx = document.getElementById('cout_chart').getContext('2d');
     var chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: JSON.parse(labelsJson),
+            labels: JSON.parse(labelsCoutJson),
             datasets: [{
                 label: 'Number of Checkouts',
-                data: JSON.parse(dataJson),
+                data: JSON.parse(dataCoutJson),
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1
@@ -78,6 +79,37 @@
             title: {
                 display: true,
                 text: 'Checkouts by Month',
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0
+                    }
+                }]
+            }
+        }
+    });
+
+    var labelsFamJson = '{{ labels_fams|safe }}';
+    var dataFamJson = '{{ data_fams|safe }}';
+
+    var ctx = document.getElementById('fam_chart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: JSON.parse(labelsFamJson),
+            datasets: [{
+                label: 'Number of Families',
+                data: JSON.parse(dataFamJson),
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Families by Month',
             },
             scales: {
                 yAxes: [{
