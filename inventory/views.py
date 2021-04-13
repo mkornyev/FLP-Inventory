@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.core import serializers
 from django.http import JsonResponse
 from django_tables2 import SingleTableView
+from django_filters.views import FilterView
 from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
 
 from django.contrib import messages
@@ -545,7 +546,7 @@ class CheckinIndexView(LoginRequiredMixin, SingleTableView):
     table_class = CheckinTable
     template_name = "inventory/checkins/index.html"
 
-class CheckoutIndexView(LoginRequiredMixin, SingleTableView):
+class CheckoutIndexView(LoginRequiredMixin, SingleTableView, FilterView):
     model = Checkout
     table_class = CheckoutTable
     template_name = "inventory/checkouts/index.html"
