@@ -173,6 +173,18 @@
         });
 
         // remember dropdown values on refresh
+        $("#date-period").val(function () {
+            return localStorage.getItem("date-period");
+        });
+        $("#date-period").on("change", function () {
+            localStorage.setItem("date-period", $(this).val());
+        });
+        $("#group-by").val(function () {
+            return localStorage.getItem("group-by");
+        });
+        $("#group-by").on("change", function () {
+            localStorage.setItem("group-by", $(this).val());
+        });
         $("#chart-type").val(function () {
             return localStorage.getItem("chart-type");
         });
