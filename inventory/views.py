@@ -332,7 +332,6 @@ def analytics(request):
     context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts, 'id')
     context['labels_fams'], context['data_fams'] = chart_info_by_month(all_checkouts, 'family')
 
-
     return render(request, 'inventory/analytics.html', context)
 
   

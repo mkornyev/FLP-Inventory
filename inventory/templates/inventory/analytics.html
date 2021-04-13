@@ -46,6 +46,14 @@
             {% csrf_token %}
         </div>
         <div class="col-sm">
+            <div class="row">
+                <div class="col-sm">
+                    <select class="form-select" id="chart-type">
+                        <option value="cout" selected>Checkouts</option>
+                        <option value="fam">Families</option>
+                    </select>
+                </div>
+            </div>
             <canvas id="cout_chart" width=150 height=100></canvas>
             <canvas id="fam_chart" width=150 height=100></canvas>
         </div>
@@ -109,12 +117,13 @@
         options: {
             title: {
                 display: true,
-                text: 'Families by Month',
+                text: 'Families by Month'
             },
             scales: {
                 yAxes: [{
                     ticks: {
-                        min: 0
+                        min: 0,
+                        precision: 0
                     }
                 }]
             }
@@ -122,6 +131,7 @@
     });
 
     $(document).ready(function() {
+        // for showing tables
         var initial_table_selector = "#last_week_category"
         $(".table_div").not(initial_table_selector).hide();
         $(initial_table_selector).show();
@@ -133,6 +143,20 @@
 
             $(".table_div").not(show_table_id).hide();
             $(show_table_id).show();
+        });
+
+        // for showing charts
+        var initial_chart_selector = "#cout_chart"
+        $("canvas").not(initial_chart_selector).hide();
+        $(initial_chart_selector).show();
+
+        $("#chart-type").on('change', function() {
+            var chart_type = $("#chart-type").val();
+
+            show_chart_id = "#" + chart_type + "_chart"
+
+            $("canvas").not(show_chart_id).hide();
+            $(show_chart_id).show();
         });
     });
 </script>
