@@ -171,6 +171,14 @@
             $("canvas").not(show_chart_id).hide();
             $(show_chart_id).show();
         });
+
+        // remember dropdown values on refresh
+        $("#chart-type").val(function () {
+            return localStorage.getItem("chart-type");
+        });
+        $("#chart-type").on("change", function () {
+            localStorage.setItem("chart-type", $(this).val());
+        });
     });
 </script>
 
