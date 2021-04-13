@@ -1,8 +1,20 @@
 {% extends "inventory/base.html" %}
 {% load render_table from django_tables2 %}
+{% load bootstrap3 %}
 
 {% block page_specific_styles %}
   {% load static %}
+  <style>
+    .ui-autocomplete {
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .filter-button-container {
+      display: flex;
+      align-items: flex-end;
+    }
+  </style>
   <!-- <link href="{% static 'inventory/index_styles.css' %}" rel="stylesheet" type="text/css"> -->
 {% endblock %}
 
@@ -15,6 +27,27 @@
 {% block content %}
 <div class="container">
   <h1>Checkouts</h1>
+  <form action="" method="get" class="form form-inline">
+    <div class="row">
+      <div class="col">
+        {% bootstrap_form filter.form %}
+      </div>
+      <div class="col filter-button-container">
+        {% bootstrap_button 'Filter' button_class="btn-primary" %}
+      </div>
+    </div>
+  </form>
   {% render_table table %}
 </div>
+{% endblock %}
+
+{% block page_specific_scripts %}
+<script>
+  $(document).ready(function() {
+    $("#id_family__name").autocomplete({
+      source: '{% url 'autocomplete_family' %}',
+      minLength: 2
+    });
+  });
+</script>
 {% endblock %}
