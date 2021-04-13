@@ -6,15 +6,26 @@
     {% endblock %}
 {% endblock %}
 
+{% block page_specific_styles %}
+  <style>
+    .checked-out-col {
+        padding-right:20px; 
+        border-right: 1px solid #ccc;
+    }
+
+  </style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h1>Analytics</h1>
     <br>
     <div class="row">
-        <div class="col-sm">
+        <div class="col-sm checked-out-col">
             <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
                     <div class="row">
                         <div class="col-sm">
+                            <h6>Time Period</h6>
                             <select class="form-select" id="date-period">
                                 <option value="last_week" selected>Last Week</option>
                                 <option value="last_month">Last Month</option>
@@ -24,6 +35,7 @@
                         </div>
 
                         <div class="col-sm">
+                            <h6>Group</h6>
                             <select class="form-select" id="group-by">
                                 <option value="category" selected>By Category</option>
                                 <option value="item">By Item</option>
@@ -48,6 +60,7 @@
         <div class="col-sm">
             <div class="row">
                 <div class="col-sm">
+                    <h6>Data Type</h6>
                     <select class="form-select" id="chart-type">
                         <option value="cout" selected>Checkouts</option>
                         <option value="fam">Families</option>
