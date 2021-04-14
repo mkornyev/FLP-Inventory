@@ -17,7 +17,9 @@
       <td id="{{c.id}}-quantity">{{ c.quantity }}</td>
       <td id="{{c.id}}-price" class="edit-in-place">{% if c.price %}{{ c.price }}{% else %}0{% endif %}</td>
 
-      <input id="{{c.id}}-adjustment" hidden type="number" name="{{c.id}}-adjustment" value="{% if c.price %}{{ c.price }}{% else %}0.00{% endif %}">
+      {% if tx == 'Checkout' and itemizedOutput %}
+        <input id="{{c.id}}-adjustment" type="hidden" name="{{c.id}}-adjustment" value="{% if c.price %}{{ c.price }}{% else %}0.00{% endif %}">
+      {% endif %}
 
       <td id="{{c.id}}-value">{{ c.value }}</td>
     </tr>
