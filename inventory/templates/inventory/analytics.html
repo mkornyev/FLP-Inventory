@@ -145,7 +145,19 @@
 
     $(document).ready(function() {
         // for showing tables
-        var initial_table_selector = "#last_week_category"
+        var date_period_init = "last_week";
+        var group_by_init = "category";
+        
+        if (localStorage.getItem("date-period") != null) {
+            date_period_init = localStorage.getItem("date-period");
+        }
+        if (localStorage.getItem("group-by") != null) {
+            group_by_init = localStorage.getItem("group-by");
+        }
+        localStorage.setItem("date-period", date_period_init);
+        localStorage.setItem("group-by", group_by_init);
+
+        var initial_table_selector = "#" + date_period_init + "_" + group_by_init
         $(".table_div").not(initial_table_selector).hide();
         $(initial_table_selector).show();
 
@@ -156,40 +168,41 @@
 
             $(".table_div").not(show_table_id).hide();
             $(show_table_id).show();
+
+            localStorage.setItem("date-period", date_period);
+            localStorage.setItem("group-by", group_by);
         });
 
         // for showing charts
-        var initial_chart_selector = "#cout_chart"
-        $("canvas").not(initial_chart_selector).hide();
-        $(initial_chart_selector).show();
+        var chart_selector_init = "cout"
+        if (localStorage.getItem("chart-type") != null) {
+            chart_selector_init = localStorage.getItem("chart-type");
+        }
+        localStorage.setItem("chart-type", chart_selector_init);
 
+        var chart_id_init = "#" + chart_selector_init + "_chart"
+        $("canvas").not(chart_id_init).hide();
+        $(chart_id_init).show();
+    
         $("#chart-type").on('change', function() {
             var chart_type = $("#chart-type").val();
-
             show_chart_id = "#" + chart_type + "_chart"
 
             $("canvas").not(show_chart_id).hide();
             $(show_chart_id).show();
+
+            localStorage.setItem("chart-type", chart_type);
         });
 
         // remember dropdown values on refresh
         $("#date-period").val(function () {
             return localStorage.getItem("date-period");
         });
-        $("#date-period").on("change", function () {
-            localStorage.setItem("date-period", $(this).val());
-        });
         $("#group-by").val(function () {
             return localStorage.getItem("group-by");
         });
-        $("#group-by").on("change", function () {
-            localStorage.setItem("group-by", $(this).val());
-        });
         $("#chart-type").val(function () {
             return localStorage.getItem("chart-type");
-        });
-        $("#chart-type").on("change", function () {
-            localStorage.setItem("chart-type", $(this).val());
         });
     });
 </script>
