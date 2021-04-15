@@ -103,6 +103,9 @@
 
 <script>
   $(document).ready(function() {
+    if (createdFamily != "") {
+      localStorage.setItem("family", createdFamily)
+    }
     $("#id_family").val(function () {
       return localStorage.getItem("family");
     });
