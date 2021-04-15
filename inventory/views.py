@@ -408,6 +408,12 @@ def createFamily_action(request):
 
         family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
+        famName = ''
+        if fname:                
+            famName = '{}, {}'.format(lname, fname)
+        else: 
+            famName = lname
+        request.session['createdFamily'] = famName
         messages.success(request, 'Family created')
         return redirect(reverse('Checkout'))
 
@@ -503,7 +509,11 @@ def checkout_action(request):
     if request.method == 'GET':
         context['items'] = Item.objects.all()
         context['categories'] = Category.objects.all()
-        context['formcheckout'] = CheckOutForm()
+        form = CheckOutForm()
+        if ('createdFamily' in request.session):
+            famName = request.session['createdFamily']
+            form.fields['family'].initial = famName
+        context['formcheckout'] = form 
         context['transactions'] = transactions
         return render(request, 'inventory/checkout.html', context)
 
