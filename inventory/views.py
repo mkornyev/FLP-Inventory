@@ -510,9 +510,11 @@ def checkout_action(request):
         context['items'] = Item.objects.all()
         context['categories'] = Category.objects.all()
         form = CheckOutForm()
+        context['createdFamily'] = ''
         if ('createdFamily' in request.session):
             famName = request.session['createdFamily']
             form.fields['family'].initial = famName
+            context['createdFamily'] = famName
         context['formcheckout'] = form 
         context['transactions'] = transactions
         return render(request, 'inventory/checkout.html', context)
