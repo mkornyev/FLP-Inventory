@@ -19,10 +19,12 @@
   <form action="" method="get" class="form form-inline">
     <div class="row">
       <div class="col">
-        {% bootstrap_form filter.form %}
+        <div class="form-group">
+          <input type="text" name="family__name" class="form-control ui-autocomplete-input" placeholder="Family name" title="" id="id_family__name" autocomplete="off">
+        </div>
       </div>
       <div class="col filter-button-container">
-        {% bootstrap_button 'Filter' button_class="btn-primary" %}
+        <button class="btn btn-primary">Filter</button>
       </div>
     </div>
   </form>
