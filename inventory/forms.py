@@ -137,7 +137,7 @@ class CreateItemForm(forms.Form):
         # Confirms the quantity is above zero
         price = self.cleaned_data.get('price')
 
-        if price < 0:
+        if price and price < 0:
             raise forms.ValidationError("Price must be above zero.")
 
         # We must return the cleaned data we got from the cleaned_data
