@@ -16,7 +16,7 @@ class Family(models.Model):
   # USE Family.child_set OR .children TO GET QuerySet<Child>
 
   @property
-  def childNames(self):
+  def child_names(self):
     return ','.join(map(lambda c: c.name, self.children.all()))
   
   def __str__(self):
