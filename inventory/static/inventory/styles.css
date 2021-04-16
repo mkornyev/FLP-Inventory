@@ -49,3 +49,9 @@ span#reportGroupingTooltip {
   position: relative;
   top: 6px;
 }
+
+/* Forms */
+label.required::after {
+  content: ' *';
+  color: red;
+}
