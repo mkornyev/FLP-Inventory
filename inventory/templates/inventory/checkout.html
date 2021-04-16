@@ -63,7 +63,7 @@
             </div>
             {% endfor %}
             {% csrf_token %}
-            <button class="btn btn-success" type="submit">Check Out Items</button>
+            <button id="checkout-btn" class="btn btn-success" type="submit">Check Out Items</button>
         </form>
 
         <a class="btn btn-primary" href="{% url 'CreateFamily' %}">Add Family +</a>
@@ -116,6 +116,9 @@
       source: '{% url 'autocomplete_family' %}',
       minLength: 2
     });
+    $("#checkout-btn").on('click', function(){
+      localStorage.setItem("family", $("#id_family").val())
+    })
   });
 </script>
 

@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 
 from inventory.models import Item, Family, Category
 
@@ -69,8 +70,12 @@ class RegistrationForm(forms.Form):
         return username
 
 class CreateFamilyForm(forms.Form):
-    name = forms.CharField(max_length=50,
+    first_name = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    last_name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
+    phone = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control', 'type':'tel'}), required=False)
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):
@@ -190,11 +195,21 @@ class CheckOutForm(forms.Form):
 
     def clean_family(self):
         # Confirms the family exists
-        family = self.cleaned_data.get('family')
+        family = self.cleaned_data.get('family').strip()
 
+        if ',' in family: 
+            comma = family.index(',')
+            lname = family[0:comma]
+            fname = family[comma+2:]
 
-        if not Family.objects.filter(name__exact=family):
-            raise forms.ValidationError("Family does not exist.")
+            if not Family.objects.filter(
+                Q(fname__exact=fname) and Q(lname__exact=lname)
+            ):
+                raise forms.ValidationError("Family does not exist.")
+        
+        else: 
+            if not Family.objects.filter(lname__exact=family):
+                raise forms.ValidationError("Family does not exist.")
 
         # We must return the cleaned data we got from the cleaned_data
         # dictionary

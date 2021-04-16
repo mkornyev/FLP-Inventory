@@ -2,11 +2,15 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Family, Category, Item, ItemTransaction, Checkin, Checkout
+from .models import Family, Child, Category, Item, ItemTransaction, Checkin, Checkout
 
 class FamilyAdmin(admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('fname', 'lname', 'phone', )
 admin.site.register(Family, FamilyAdmin)
+
+class ChildAdmin(admin.ModelAdmin):
+    list_display = ('name', 'family', )
+admin.site.register(Child, ChildAdmin)
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', )
