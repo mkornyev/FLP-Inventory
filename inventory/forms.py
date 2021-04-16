@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate
 class LoginForm(forms.Form):
     username = forms.CharField(max_length = 20)
     password = forms.CharField(max_length = 200, widget = forms.PasswordInput())
+    required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
@@ -39,6 +40,7 @@ class RegistrationForm(forms.Form):
     password2  = forms.CharField(max_length = 200, 
                                  label='Confirm password',  
                                  widget = forms.PasswordInput())
+    required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
@@ -76,6 +78,8 @@ class CreateFamilyForm(forms.Form):
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     phone = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control', 'type':'tel'}), required=False)
+    required_css_class = 'required'
+
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):
@@ -92,7 +96,8 @@ class CreateItemForm(forms.Form):
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    price = forms.DecimalField(max_digits=6, decimal_places=2, required=False) 
+    price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
+    required_css_class = 'required' 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):
@@ -145,6 +150,7 @@ class AddItemForm(forms.Form):
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
@@ -182,6 +188,7 @@ class AddItemForm(forms.Form):
 class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
+    required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
