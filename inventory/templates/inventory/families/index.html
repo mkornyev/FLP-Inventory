@@ -14,7 +14,14 @@
 
 {% block content %}
 <div class="container">
-  <h1>Families</h1>
+  <div class="row">
+    <div class="col">
+      <h1>Families</h1> 
+    </div>
+    <div class="col">
+      <a class="btn btn-primary float-end" href="{% url 'CreateFamily' %}">Create Family +</a>
+    </div>
+  </div>
   {% render_table table %}
 </div>
 {% endblock %}
