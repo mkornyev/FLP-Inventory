@@ -52,7 +52,6 @@
     <div class="col-md-8">
       <div class="split">
         <h1>Check Out Items:</h1>
-        <a class="btn btn-primary" href="{% url 'AddItem' location='out' %}">Add Item +</a>
       </div>
       <form method="POST" action="{% url 'Checkout' %}">
             <div class="checkout-form">
@@ -98,7 +97,16 @@
         {% if not transactions %}
           <p style="font-style: italic;">No items added...</p>
         {% endif %}
-        <button id="checkout-btn" class="btn btn-success" type="submit">Check Out Items</button>
+        <div class="row">
+          <div class="col">
+            <a class="btn btn-primary" href="{% url 'AddItem' location='out' %}">Add Item +</a>
+          </div>
+          {% if transactions %}
+            <div class="col">
+              <button id="checkout-btn" class="btn btn-success float-end" type="submit">Check Out Items</button>
+            </div>
+          {% endif %}
+        </div>
       </form>
     </div>
   </div>
