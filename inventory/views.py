@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models.functions import ExtractYear, ExtractMonth
 from django.db.models import Count, Q
@@ -412,7 +412,7 @@ def createFamily_action(request):
         return redirect(reverse('Checkout'))
 
 # Create Item View
-@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def createItem_action(request):
     context = {}
 
