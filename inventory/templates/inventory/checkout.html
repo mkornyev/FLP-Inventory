@@ -107,10 +107,10 @@
 
 <script>
   $(document).ready(function() {
-    var createdFamily = $('#fromCreateFamilyRedirect').first().attr('value')
+    var createdFamily = $("#fromCreatedFamilyRedirect").first().attr('value')
     // var createdFamily = createdFamily
 
-    if (createdFamily != "") {
+    if (createdFamily != 'no family') {
       // print(createdFamily)
       localStorage.setItem("family", createdFamily);
     }
