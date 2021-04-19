@@ -40,7 +40,11 @@
                 {% endfor %}
                 {% csrf_token %}
                 <br>
-                <p>Can't find what you're looking for?<br/><a href="{% url 'CreateItem' %}">Create a new item.</a></p>
+                {% if user.is_superuser %}
+                  <p>Can't find what you're looking for?<br/><a href="{% url 'CreateItem' %}">Create a new item.</a></p>
+                {% else %}
+                  <p>Can't find what you're looking for? Ask an admin to create a new item.</p>
+                {% endif %}
                 <button class="btn btn-primary" type="submit">Add Item to Cart</button>
             </form>
         </div>
