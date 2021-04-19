@@ -33,7 +33,7 @@ class Child(models.Model):
     return "{}".format(self.name)
 
 class Category(models.Model):
-  name = models.CharField(max_length=50, blank=False, null=False)
+  name = models.CharField(max_length=50, blank=False, null=False, unique=True)
 
   # name being same as Item 'quantity' field is important so they can be sorted the same way
   @property
@@ -45,7 +45,7 @@ class Category(models.Model):
 
 class Item(models.Model):
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True) # CASCADE - deletes all items if a Category is deleted
-  name = models.CharField(max_length=50, blank=False, null=False)
+  name = models.CharField(max_length=50, blank=False, null=False, unique=True)
   price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True) 
   quantity = models.IntegerField(default=0)
   
