@@ -10,7 +10,6 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -19,7 +18,7 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from django.db.models import Count, Q
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
-from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm, CreateItemForm
+from inventory.forms import LoginForm, AddItemForm, CheckOutForm, CreateFamilyForm, CreateItemForm
 
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
