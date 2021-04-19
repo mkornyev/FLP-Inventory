@@ -278,30 +278,31 @@ def analytics(request):
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
 
     ###  Data for charts
-    def chart_info_by_month(objects):
+    def chart_info_by_month(objects, count_field):
         '''
-        Returns a tuple of chart's labels and data both as lists based on the objects grouped by year/month. 
+        Returns a tuple of chart's labels and data both as json-lists based on the objects grouped by year/month. 
         A label is a year + month as a string and data is an integer value for how many occurred in that month.
+        count_field is the field in Checkout to count for each month.
         '''
-        checkouts_by_month = objects.annotate(   
+        by_month = objects.annotate(   
             month=ExtractMonth('datetime'),
             year=ExtractYear('datetime') 
         ).values('year', 'month').annotate(
-            count=Count('datetime')
+            count=Count(count_field, distinct=True)
         ).order_by('year', 'month')
 
         # Note: technically if a month has no checkouts, it will not show up as 0, 
         # but instead be omitted, but hoping that's not something that might happen for now
         labels_by_month, data_by_month = [], []
-        for month_count in checkouts_by_month:
+        for month_count in by_month:
             month = calendar.month_name[month_count['month']]
             labels_by_month.append(month + ' ' + str(month_count['year']))
             data_by_month.append(month_count['count'])
         
-        return (labels_by_month, data_by_month)
+        return (json.dumps(labels_by_month), json.dumps(data_by_month))
 
-    labels, data = chart_info_by_month(all_checkouts)
-    context['labels'], context['data'] = json.dumps(labels), json.dumps(data)
+    context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts, 'id')
+    context['labels_fams'], context['data_fams'] = chart_info_by_month(all_checkouts, 'family')
 
     return render(request, 'inventory/analytics.html', context)
 
