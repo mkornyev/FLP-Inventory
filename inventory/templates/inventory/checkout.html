@@ -95,6 +95,10 @@
       {% endif %}
     </div>
   </div>
+
+  {% if createdFamily %}
+    <div id="fromCreatedFamilyRedirect" value="{{ createdFamily }}" style="display: none;"></div>
+  {% endif %}
 </div>
 
 {% endblock %}
@@ -103,9 +107,14 @@
 
 <script>
   $(document).ready(function() {
+    var createdFamily = $('#fromCreateFamilyRedirect').first().attr('value')
+    // var createdFamily = createdFamily
+
     if (createdFamily != "") {
+      // print(createdFamily)
       localStorage.setItem("family", createdFamily);
     }
+
     $("#id_family").val(function () {
       return localStorage.getItem("family");
     });
