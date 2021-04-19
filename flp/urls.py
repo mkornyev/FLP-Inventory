@@ -28,7 +28,6 @@ urlpatterns = [
     # AUTH ROUTES 
     path('login/', views.login_action, name='Login'),
     path('logout/', views.logout_action, name='Logout'),
-    path('register/', views.register_action, name='Register'),
 
     # ACTION ROUTES
     path('report/', views.generate_report, name='Report'),
