@@ -3,6 +3,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from phonenumber_field.modelfields import PhoneNumberField
 
 from django.utils import timezone
 
@@ -11,7 +12,7 @@ from django.utils import timezone
 class Family(models.Model):
   fname = models.CharField(max_length=50, blank=True, null=True, verbose_name='First Name')
   lname = models.CharField(max_length=50, blank=False, null=False,verbose_name='Last Name') # Only the last_name is required
-  phone = models.CharField(max_length=11, blank=True, null=True)
+  phone = PhoneNumberField(blank=True, null=True)
   # created_at = models.DateTimeField(default=timezone.now)
   # USE Family.child_set OR .children TO GET QuerySet<Child>
 
