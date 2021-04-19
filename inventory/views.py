@@ -10,16 +10,15 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models.functions import ExtractYear, ExtractMonth
 from django.db.models import Count, Q
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
-from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm, CreateItemForm
+from inventory.forms import LoginForm, AddItemForm, CheckOutForm, CreateFamilyForm, CreateItemForm
 
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -64,33 +63,6 @@ def login_action(request):
 def logout_action(request):
     logout(request)
     return redirect(reverse('Login'))
-
-def register_action(request):
-    context = {}
-
-    if request.method == 'GET':
-        context['form'] = RegistrationForm()
-        return render(request, 'inventory/register.html', context)
-
-    form = RegistrationForm(request.POST)
-    context['form'] = form
-
-    if not form.is_valid():
-        return render(request, 'inventory/register.html', context)
-
-    new_user = User.objects.create_user(username=form.cleaned_data['username'], 
-                                        password=form.cleaned_data['password1'],
-                                        email=form.cleaned_data['email'],
-                                        first_name=form.cleaned_data['first_name'],
-                                        last_name=form.cleaned_data['last_name'])
-    new_user.save()
-
-    new_user = authenticate(username=form.cleaned_data['username'],
-                            password=form.cleaned_data['password1'])
-
-    login(request, new_user)
-    return redirect(reverse('Home'))
-
 
 ######################### REPORT GENERATION #########################
 @login_required
@@ -412,7 +384,7 @@ def createFamily_action(request):
         return redirect(reverse('Checkout'))
 
 # Create Item View
-@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def createItem_action(request):
     context = {}
 
