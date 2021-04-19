@@ -4,6 +4,7 @@ from django.db.models import Q
 from inventory.models import Item, Family, Category
 
 from django.contrib.auth import authenticate
+from phonenumber_field.formfields import PhoneNumberField
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length = 20)
@@ -32,8 +33,8 @@ class CreateFamilyForm(forms.Form):
                            widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     last_name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
-    phone = forms.CharField(max_length=50,
-                           widget=forms.TextInput(attrs={'class': 'form-control', 'type':'tel'}), required=False)
+    phone = PhoneNumberField(widget=forms.TextInput(attrs={'class': 'form-control', 'type':'tel'}),
+                            required=False)
     required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
