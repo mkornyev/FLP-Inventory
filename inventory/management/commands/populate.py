@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from inventory.models import User, Family, Category, Item, ItemTransaction, Checkin, Checkout
+from inventory.models import User, Family, Child, Category, Item, ItemTransaction, Checkin, Checkout
 from datetime import date, timedelta
 
 # POPULATE SCRIPT
@@ -28,10 +28,17 @@ class Command(BaseCommand):
         five_days_ago = today - timedelta(days=5)
         ten_days_ago = today - timedelta(days=10)
 
-
-        family = Family.objects.create(name="Jones-Indiana")
+        family = Family.objects.create(lname="Jones-Indiana")
+        family.save()
+        family = Family.objects.create(lname="Pavetti", phone="+1234567891")
+        family.save()
+        family = Family.objects.create(fname="Paulo", lname="Merson", phone="1234567891")
         family.save()
         print("Family has been created.")
+
+        child = Child.objects.create(name="Paulo Jr", family=family)
+        child.save()
+        print("Children have been created.")
 
         category1 = Category.objects.create(name="Clothes")
         category1.save()

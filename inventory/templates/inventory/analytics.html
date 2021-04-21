@@ -6,15 +6,26 @@
     {% endblock %}
 {% endblock %}
 
+{% block page_specific_styles %}
+  <style>
+    .checked-out-col {
+        padding-right:20px; 
+        border-right: 1px solid #ccc;
+    }
+
+  </style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h1>Analytics</h1>
     <br>
     <div class="row">
-        <div class="col-sm">
+        <div class="col-sm checked-out-col">
             <form class="check-report-form" method="POST" action="{% url 'Analytics' %}">
                     <div class="row">
                         <div class="col-sm">
+                            <h6>Time Period</h6>
                             <select class="form-select" id="date-period">
                                 <option value="last_week" selected>Last Week</option>
                                 <option value="last_month">Last Month</option>
@@ -24,6 +35,7 @@
                         </div>
 
                         <div class="col-sm">
+                            <h6>Group</h6>
                             <select class="form-select" id="group-by">
                                 <option value="category" selected>By Category</option>
                                 <option value="item">By Item</option>
@@ -46,7 +58,17 @@
             {% csrf_token %}
         </div>
         <div class="col-sm">
-            <canvas id="chart" width=150 height=100></canvas>
+            <div class="row">
+                <div class="col-sm">
+                    <h6>Data Type</h6>
+                    <select class="form-select" id="chart-type">
+                        <option value="cout" selected>Checkouts</option>
+                        <option value="fam">Families</option>
+                    </select>
+                </div>
+            </div>
+            <canvas id="cout_chart" width=150 height=100></canvas>
+            <canvas id="fam_chart" width=150 height=100></canvas>
         </div>
     </div>
 </div>
@@ -58,17 +80,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script type="text/javascript">
-    var labelsJson = '{{ labels|safe }}';
-    var dataJson = '{{ data|safe }}';
+    var labelsCoutJson = '{{ labels_couts|safe }}';
+    var dataCoutJson = '{{ data_couts|safe }}';
 
-    var ctx = document.getElementById('chart').getContext('2d');
+    var ctx = document.getElementById('cout_chart').getContext('2d');
     var chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: JSON.parse(labelsJson),
+            labels: JSON.parse(labelsCoutJson),
             datasets: [{
                 label: 'Number of Checkouts',
-                data: JSON.parse(dataJson),
+                data: JSON.parse(dataCoutJson),
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1
@@ -89,8 +111,53 @@
         }
     });
 
+    var labelsFamJson = '{{ labels_fams|safe }}';
+    var dataFamJson = '{{ data_fams|safe }}';
+
+    var ctx = document.getElementById('fam_chart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: JSON.parse(labelsFamJson),
+            datasets: [{
+                label: 'Number of Families',
+                data: JSON.parse(dataFamJson),
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Families by Month'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        precision: 0
+                    }
+                }]
+            }
+        }
+    });
+
     $(document).ready(function() {
-        var initial_table_selector = "#last_week_category"
+        // for showing tables
+        var date_period_init = "last_week";
+        var group_by_init = "category";
+        
+        if (localStorage.getItem("date-period") != null) {
+            date_period_init = localStorage.getItem("date-period");
+        }
+        if (localStorage.getItem("group-by") != null) {
+            group_by_init = localStorage.getItem("group-by");
+        }
+        localStorage.setItem("date-period", date_period_init);
+        localStorage.setItem("group-by", group_by_init);
+
+        var initial_table_selector = "#" + date_period_init + "_" + group_by_init
         $(".table_div").not(initial_table_selector).hide();
         $(initial_table_selector).show();
 
@@ -101,6 +168,41 @@
 
             $(".table_div").not(show_table_id).hide();
             $(show_table_id).show();
+
+            localStorage.setItem("date-period", date_period);
+            localStorage.setItem("group-by", group_by);
+        });
+
+        // for showing charts
+        var chart_selector_init = "cout"
+        if (localStorage.getItem("chart-type") != null) {
+            chart_selector_init = localStorage.getItem("chart-type");
+        }
+        localStorage.setItem("chart-type", chart_selector_init);
+
+        var chart_id_init = "#" + chart_selector_init + "_chart"
+        $("canvas").not(chart_id_init).hide();
+        $(chart_id_init).show();
+    
+        $("#chart-type").on('change', function() {
+            var chart_type = $("#chart-type").val();
+            show_chart_id = "#" + chart_type + "_chart"
+
+            $("canvas").not(show_chart_id).hide();
+            $(show_chart_id).show();
+
+            localStorage.setItem("chart-type", chart_type);
+        });
+
+        // remember dropdown values on refresh
+        $("#date-period").val(function () {
+            return localStorage.getItem("date-period");
+        });
+        $("#group-by").val(function () {
+            return localStorage.getItem("group-by");
+        });
+        $("#chart-type").val(function () {
+            return localStorage.getItem("chart-type");
         });
     });
 </script>

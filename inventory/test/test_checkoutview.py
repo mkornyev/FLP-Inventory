@@ -8,7 +8,7 @@ class CheckoutTestCase(TestCase):
         user = User.objects.create_superuser(username='testuser', password='12345')
         user.save()
 
-        family = Family.objects.create(name="ValidFamily")
+        family = Family.objects.create(lname="ValidFamily")
         family.save()
 
         item = Item.objects.create(name="ValidItem", quantity=5)

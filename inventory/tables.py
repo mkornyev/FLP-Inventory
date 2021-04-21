@@ -13,12 +13,14 @@ class NameTable(tables.Table):
         ).order_by(("-" if is_descending else "") + "lower")
         return (queryset, True)
 
-class FamilyTable(NameTable):
+class FamilyTable(tables.Table):
+    child_names = tables.Column(accessor='child_names', orderable=False)
+
     class Meta:
         model = Family
         template_name = "django_tables2/bootstrap.html"
-        fields = ("id", "name", )
-        order_by = 'name'
+        sequence = "id", "lname", "fname", "phone", "child_names"
+        order_by = 'lname'
 
 class CategoryTable(NameTable):
     class Meta:
@@ -47,5 +49,5 @@ class CheckoutTable(tables.Table):
     class Meta:
         model = Checkout
         template_name = "django_tables2/bootstrap.html"
-        fields = ("id", "user", "family.name", "datetime", "out_items", )
+        fields = ("id", "user", "family", "datetime", "out_items", )
         order_by = '-datetime'

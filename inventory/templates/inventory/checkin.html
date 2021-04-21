@@ -12,15 +12,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
-    .top-buttons {
-      display: flex;
-    }
-
-    .top-buttons a {
-      margin-right: 20px;
-    }
-
   </style>
 {% endblock %}
 
@@ -42,14 +33,6 @@
     <div class="col-md-8">
       <div class="split">
         <h1>Check In Items:</h1>
-        <div class="top-buttons">
-          <a class="btn btn-primary" href="{% url 'AddItem' location='in' %}">Add Item +</a>
-
-            <form method="POST" action="{% url 'Checkin' %}">
-                {% csrf_token %}
-                <button class="btn btn-success" type="submit">Check In Items</button>
-            </form>
-        </div>
       </div>
 
       <table class="table">
@@ -77,6 +60,19 @@
       {% if not transactions %}
         <p style="font-style: italic;">No items added...</p>
       {% endif %}
+      <div class="row">
+        <div class="col">
+          <a class="btn btn-warning" href="{% url 'AddItem' location='in' %}">Add Item to Cart +</a>
+        </div>
+        {% if transactions %}
+          <div class="col">
+            <form method="POST" action="{% url 'Checkin' %}">
+              {% csrf_token %}
+              <button class="btn btn-success float-end" type="submit">Check In Items</button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

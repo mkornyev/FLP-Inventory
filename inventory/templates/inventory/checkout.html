@@ -13,13 +13,16 @@
       justify-content: space-between;
     }
 
-    .checkin-form {
+    .checkout-form {
       display: flex;
-      align-items: last baseline;
     }
 
-    .checkin-form .fieldWrapper{
+    .checkout-form .fieldWrapper{
       padding-right: 20px;
+    }
+
+    .create-family {
+      padding-top: 15px;
     }
 
     .ui-autocomplete {
@@ -48,53 +51,68 @@
     <div class="col-md-8">
       <div class="split">
         <h1>Check Out Items:</h1>
-        <a class="btn btn-primary" href="{% url 'AddItem' location='out' %}">Add Item +</a>
       </div>
-        <form class="checkin-form" method="POST" action="{% url 'Checkout' %}">
-            {% for field in formcheckout %}
-            <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}
-                  {% for error in field.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                  {% endfor %}
-                {% endif %}
+      <form method="POST" action="{% url 'Checkout' %}">
+            <div class="checkout-form">
+              {% for field in formcheckout %}
+              <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+                  {{ field.label_tag }}
+                  {{ field }}
+                  {% if field.errors %}
+                    {% for error in field.errors %}
+                      <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                  {% endif %}
+              </div>
+              {% endfor %}
+              {% csrf_token %}
+              <p class="create-family">Can't find the family you're looking for?<br/><a href="{% url 'CreateFamily' %}">Create a new family.</a></p>
             </div>
-            {% endfor %}
-            {% csrf_token %}
-            <button class="btn btn-success" type="submit">Check Out Items</button>
-        </form>
-
-        <a class="btn btn-primary" href="{% url 'CreateFamily' %}">Add Family +</a>
-
-      <table class="table">
-        <thead>
-          <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for tx in transactions %}
-            <tr> 
-                <th scope="row">{{ tx.item}}</td>
-                <td>{{ tx.quantity }}</td>
-                <td>
-                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger">
-                    Remove
-                  </a>
-                </td
+            
+        <table class="table">
+          <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Actions</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% if not transactions %}
-        <p style="font-style: italic;">No items added...</p>
-      {% endif %}
+          </thead>
+          <tbody>
+            {% for tx in transactions %}
+              <tr> 
+            <tr> 
+              <tr> 
+                  <th scope="row">{{ tx.item}}</td>
+                  <td>{{ tx.quantity }}</td>
+                  <td>
+                    <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger">
+                      Remove
+                    </a>
+                  </td
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if not transactions %}
+          <p style="font-style: italic;">No items added...</p>
+        {% endif %}
+        <div class="row">
+          <div class="col">
+            <a class="btn btn-warning" href="{% url 'AddItem' location='out' %}">Add Item to Cart +</a>
+          </div>
+          {% if transactions %}
+            <div class="col">
+              <button id="checkout-btn" class="btn btn-success float-end" type="submit">Check Out Items</button>
+            </div>
+          {% endif %}
+        </div>
+      </form>
     </div>
   </div>
+
+  {% if createdFamily %}
+    <div id="fromCreatedFamilyRedirect" value="{{ createdFamily }}" style="display: none;"></div>
+  {% endif %}
 </div>
 
 {% endblock %}
@@ -103,6 +121,12 @@
 
 <script>
   $(document).ready(function() {
+    var createdFamily = $("#fromCreatedFamilyRedirect").first().attr('value')
+
+    if (createdFamily != 'no family') {
+      localStorage.setItem("family", createdFamily);
+    }
+
     $("#id_family").val(function () {
       return localStorage.getItem("family");
     });
@@ -116,6 +140,9 @@
       source: '{% url 'autocomplete_family' %}',
       minLength: 2
     });
+    $("#checkout-btn").on('click', function(){
+      localStorage.setItem("family", $("#id_family").val())
+    })
   });
 </script>
 

@@ -12,16 +12,15 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 # from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models.functions import ExtractYear, ExtractMonth
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from inventory.models import Family, Category, Item, Checkin, Checkout, ItemTransaction
-from inventory.forms import LoginForm, RegistrationForm, AddItemForm, CheckOutForm, CreateFamilyForm
+from inventory.forms import LoginForm, AddItemForm, CheckOutForm, CreateFamilyForm, CreateItemForm
 
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -66,33 +65,6 @@ def login_action(request):
 def logout_action(request):
     logout(request)
     return redirect(reverse('Login'))
-
-def register_action(request):
-    context = {}
-
-    if request.method == 'GET':
-        context['form'] = RegistrationForm()
-        return render(request, 'inventory/register.html', context)
-
-    form = RegistrationForm(request.POST)
-    context['form'] = form
-
-    if not form.is_valid():
-        return render(request, 'inventory/register.html', context)
-
-    new_user = User.objects.create_user(username=form.cleaned_data['username'], 
-                                        password=form.cleaned_data['password1'],
-                                        email=form.cleaned_data['email'],
-                                        first_name=form.cleaned_data['first_name'],
-                                        last_name=form.cleaned_data['last_name'])
-    new_user.save()
-
-    new_user = authenticate(username=form.cleaned_data['username'],
-                            password=form.cleaned_data['password1'])
-
-    login(request, new_user)
-    return redirect(reverse('Home'))
-
 
 ######################### REPORT GENERATION #########################
 @login_required
@@ -308,30 +280,31 @@ def analytics(request):
     context['LOW_QUANTITY_THRESHOLD'] = LOW_QUANTITY_THRESHOLD
 
     ###  Data for charts
-    def chart_info_by_month(objects):
+    def chart_info_by_month(objects, count_field):
         '''
-        Returns a tuple of chart's labels and data both as lists based on the objects grouped by year/month. 
+        Returns a tuple of chart's labels and data both as json-lists based on the objects grouped by year/month. 
         A label is a year + month as a string and data is an integer value for how many occurred in that month.
+        count_field is the field in Checkout to count for each month.
         '''
-        checkouts_by_month = objects.annotate(   
+        by_month = objects.annotate(   
             month=ExtractMonth('datetime'),
             year=ExtractYear('datetime') 
         ).values('year', 'month').annotate(
-            count=Count('datetime')
+            count=Count(count_field, distinct=True)
         ).order_by('year', 'month')
 
         # Note: technically if a month has no checkouts, it will not show up as 0, 
         # but instead be omitted, but hoping that's not something that might happen for now
         labels_by_month, data_by_month = [], []
-        for month_count in checkouts_by_month:
+        for month_count in by_month:
             month = calendar.month_name[month_count['month']]
             labels_by_month.append(month + ' ' + str(month_count['year']))
             data_by_month.append(month_count['count'])
         
-        return (labels_by_month, data_by_month)
+        return (json.dumps(labels_by_month), json.dumps(data_by_month))
 
-    labels, data = chart_info_by_month(all_checkouts)
-    context['labels'], context['data'] = json.dumps(labels), json.dumps(data)
+    context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts, 'id')
+    context['labels_fams'], context['data_fams'] = chart_info_by_month(all_checkouts, 'family')
 
     return render(request, 'inventory/analytics.html', context)
 
@@ -404,11 +377,48 @@ def createFamily_action(request):
             return render(request, 'inventory/createFamily.html', context)
 
         # category = form.cleaned_data['category']
-        name = form.cleaned_data['name']
+        fname = form.cleaned_data['first_name']
+        lname = form.cleaned_data['last_name']
+        phone = form.cleaned_data['phone']
 
-        family = Family(name=name)
+        family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
+        famName = ''
+        if fname:                
+            famName = '{}, {}'.format(lname, fname)
+        else: 
+            famName = lname
+        request.session['createdFamily'] = famName
         messages.success(request, 'Family created')
+        return redirect(reverse('Checkout'))
+
+# Create Item View
+@user_passes_test(lambda u: u.is_superuser)
+def createItem_action(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = CreateItemForm()
+        
+        return render(request, 'inventory/createitem.html', context)
+
+    if request.method == 'POST':
+        form = CreateItemForm(request.POST)
+
+        context['form'] = form
+
+        if not form.is_valid():
+            return render(request, 'inventory/createitem.html', context)
+
+        category = form.cleaned_data['category']
+        name = form.cleaned_data['name']
+        price = form.cleaned_data['price']
+        quantity = form.cleaned_data['quantity']
+
+        item = Item(category=category, name=name, price=price, quantity=quantity)
+        item.save()
+
+        messages.success(request, 'Item created')
         return redirect(reverse('Checkout'))
 
 # Checkin view
@@ -474,7 +484,14 @@ def checkout_action(request):
     if request.method == 'GET':
         context['items'] = Item.objects.all()
         context['categories'] = Category.objects.all()
-        context['formcheckout'] = CheckOutForm()
+        form = CheckOutForm()
+        context['createdFamily'] = 'no family'
+        if ('createdFamily' in request.session):
+            famName = request.session['createdFamily']
+            form.fields['family'].initial = famName
+            context['createdFamily'] = famName
+            del request.session['createdFamily']
+        context['formcheckout'] = form 
         context['transactions'] = transactions
         return render(request, 'inventory/checkout.html', context)
 
@@ -484,8 +501,18 @@ def checkout_action(request):
     if not form.is_valid():
         return render(request, 'inventory/checkout.html', context, status=400)
 
-    family = form.cleaned_data['family']
-    family_object = Family.objects.filter(name__exact=family)
+    family = form.cleaned_data['family'].strip()
+
+    if ',' in family: 
+        comma = family.index(',')
+        lname = family[0:comma]
+        fname = family[comma+2:]
+
+        family_object = Family.objects.filter(
+            Q(fname__exact=fname) and Q(lname__exact=lname)
+        )
+    else: 
+        family_object = Family.objects.filter(lname__exact=family)
 
     if not transactions:
         messages.warning(request, 'Could not create checkout: No items added')
@@ -519,10 +546,15 @@ def autocomplete_item(request):
   
 def autocomplete_family(request):
     if 'term' in request.GET:
-        qs = Family.objects.filter(name__icontains=request.GET.get('term'))
+        qs = Family.objects.filter(
+            Q(fname__icontains=request.GET.get('term')) | Q(lname__icontains=request.GET.get('term'))
+        )
         names = list()
         for fam in qs:
-            names.append(fam.name)
+            if fam.fname:                
+                names.append('{}, {}'.format(fam.lname, fam.fname))
+            else: 
+                names.append(fam.lname)
         return JsonResponse(names, safe=False)
   
 ######################### DATABASE VIEWS #########################
