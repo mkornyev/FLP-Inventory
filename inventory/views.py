@@ -308,20 +308,6 @@ def analytics(request):
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
-# Add item to cart
-@login_required
-def addtocart_action(request, location):
-    context = {}
-
-    context['location'] = location
-
-    if request.method == 'GET':
-        context['form'] = AddItemForm()
-        
-        return render(request, 'inventory/additem.html', context)
-
-
-
 # Remove item from cart
 def removeitem_action(request, index, location):
     saved_list = request.session['transactions-' + location]
