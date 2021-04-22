@@ -392,7 +392,7 @@ def createItem_action(request):
     if request.method == 'GET':
         context['form'] = CreateItemForm()
         
-        return render(request, 'inventory/createitem.html', context)
+        return render(request, 'inventory/items/create.html', context)
 
     if request.method == 'POST':
         form = CreateItemForm(request.POST)
@@ -400,7 +400,7 @@ def createItem_action(request):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createitem.html', context)
+            return render(request, 'inventory/items/create.html', context)
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
