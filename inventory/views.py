@@ -364,7 +364,7 @@ def createFamily_action(request):
     if request.method == 'GET':
         context['form'] = CreateFamilyForm()
         
-        return render(request, 'inventory/createFamily.html', context)
+        return render(request, 'inventory/families/create.html', context)
 
     if request.method == 'POST':
         form = CreateFamilyForm(request.POST)
@@ -372,7 +372,7 @@ def createFamily_action(request):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createFamily.html', context)
+            return render(request, 'inventory/families/create.html', context)
 
         # category = form.cleaned_data['category']
         fname = form.cleaned_data['first_name']
