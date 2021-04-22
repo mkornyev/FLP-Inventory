@@ -66,7 +66,7 @@
               </div>
               {% endfor %}
               {% csrf_token %}
-              <p class="create-family">Can't find the family you're looking for?<br/><a href="{% url 'CreateFamily' %}">Create a new family.</a></p>
+              <p class="create-family">Can't find the family you're looking for?<br/><a id="createFam-btn" href="{% url 'CreateFamily' %}">Create a new family.</a></p>
             </div>
             
         <table class="table">
@@ -96,15 +96,23 @@
         {% if not transactions %}
           <p style="font-style: italic;">No items added...</p>
         {% endif %}
+
+        <div id="notesCollapse" class="collapse">
+            <label for="id_checkout_notes">Notes:</label>
+            <textarea name="checkout_notes" cols="25" rows="4" class="form-control" maxlength="500" id="id_checkout_notes" spellcheck="false"></textarea>
+            <br>
+        </div>
+
         <div class="row">
           <div class="col">
-            <a class="btn btn-warning" href="{% url 'AddItem' location='out' %}">Add Item to Cart +</a>
+            <a id="addToCart-btn" class="btn btn-warning mt-2" href="{% url 'AddItem' location='out' %}">Add Item to Cart +</a>
+            <button id="addNotes-btn" class="btn btn-warning mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#notesCollapse" aria-expanded="false" aria-controls="notesCollapse">
+              Add Notes &#x270E;
+            </button>
           </div>
-          {% if transactions %}
-            <div class="col">
-              <button id="checkout-btn" class="btn btn-success float-end" type="submit">Check Out Items</button>
-            </div>
-          {% endif %}
+          <div class="col">
+            <button id="checkout-btn" class="btn btn-success float-end mt-2" type="submit" {% if not transactions %}disabled{% endif %}>Check Out Items</button>
+          </div>
         </div>
       </form>
     </div>
@@ -142,6 +150,47 @@
     });
     $("#checkout-btn").on('click', function(){
       localStorage.setItem("family", $("#id_family").val())
+    })
+
+    // NOTES SCRIPTS: 
+
+    var notesFieldValue = localStorage.getItem('notes-field')
+    if (notesFieldValue) {
+      $('#id_checkout_notes').val(notesFieldValue)
+      $('#notesCollapse').addClass('show') // show field
+      toggleNotesButton()
+    } 
+
+    // Save Notes on AddItem / CreateFamily
+    $('#addToCart-btn, #createFam-btn').on('click', function(){
+      localStorage.setItem('notes-field', $('#id_checkout_notes').val())
+    })
+    $('#addNotes-btn').on('click', function(){
+      toggleNotesButton()
+    })
+
+    function toggleNotesButton() {
+      var btnHtml = $('#addNotes-btn').html()
+
+      if(btnHtml.includes('Clear Notes')){
+        localStorage.removeItem('notes-field')
+        $('#id_checkout_notes').val('')
+
+        $('#addNotes-btn')
+        .html('Add Notes &#x270E;')
+        .removeClass('btn-danger')
+        .addClass('btn-warning')
+      } else {
+        $('#addNotes-btn')
+        .html('Clear Notes &#x2715')
+        .removeClass('btn-warning')
+        .addClass('btn-danger')
+      }
+    }
+
+    // Clear notes on Checkout
+    $('#checkout-btn').on('click', function(){
+      localStorage.removeItem('notes-field')
     })
   });
 </script>

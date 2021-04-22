@@ -516,7 +516,11 @@ def checkout_action(request):
         messages.warning(request, 'Could not create checkout: No items added')
         return render(request, 'inventory/checkout.html', context, status=400)
 
-    checkout = Checkout(family=family_object[0], user=request.user)
+    notes = None
+    if 'checkout_notes' in request.POST and request.POST['checkout_notes'] != '': 
+        notes = request.POST['checkout_notes']
+
+    checkout = Checkout(family=family_object[0], user=request.user, notes=notes)
     checkout.save()
 
     for tx in transactions:
