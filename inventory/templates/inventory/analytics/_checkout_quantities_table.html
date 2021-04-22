@@ -45,7 +45,7 @@
         <!-- Pagination -->
         {% if checkouts.has_other_pages %}
 
-            {% include 'inventory/reports/_pagination.html' with results=checkouts %}
+            {% include 'inventory/_pagination.html' with results=checkouts %}
 
         {% endif %}
         {% csrf_token %}

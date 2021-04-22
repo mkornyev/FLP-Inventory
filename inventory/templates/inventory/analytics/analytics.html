@@ -44,15 +44,15 @@
                     </div>
                     <br>
 
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=item_week_checkouts group_by="item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=item_month_checkouts group_by="item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=item_six_month_checkouts group_by="item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=item_all_time_checkouts group_by="item" %}
-
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=cat_week_checkouts group_by="category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=cat_month_checkouts group_by="category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=cat_six_month_checkouts group_by="category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=cat_all_time_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=item_week_checkouts group_by="item" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=item_month_checkouts group_by="item" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=item_six_month_checkouts group_by="item" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=item_all_time_checkouts group_by="item" %}
+                    
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=cat_week_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=cat_month_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=cat_six_month_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=cat_all_time_checkouts group_by="category" %}
                     
             </form>
             {% csrf_token %}
