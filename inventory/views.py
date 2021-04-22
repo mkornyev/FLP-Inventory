@@ -475,6 +475,7 @@ def checkout_action(request):
         
     context['items'] = Item.objects.all()
     context['categories'] = Category.objects.all()
+    context['createdFamily'] = 'no family'
 
     # Create transactions if they don't exist
     if not 'transactions-out' in request.session or not request.session['transactions-out']:
