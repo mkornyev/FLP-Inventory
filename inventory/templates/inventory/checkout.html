@@ -168,6 +168,11 @@
     $("#checkout-btn").on('click', function(){
       localStorage.removeItem("family")
     })
+
+    $("#id_name").autocomplete({
+    	source: '{% url 'autocomplete_item' %}',
+    	minLength: 2
+    });
   });
 </script>
 
