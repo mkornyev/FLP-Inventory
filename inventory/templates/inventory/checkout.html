@@ -30,6 +30,10 @@
       overflow-y: auto;
       overflow-x: hidden;
     }
+
+    #additemform {
+      border-left: 1px solid lightgrey;
+    }
   </style>
 {% endblock %}
 
@@ -47,65 +51,87 @@
     </div>
   {% endfor %}
 
+  <h1>Check Out</h1>
+  <br/>
   <div class="row">
-    <div class="col-md-8">
-      <div class="split">
-        <h1>Check Out Items:</h1>
-      </div>
-      <form method="POST" action="{% url 'Checkout' %}">
-            <div class="checkout-form">
-              {% for field in formcheckout %}
-              <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
-                  {{ field.label_tag }}
-                  {{ field }}
-                  {% if field.errors %}
-                    {% for error in field.errors %}
-                      <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
-                  {% endif %}
-              </div>
-              {% endfor %}
-              {% csrf_token %}
-              <p class="create-family">Can't find the family you're looking for?<br/><a href="{% url 'CreateFamily' %}">Create a new family.</a></p>
-            </div>
-            
-        <table class="table">
-          <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for tx in transactions %}
-              <tr> 
+    <div class="col-md-7">
+      <h4>Your Cart</h4>
+      <table class="table">
+        <thead>
+          <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in transactions %}
             <tr> 
-              <tr> 
-                  <th scope="row">{{ tx.item}}</td>
-                  <td>{{ tx.quantity }}</td>
-                  <td>
-                    <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger">
-                      Remove
-                    </a>
-                  </td
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% if not transactions %}
-          <p style="font-style: italic;">No items added...</p>
-        {% endif %}
-        <div class="row">
-          <div class="col">
-            <a class="btn btn-warning" href="{% url 'AddItem' location='out' %}">Add Item to Cart +</a>
+          <tr> 
+            <tr> 
+                <th scope="row">{{ tx.item}}</td>
+                <td>{{ tx.quantity }}</td>
+                <td>
+                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger">
+                    Remove
+                  </a>
+                </td
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not transactions %}
+        <p style="font-style: italic;">No items added...</p>
+      {% endif %}
+
+      <form method="POST" action="{% url 'Checkout' %}">
+        <div class="checkout-form">
+          {% for field in formcheckout %}
+          <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
           </div>
+          {% endfor %}
+          {% csrf_token %}
+          <p class="create-family">Can't find the family you're looking for?<br/><a href="{% url 'CreateFamily' %}">Create a new family.</a></p>
+        </div>
+
+        <div class="row">
           {% if transactions %}
             <div class="col">
-              <button id="checkout-btn" class="btn btn-success float-end" type="submit">Check Out Items</button>
+              <button name="checkout" id="checkout-btn" class="btn btn-success" type="submit">Check Out Items</button>
             </div>
           {% endif %}
         </div>
+      </form>
+    </div>
+    <div class="col-md-4" id="additemform">
+      <h4>Add To Cart</h4>
+      <form method="POST" action="{% url 'Checkout' %}">
+          {% for field in formadditem %}
+          <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
+          </div>
+          {% endfor %}
+          {% csrf_token %}
+          <br>
+          {% if user.is_superuser %}
+            <p>Can't find what you're looking for?<br/><a href="{% url 'CreateItem' location='out' %}">Create a new item.</a></p>
+          {% else %}
+            <p>Can't find what you're looking for? Ask an admin to create a new item.</p>
+          {% endif %}
+          <button name="additem" class="btn btn-warning" type="submit">Add Item +</button>
       </form>
     </div>
   </div>
