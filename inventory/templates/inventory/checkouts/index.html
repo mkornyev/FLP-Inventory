@@ -14,7 +14,15 @@
 
 {% block content %}
 <div class="container">
-  <h1>Checkouts</h1>
+  <div class="row">
+    <div class="col">
+      <h1>Checkouts</h1> 
+    </div>
+    <div class="col">
+      <a class="btn btn-warning float-end" href="{% url 'Checkout' %}">Create Checkout +</a>
+    </div>
+  </div>
+
   {% render_table table %}
 </div>
 {% endblock %}

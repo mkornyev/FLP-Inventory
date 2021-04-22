@@ -38,12 +38,12 @@ class AddItemTestCase(TestCase):
         response = self.client.get("/additem/in/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<h1>Add Item:</h1>")
+        self.assertContains(response, "<h1>Add Item to Cart:</h1>")
 
         response = self.client.get("/additem/out/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<h1>Add Item:</h1>")
+        self.assertContains(response, "<h1>Add Item to Cart:</h1>")
 
     def test_post_success(self):
         self.client.login(username='testuser', password='12345')

@@ -28,13 +28,13 @@ urlpatterns = [
     # AUTH ROUTES 
     path('login/', views.login_action, name='Login'),
     path('logout/', views.logout_action, name='Logout'),
-    path('register/', views.register_action, name='Register'),
 
     # ACTION ROUTES
     path('report/', views.generate_report, name='Report'),
     path('checkin/', views.checkin_action, name='Checkin'),
     path('checkout/', views.checkout_action, name='Checkout'),
     path('additem/<str:location>/', views.addtocart_action, name='AddItem'),
+    path('createitem/', views.createItem_action, name='CreateItem'),
     path('createFamily/', views.createFamily_action, name='CreateFamily'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
     path('analytics/', views.analytics, name='Analytics'),
