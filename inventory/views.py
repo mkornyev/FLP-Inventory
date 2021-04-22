@@ -479,24 +479,29 @@ def checkout_action(request):
         for deserialized_transaction in serializers.deserialize("json", tx):
             transactions.append(deserialized_transaction.object)
 
+    context['transactions'] = transactions
+
     if request.method == 'GET':
         context['items'] = Item.objects.all()
         context['categories'] = Category.objects.all()
-        form = CheckOutForm()
         context['createdFamily'] = 'no family'
+
+        form = CheckOutForm()
+        context['formcheckout'] = form 
+
         if ('createdFamily' in request.session):
             famName = request.session['createdFamily']
             form.fields['family'].initial = famName
             context['createdFamily'] = famName
             del request.session['createdFamily']
-        context['formcheckout'] = form 
-        context['transactions'] = transactions
+
         return render(request, 'inventory/checkout.html', context)
 
     form = CheckOutForm(request.POST)
     context['formcheckout'] = form
 
     if not form.is_valid():
+        context['createdFamily'] = 'no family'
         return render(request, 'inventory/checkout.html', context, status=400)
 
     family = form.cleaned_data['family'].strip()
