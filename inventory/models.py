@@ -81,7 +81,7 @@ class Checkin(models.Model):
     return val
 
   def __str__(self):
-    return "({}, {})".format(self.datetime, self.in_items())
+    return "({}, {})".format(self.datetime, self.in_items)
 
   @property
   def in_items(self):
@@ -103,7 +103,7 @@ class Checkout(models.Model):
     return val
 
   def __str__(self):
-    return "({}, {})".format(self.family, self.out_items())
+    return "({}, {})".format(self.family, self.out_items)
   
   @property
   def out_items(self):
