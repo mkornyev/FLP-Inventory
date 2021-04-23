@@ -319,6 +319,7 @@ def addtocart_action(request, location):
 
     if request.method == 'GET':
         context['form'] = AddItemForm()
+        context['form'].fields['quantity'].initial = 1
         
         return render(request, 'inventory/additem.html', context)
 
