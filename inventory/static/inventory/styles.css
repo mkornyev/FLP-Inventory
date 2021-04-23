@@ -36,9 +36,17 @@ a:hover {
   margin-bottom: 10%;
 }
 
+/* Nav Bar */
+
 .navbar {
   padding-left: 25px;
   padding-right: 25px;
+}
+
+.nav-hi::after {
+  content: '|';
+  padding-left: .5em;
+	padding-right: .5em;
 }
 
 /* Text Styles */

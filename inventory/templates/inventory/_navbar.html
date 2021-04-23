@@ -2,7 +2,6 @@
 	<nav id="app-nav" {% if user.is_superuser %} class="navbar navbar-expand-lg navbar-dark bg-dark" {% else %} class="navbar navbar-expand-lg navbar-light bg-light" {% endif %}>
 
 		<!-- Render the logo -->
-		
 		<a class="navbar-brand" href="{% url 'Home' %}">
 			{% load static %}
 			<img src="{% static 'inventory/logo.png' %}" width="35" height="33" class="d-inline-block align-top" alt="FLP Logo">
@@ -67,9 +66,9 @@
 			</ul>
 			<ul class="navbar-nav ms-auto">
 
-        
 				<!-- Only show the log out link if the user is logged in -->
 				{% if user.is_authenticated %}
+					<span class="navbar-text nav-hi">Hi, {{ user.first_name }}</span>
 					{% if user.is_superuser %}
 						<li class="nav-item">
 							<a class="nav-link" href="{% url 'admin:index' %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Admin Site">&#x2699;</a>
@@ -85,6 +84,7 @@
 						<a class="nav-link {% if request.path == login_url %}active{% endif %}" href="{{ login_url }}">Log In</a>
 					</li>
 				{% endif %}
+
 			</ul>
 		</div>
 	</nav>
