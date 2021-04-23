@@ -24,6 +24,9 @@ class Family(models.Model):
     if self.fname: 
       return "{}, {}".format(self.lname, self.fname)
     return "{}".format(self.lname)
+  
+  class Meta:
+    verbose_name_plural = "families"
 
 
 class Child(models.Model): 
@@ -32,6 +35,9 @@ class Child(models.Model):
 
   def __str__(self):
     return "{}".format(self.name)
+  
+  class Meta:
+    verbose_name_plural = "children"
 
 class Category(models.Model):
   name = models.CharField(max_length=50, blank=False, null=False, unique=True)
@@ -43,6 +49,9 @@ class Category(models.Model):
   
   def __str__(self):
     return "{}".format(self.name)
+
+  class Meta:
+    verbose_name_plural = "categories"
 
 class Item(models.Model):
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True) # CASCADE - deletes all items if a Category is deleted
