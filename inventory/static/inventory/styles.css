@@ -36,6 +36,11 @@ a:hover {
   margin-bottom: 10%;
 }
 
+.navbar {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
 /* Text Styles */
 
 .bold { font-weight: 800; }

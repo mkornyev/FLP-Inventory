@@ -21,7 +21,7 @@
 		</button>
 		
 		<div class="collapse navbar-collapse" id="navbarText">
-			<ul class="navbar-nav ml-auto">
+			<ul class="navbar-nav me-auto">
 
 				{% if user.is_staff %}
 					<li class="nav-item dropdown">
@@ -56,30 +56,33 @@
 					</li>
 				{% endif %}
 
+				{% if not user.is_authenticated %}
+					<!-- Only show the about link if the user is logged out -->
+					<li class="nav-item">
+						{% url 'About' as about_url %}
+						<a class="nav-link {% if request.path == about_url %}active{% endif %}" href="{{ about_url }}">About</a>
+					</li>
+				{% endif %}
+			
+			</ul>
+			<ul class="navbar-nav ms-auto">
+
         
 				<!-- Only show the log out link if the user is logged in -->
 				{% if user.is_authenticated %}
-					<li class="nav-item">
-						<a class="nav-link" href="{% url 'Logout' %}">Log Out</a>
-					</li>
 					{% if user.is_superuser %}
 						<li class="nav-item">
 							<a class="nav-link" href="{% url 'admin:index' %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Admin Site">&#x2699;</a>
 						</li>
 					{% endif %}
-					
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'Logout' %}">Log Out</a>
+					</li>
 				{% else %}
-
 					<!-- Only show the log in link if the user is logged out -->
 					<li class="nav-item">
 						{% url 'Login' as login_url %}
 						<a class="nav-link {% if request.path == login_url %}active{% endif %}" href="{{ login_url }}">Log In</a>
-					</li>
-
-					<!-- Only show the about link if the user is logged out -->
-					<li class="nav-item">
-						{% url 'About' as about_url %}
-						<a class="nav-link {% if request.path == about_url %}active{% endif %}" href="{{ about_url }}">About</a>
 					</li>
 				{% endif %}
 			</ul>
