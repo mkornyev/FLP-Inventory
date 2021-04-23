@@ -6,10 +6,10 @@
 		<a class="navbar-brand" href="{% url 'Home' %}">
 			{% load static %}
 			<img src="{% static 'inventory/logo.png' %}" width="35" height="33" class="d-inline-block align-top" alt="FLP Logo">
-			{% if user.is_superuser %}
-			<b>&nbsp;&nbsp;Foster Love Project (Admin)&nbsp;&nbsp;</b>
-			{% elif user.is_staff %}
+			{% if user.is_superuser %} <!-- Note that is_staff != Staff in UI -->
 			<b>&nbsp;&nbsp;Foster Love Project (Staff)&nbsp;&nbsp;</b>
+			{% elif user.is_staff %}
+			<b>&nbsp;&nbsp;Foster Love Project (Volunteer)&nbsp;&nbsp;</b>
 			{% else %}
 			<b>&nbsp;&nbsp;Foster Love Project&nbsp;&nbsp;</b>
 			{% endif %}
