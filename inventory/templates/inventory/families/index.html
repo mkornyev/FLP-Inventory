@@ -19,7 +19,7 @@
       <h1>Families</h1> 
     </div>
     <div class="col">
-      <a class="btn btn-warning float-end" href="{% url 'CreateFamily' %}">Create Family +</a>
+      <a class="btn btn-warning float-end" href="{% url 'CreateFamily' location='Families' %}">Create Family +</a>
     </div>
   </div>
   {% render_table table %}
