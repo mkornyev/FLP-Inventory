@@ -42,6 +42,13 @@ a:hover {
 
 .blue { color: #095cb5; }
 
+/* Item Cart Panel */
+
+@media only screen and (max-width: 767px) {
+  #additemform { border-left: none !important; }
+  div#additemform h4 { margin-top: 50px; }
+}
+
 /* Report Generation: */
 
 form.check-report-form {
