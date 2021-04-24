@@ -41,7 +41,7 @@ urlpatterns = [
     path('families/create/', views.createFamily_action, name='CreateFamily'),
     path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
     path('items/index/', views.ItemIndexView.as_view(), name="Items"),
-    path('items/create/', views.createItem_action, name='CreateItem'),
+    path('items/create/<str:location>/', views.createItem_action, name='CreateItem'),
     path('checkins/index/', views.CheckinIndexView.as_view(), name="Checkins"),
     path('checkouts/index/', views.CheckoutIndexView.as_view(), name="Checkouts"),
 ]

@@ -3,7 +3,9 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
 from django.http import JsonResponse
-from django_tables2 import SingleTableView
+from django_tables2 import SingleTableView, SingleTableMixin
+from django_filters.views import FilterView
+from .filters import CheckoutFilter
 from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
 
 from django.contrib import messages
@@ -308,44 +310,6 @@ def analytics(request):
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
-# Add item to cart
-@login_required
-def addtocart_action(request, location):
-    context = {}
-
-    context['location'] = location
-
-    if request.method == 'GET':
-        context['form'] = AddItemForm()
-        
-        return render(request, 'inventory/additem.html', context)
-
-    if request.method == 'POST':
-        form = AddItemForm(request.POST)
-
-        context['form'] = form
-
-        if not form.is_valid():
-            return render(request, 'inventory/additem.html', context)
-
-        # category = form.cleaned_data['category']
-        name = form.cleaned_data['name']
-        quantity = form.cleaned_data['quantity']
-
-        item = Item.objects.filter(name=name).first()
-    
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
-        if not 'transactions-' + location in request.session or not request.session['transactions-' + location]:
-            saved_list = []
-        else:
-            saved_list = request.session['transactions-' + location]
-
-        saved_list.append(tx)
-        request.session['transactions-' + location] = saved_list
-
-        messages.success(request, 'Item Added')
-        return redirect(reverse('Check' + location))
-
 # Remove item from cart
 def removeitem_action(request, index, location):
     saved_list = request.session['transactions-' + location]
@@ -353,7 +317,6 @@ def removeitem_action(request, index, location):
     saved_list.pop(index)
     request.session['transactions-' + location] = saved_list
 
-    messages.success(request, 'Item Removed')
     return redirect(reverse('Check' + location))
 
 # Create Family View 
@@ -381,13 +344,21 @@ def createFamily_action(request):
 
         family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
+        famName = ''
+        if fname:                
+            famName = '{}, {}'.format(lname, fname)
+        else: 
+            famName = lname
+        request.session['createdFamily'] = famName
         messages.success(request, 'Family created')
         return redirect(reverse('Checkout'))
 
 # Create Item View
 @user_passes_test(lambda u: u.is_superuser)
-def createItem_action(request):
+def createItem_action(request, location):
     context = {}
+
+    context['location'] = location
 
     if request.method == 'GET':
         context['form'] = CreateItemForm()
@@ -411,13 +382,16 @@ def createItem_action(request):
         item.save()
 
         messages.success(request, 'Item created')
-        return redirect(reverse('Checkout'))
+        return redirect(reverse('Check' + location))
 
 # Checkin view
 @login_required
 def checkin_action(request):
     context = {}
         
+    context['items'] = Item.objects.all()
+    context['categories'] = Category.objects.all()
+
     # Create transactions if they don't exist
     if not 'transactions-in' in request.session or not request.session['transactions-in']:
         request.session['transactions-in'] = []
@@ -429,39 +403,68 @@ def checkin_action(request):
         for deserialized_transaction in serializers.deserialize("json", tx):
             transactions.append(deserialized_transaction.object)
 
+    context['transactions'] = transactions
+
     if request.method == 'GET':
-        context['items'] = Item.objects.all()
-        context['categories'] = Category.objects.all()
-        context['form'] = AddItemForm()
-        context['transactions'] = transactions
+        context['formadditem'] = AddItemForm()
         return render(request, 'inventory/checkin.html', context)
 
-    if not transactions:
-        messages.warning(request, 'Could not create checkin: No items added')
-        return render(request, 'inventory/checkin.html', context, status=400)
+    if request.method == 'POST' and 'additem' in request.POST:
+        form = AddItemForm(request.POST)
 
-    checkin = Checkin(user=request.user)
-    checkin.save()
+        context['formadditem'] = form
 
-    for tx in transactions:
-        tx.save()
+        if not form.is_valid():
+            return render(request, 'inventory/checkin.html', context)
 
-        checkin.items.add(tx)
+        # category = form.cleaned_data['category']
+        name = form.cleaned_data['name']
+        quantity = form.cleaned_data['quantity']
 
-        tx.item.quantity += tx.quantity
-        tx.item.save()
+        item = Item.objects.filter(name=name).first()
+    
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
+        if not 'transactions-in' in request.session or not request.session['transactions-in']:
+            saved_list = []
+        else:
+            saved_list = request.session['transactions-in']
 
-    del request.session['transactions-in']
-    request.session.modified = True
+        saved_list.append(tx)
+        request.session['transactions-in'] = saved_list
 
-    messages.success(request, 'Checkin created.')
-    return redirect(reverse('Checkin'))
+        return redirect(reverse('Checkin'))
+
+    if request.method == 'POST' and 'checkin' in request.POST:
+        if not transactions:
+            messages.warning(request, 'Could not create checkin: No items added')
+            return render(request, 'inventory/checkin.html', context, status=400)
+
+        checkin = Checkin(user=request.user)
+        checkin.save()
+
+        for tx in transactions:
+            tx.save()
+
+            checkin.items.add(tx)
+
+            tx.item.quantity += tx.quantity
+            tx.item.save()
+
+        del request.session['transactions-in']
+        request.session.modified = True
+
+        messages.success(request, 'Checkin created.')
+        return redirect(reverse('Checkin'))
 
 # Checkout view
 @login_required
 def checkout_action(request):
     context = {}
         
+    context['items'] = Item.objects.all()
+    context['categories'] = Category.objects.all()
+    context['createdFamily'] = 'no family'
+
     # Create transactions if they don't exist
     if not 'transactions-out' in request.session or not request.session['transactions-out']:
         request.session['transactions-out'] = []
@@ -473,53 +476,89 @@ def checkout_action(request):
         for deserialized_transaction in serializers.deserialize("json", tx):
             transactions.append(deserialized_transaction.object)
 
+    context['transactions'] = transactions
+
     if request.method == 'GET':
-        context['items'] = Item.objects.all()
-        context['categories'] = Category.objects.all()
-        context['formcheckout'] = CheckOutForm()
-        context['transactions'] = transactions
+        context['formadditem'] = AddItemForm()
+        form = CheckOutForm()
+        context['formcheckout'] = form
+
+        if ('createdFamily' in request.session):
+            famName = request.session['createdFamily']
+            form.fields['family'].initial = famName
+            context['createdFamily'] = famName
+            del request.session['createdFamily']
+
         return render(request, 'inventory/checkout.html', context)
 
-    form = CheckOutForm(request.POST)
-    context['formcheckout'] = form
+    if request.method == 'POST' and 'additem' in request.POST:
+        form = AddItemForm(request.POST)
 
-    if not form.is_valid():
-        return render(request, 'inventory/checkout.html', context, status=400)
+        context['formadditem'] = form
+        context['formcheckout'] = CheckOutForm()
 
-    family = form.cleaned_data['family'].strip()
+        if not form.is_valid():
+            return render(request, 'inventory/checkout.html', context)
 
-    if ',' in family: 
-        comma = family.index(',')
-        lname = family[0:comma]
-        fname = family[comma+2:]
+        # category = form.cleaned_data['category']
+        name = form.cleaned_data['name']
+        quantity = form.cleaned_data['quantity']
 
-        family_object = Family.objects.filter(
-            Q(fname__exact=fname) and Q(lname__exact=lname)
-        )
-    else: 
-        family_object = Family.objects.filter(lname__exact=family)
+        item = Item.objects.filter(name=name).first()
+    
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
+        if not 'transactions-out' in request.session or not request.session['transactions-out']:
+            saved_list = []
+        else:
+            saved_list = request.session['transactions-out']
 
-    if not transactions:
-        messages.warning(request, 'Could not create checkout: No items added')
-        return render(request, 'inventory/checkout.html', context, status=400)
+        saved_list.append(tx)
+        request.session['transactions-out'] = saved_list
 
-    checkout = Checkout(family=family_object[0], user=request.user)
-    checkout.save()
+        return redirect(reverse('Checkout'))
 
-    for tx in transactions:
-        tx.save()
+    if request.method == 'POST' and 'checkout' in request.POST:
+        form = CheckOutForm(request.POST)
 
-        checkout.items.add(tx)
+        context['formcheckout'] = form
+        context['formadditem'] = AddItemForm()
 
-        tx.item.quantity -= tx.quantity
-        tx.item.save()
+        if not form.is_valid():
+            return render(request, 'inventory/checkout.html', context, status=400)
 
-    del request.session['transactions-out']
-    request.session.modified = True
+        family = form.cleaned_data['family'].strip()
 
-    messages.success(request, 'Checkout created.')
-    return redirect(reverse('Checkout'))
+        if ',' in family: 
+            comma = family.index(',')
+            lname = family[0:comma]
+            fname = family[comma+2:]
 
+            family_object = Family.objects.filter(
+                Q(fname__exact=fname) and Q(lname__exact=lname)
+            )
+        else: 
+            family_object = Family.objects.filter(lname__exact=family)
+
+        if not transactions:
+            messages.warning(request, 'Could not create checkout: No items added')
+            return render(request, 'inventory/checkout.html', context, status=400)
+
+        checkout = Checkout(family=family_object[0], user=request.user)
+        checkout.save()
+
+        for tx in transactions:
+            tx.save()
+
+            checkout.items.add(tx)
+
+            tx.item.quantity -= tx.quantity
+            tx.item.save()
+
+        del request.session['transactions-out']
+        request.session.modified = True
+
+        messages.success(request, 'Checkout created.')
+        return redirect(reverse('Checkout'))
   
 def autocomplete_item(request):
     if 'term' in request.GET:
@@ -564,10 +603,11 @@ class CheckinIndexView(LoginRequiredMixin, SingleTableView):
     table_class = CheckinTable
     template_name = "inventory/checkins/index.html"
 
-class CheckoutIndexView(LoginRequiredMixin, SingleTableView):
+class CheckoutIndexView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Checkout
     table_class = CheckoutTable
     template_name = "inventory/checkouts/index.html"
+    filterset_class = CheckoutFilter
 
 
 ######################### VIEW HELPERS #########################

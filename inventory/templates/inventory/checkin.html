@@ -12,6 +12,10 @@
       align-items: center;
       justify-content: space-between;
     }
+
+    #additemform {
+      border-left: 1px solid lightgrey;
+    }
   </style>
 {% endblock %}
 
@@ -29,12 +33,11 @@
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   {% endfor %}
+  <h1>Check In</h1>
+  <br/>
   <div class="row">
-    <div class="col-md-8">
-      <div class="split">
-        <h1>Check In Items:</h1>
-      </div>
-
+   <div class="col-md-7">
+     <h4>Your Cart</h4>
       <table class="table">
         <thead>
           <tr>
@@ -61,18 +64,40 @@
         <p style="font-style: italic;">No items added...</p>
       {% endif %}
       <div class="row">
-        <div class="col">
-          <a class="btn btn-warning" href="{% url 'AddItem' location='in' %}">Add Item to Cart +</a>
-        </div>
         {% if transactions %}
           <div class="col">
             <form method="POST" action="{% url 'Checkin' %}">
               {% csrf_token %}
-              <button class="btn btn-success float-end" type="submit">Check In Items</button>
+              <button name="checkin" class="btn btn-success" type="submit">Check In Items</button>
             </form>
           </div>
         {% endif %}
       </div>
+    </div>
+
+    <div class="col-md-4" id="additemform">
+      <h4>Add To Cart</h4>
+      <form method="POST" action="{% url 'Checkin' %}">
+          {% for field in formadditem %}
+          <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
+          </div>
+          {% endfor %}
+          {% csrf_token %}
+          <br>
+          {% if user.is_superuser %}
+            <p>Can't find what you're looking for?<br/><a href="{% url 'CreateItem' location='in' %}">Create a new item.</a></p>
+          {% else %}
+            <p>Can't find what you're looking for? Ask an admin to create a new item.</p>
+          {% endif %}
+          <button name="additem" class="btn btn-warning" type="submit">Add Item +</button>
+      </form>
     </div>
   </div>
 </div>

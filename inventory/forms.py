@@ -55,6 +55,7 @@ class CreateItemForm(forms.Form):
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
     required_css_class = 'required' 
+    
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
     def clean(self):
