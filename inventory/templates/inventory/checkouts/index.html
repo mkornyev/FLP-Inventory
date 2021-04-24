@@ -21,8 +21,46 @@
     <div class="col">
       <a class="btn btn-warning float-end" href="{% url 'Checkout' %}">Create Checkout +</a>
     </div>
+    <form action="" method="get" class="form form-inline">
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <input 
+              type="text" name="family__name" class="form-control ui-autocomplete-input" placeholder="Family name" title="" id="id_family__name" autocomplete="off">
+          </div>
+        </div>
+        <div class="col filter-button-container">
+          <button class="btn btn-primary">Filter</button>
+        </div>
+      </div>
+    </form>
   </div>
-
   {% render_table table %}
 </div>
+{% endblock %}
+
+{% block page_specific_scripts %}
+<script>
+  $(document).ready(function() {
+    $("#id_family__name").autocomplete({
+      source: '{% url 'autocomplete_family' %}',
+      minLength: 2
+    });
+
+    $("#id_family__name").val(function () {
+      return localStorage.getItem("family-filter");
+    });
+    $("#id_family__name").on("change", function () {
+      localStorage.setItem("family-filter", $(this).val());
+    });
+    $("#id_family__name").on("click", function () {
+      $(this).val("");
+      localStorage.setItem("family-filter", $(this).val());
+    });
+    $("#id_family").autocomplete({
+      source: '{% url 'autocomplete_family' %}',
+      minLength: 2
+    });
+  });
+</script>
 {% endblock %}
