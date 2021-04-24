@@ -3,5 +3,5 @@ import os
 
 SECONDS_PER_WEEK = 604800
 while True:
-    os.system(f"python manage.py csv 'center@fosterloveproject.org'")
+    os.system("python manage.py csv 'center@fosterloveproject.org'")
     time.sleep(SECONDS_PER_WEEK)
