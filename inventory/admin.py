@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Family, Child, Category, Item, ItemTransaction, Checkin, Checkout
+from .models import Family, Child, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
 
 class FamilyAdmin(admin.ModelAdmin):
     list_display = ('fname', 'lname', 'phone', )
@@ -11,6 +11,10 @@ admin.site.register(Family, FamilyAdmin)
 class ChildAdmin(admin.ModelAdmin):
     list_display = ('name', 'family', )
 admin.site.register(Child, ChildAdmin)
+
+class AgeRangeAdmin(admin.ModelAdmin):
+    list_display = ('low', 'high', )
+admin.site.register(AgeRange, AgeRangeAdmin)
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', )
