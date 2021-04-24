@@ -28,12 +28,12 @@ class CheckinTestCase(TestCase):
         response = self.client.get("/checkin/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<h1>Check In Items:</h1>")
+        self.assertContains(response, "<h1>Check In</h1>")
 
     def test_invalid_no_items(self):
         self.client.login(username='testuser', password='12345')
 
-        response = self.client.post('/checkin/')
+        response = self.client.post('/checkin/', data={"checkin": ""})
 
         # Check if invalid
         self.assertEqual(response.status_code, 400)
@@ -54,7 +54,7 @@ class CheckinTestCase(TestCase):
         session['transactions-in'] = ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2}}]']
         session.save()
 
-        response = self.client.post('/checkin/', follow=True)
+        response = self.client.post('/checkin/', data={"checkin": ""}, follow=True)
 
         # Check if valid
         self.assertEqual(response.status_code, 200)

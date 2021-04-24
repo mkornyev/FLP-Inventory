@@ -1,6 +1,17 @@
   
 /* App Styles  */
 
+.ui-autocomplete {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.filter-button-container {
+  display: flex;
+  align-items: flex-end;
+}
+
 * {
   margin: 0;
   padding: 0;

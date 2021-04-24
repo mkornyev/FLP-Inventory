@@ -10,7 +10,7 @@ $(document).ready(function() {
   } 
 
   // Save Notes on AddItem / CreateFamily
-  $('#addToCart-btn, #createFam-btn').on('click', function(){
+  $('#addToCart-btn, #createFam-btn, #createItem-btn, .save-notes-on-click').on('click', function(){
     localStorage.setItem('notes-field', $('#id_checkout_notes').val())
   })
   $('#addNotes-btn').on('click', function(){

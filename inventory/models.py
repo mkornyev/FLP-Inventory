@@ -13,6 +13,7 @@ class Family(models.Model):
   fname = models.CharField(max_length=50, blank=True, null=True, verbose_name='First Name')
   lname = models.CharField(max_length=50, blank=False, null=False,verbose_name='Last Name') # Only the last_name is required
   phone = PhoneNumberField(blank=True, null=True)
+  name = models.CharField(max_length=100, blank=True, null=True, verbose_name='Full Name')
   # created_at = models.DateTimeField(default=timezone.now)
   # USE Family.child_set OR .children TO GET QuerySet<Child>
 
@@ -24,6 +25,10 @@ class Family(models.Model):
     if self.fname: 
       return "{}, {}".format(self.lname, self.fname)
     return "{}".format(self.lname)
+
+  def save(self, *args, **kwargs):
+    self.name = self.__str__()
+    super(Family, self).save(*args, **kwargs)
 
 
 class Child(models.Model): 
