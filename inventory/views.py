@@ -527,6 +527,7 @@ def checkout_action(request):
             return render(request, 'inventory/checkout.html', context, status=400)
 
         family = form.cleaned_data['family'].strip()
+        childName = form.cleaned_data['child'].strip()
 
         if ',' in family: 
             comma = family.index(',')
@@ -543,7 +544,7 @@ def checkout_action(request):
             messages.warning(request, 'Could not create checkout: No items added')
             return render(request, 'inventory/checkout.html', context, status=400)
 
-        checkout = Checkout(family=family_object[0], user=request.user)
+        checkout = Checkout(family=family_object[0], user=request.user, childName=childName)
         checkout.save()
 
         for tx in transactions:

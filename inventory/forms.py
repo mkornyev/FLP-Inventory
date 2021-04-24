@@ -147,6 +147,8 @@ class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     required_css_class = 'required'
+    child = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.

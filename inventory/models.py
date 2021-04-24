@@ -91,6 +91,7 @@ class Checkout(models.Model):
   family = models.ForeignKey(Family, on_delete=models.PROTECT, blank=True, null=True)
   items = models.ManyToManyField(ItemTransaction, blank=False)
   datetime = models.DateTimeField(default=timezone.now)
+  childName = models.CharField(max_length=50, blank=True, null=True, verbose_name='Child')
 
   def getValue(self):
     val = 0
