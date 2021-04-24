@@ -14,4 +14,4 @@ RUN export $(cat .env) && python manage.py makemigrations
 
 RUN export $(cat .env) && python manage.py migrate
 
-CMD ["export", "$(cat .env)", "&&", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD export $(cat .env) && python manage.py runserver 0.0.0.0:8000
