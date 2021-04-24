@@ -10,3 +10,4 @@ flp/__pycache__
 inventory/migrations/__pycache__
 db_csv_backups/
 staticfiles/*
+.env
