@@ -95,7 +95,7 @@ class Command(BaseCommand):
         checkout.items.add(tx1)
         checkout.save()
 
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago, notes="The stroller is brand new, retails for ~$80")
         checkout.items.add(tx2)
         checkout.items.add(tx1)
         checkout.items.add(tx4)
@@ -113,7 +113,7 @@ class Command(BaseCommand):
         checkout.items.add(tx5)
         checkout.save()
         
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today, notes="Not sure what these shirts cost??? - Krissy")
         checkout.items.add(tx5)
         checkout.save()
         print("Checkout has been created.")
