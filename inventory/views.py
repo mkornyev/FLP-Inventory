@@ -381,8 +381,11 @@ def createItem_action(request, location):
         item = Item(category=category, name=name, price=price, quantity=quantity)
         item.save()
 
-        messages.success(request, 'Item created')
-        return redirect(reverse('Check' + location))
+        if location == 'in' or location == 'out':
+            messages.success(request, 'Item created')
+            return redirect(reverse('Check' + location))
+        else:
+            return redirect(reverse(location))
 
 # Checkin view
 @login_required
