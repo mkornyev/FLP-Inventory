@@ -26,7 +26,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'flp-app.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', 'flp-app.herokuapp.com', 'ec2-3-19-227-1.us-east-2.compute.amazonaws.com']
 
 
 # Application definition
