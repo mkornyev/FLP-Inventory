@@ -33,5 +33,5 @@ class CheckinAdmin(admin.ModelAdmin):
 admin.site.register(Checkin, CheckinAdmin)
 
 class CheckoutAdmin(admin.ModelAdmin):
-    list_display = ('user', 'family', 'childName', 'out_items', 'datetime', )
+    list_display = ('user', 'family', 'childName', 'ageRange', 'out_items', 'datetime', )
 admin.site.register(Checkout, CheckoutAdmin)
