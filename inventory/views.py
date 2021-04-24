@@ -321,8 +321,10 @@ def removeitem_action(request, index, location):
 
 # Create Family View 
 @login_required
-def createFamily_action(request):
+def createFamily_action(request, location):
     context = {}
+
+    context['location'] = location
 
     if request.method == 'GET':
         context['form'] = CreateFamilyForm()
@@ -344,14 +346,15 @@ def createFamily_action(request):
 
         family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
+
         famName = ''
         if fname:                
             famName = '{}, {}'.format(lname, fname)
         else: 
             famName = lname
         request.session['createdFamily'] = famName
-        messages.success(request, 'Family created')
-        return redirect(reverse('Checkout'))
+
+        return redirect(reverse(location))
 
 # Create Item View
 @user_passes_test(lambda u: u.is_superuser)
