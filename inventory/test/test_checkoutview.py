@@ -31,12 +31,12 @@ class CheckoutTestCase(TestCase):
         response = self.client.get("/checkout/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<h1>Check Out Items:</h1>")
+        self.assertContains(response, "<h1>Check Out</h1>")
 
     def test_invalid_no_items(self):
         self.client.login(username='testuser', password='12345')
 
-        response = self.client.post('/checkout/', data={"family":"ValidFamily"})
+        response = self.client.post('/checkout/', data={"checkout": "", "family":"ValidFamily"})
 
         # Check if invalid
         self.assertEqual(response.status_code, 400)
@@ -57,7 +57,7 @@ class CheckoutTestCase(TestCase):
         session['transactions-out'] = ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2}}]']
         session.save()
 
-        response = self.client.post('/checkout/', data={"family": "ValidFamily"}, follow=True)
+        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily"}, follow=True)
 
         # Check if valid
         self.assertEqual(response.status_code, 200)

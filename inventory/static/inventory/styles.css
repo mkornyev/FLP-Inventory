@@ -1,6 +1,17 @@
   
 /* App Styles  */
 
+.ui-autocomplete {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.filter-button-container {
+  display: flex;
+  align-items: flex-end;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -30,6 +41,13 @@ a:hover {
 .bold { font-weight: 800; }
 
 .blue { color: #095cb5; }
+
+/* Item Cart Panel */
+
+@media only screen and (max-width: 767px) {
+  #additemform { border-left: none !important; }
+  div#additemform h4 { margin-top: 50px; }
+}
 
 /* Report Generation: */
 
