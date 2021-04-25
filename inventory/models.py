@@ -25,6 +25,9 @@ class Family(models.Model):
     if self.fname: 
       return "{}, {}".format(self.lname, self.fname)
     return "{}".format(self.lname)
+  
+  class Meta:
+    verbose_name_plural = "families"
 
   def save(self, *args, **kwargs):
     self.name = self.__str__()
@@ -37,6 +40,9 @@ class Child(models.Model):
 
   def __str__(self):
     return "{}".format(self.name)
+  
+  class Meta:
+    verbose_name_plural = "children"
 
 class Category(models.Model):
   name = models.CharField(max_length=50, blank=False, null=False, unique=True)
@@ -48,6 +54,9 @@ class Category(models.Model):
   
   def __str__(self):
     return "{}".format(self.name)
+
+  class Meta:
+    verbose_name_plural = "categories"
 
 class Item(models.Model):
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True) # CASCADE - deletes all items if a Category is deleted
@@ -77,7 +86,7 @@ class Checkin(models.Model):
     return val
 
   def __str__(self):
-    return "({}, {})".format(self.datetime, self.in_items())
+    return "({}, {})".format(self.datetime, self.in_items)
 
   @property
   def in_items(self):
@@ -100,7 +109,7 @@ class Checkout(models.Model):
     return val
 
   def __str__(self):
-    return "({}, {})".format(self.family, self.out_items())
+    return "({}, {})".format(self.family, self.out_items)
   
   @property
   def out_items(self):
