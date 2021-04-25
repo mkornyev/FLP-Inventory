@@ -20,7 +20,7 @@
     </div>
     {% if user.is_superuser %}
       <div class="col">
-        <a class="btn btn-warning float-end" href="{% url 'CreateItem' %}">Create Item +</a>
+        <a class="btn btn-warning float-end" href="{% url 'CreateItem' location='Items'%}">Create Item +</a>
       </div>
     {% endif %}
   </div>
