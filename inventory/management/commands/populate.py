@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from inventory.models import User, Family, Child, Category, Item, ItemTransaction, Checkin, Checkout
+from inventory.models import User, Family, Child, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
 from datetime import date, timedelta
 
 # POPULATE SCRIPT
@@ -48,6 +48,20 @@ class Command(BaseCommand):
         category3.save()
         print("Category has been created.")
 
+        a0to1 = AgeRange.objects.create(low=0, high=1)
+        a1to2 = AgeRange.objects.create(low=1, high=2)
+        a3to5 = AgeRange.objects.create(low=3, high=5)
+        a6to8 = AgeRange.objects.create(low=6, high=8)
+        a9to12 = AgeRange.objects.create(low=9, high=12)
+        a13to15 = AgeRange.objects.create(low=13, high=15)
+        a0to1.save()
+        a1to2.save()
+        a3to5.save()
+        a6to8.save()
+        a9to12.save()
+        a13to15.save()
+        print("Age ranges created")
+
         item1 = Item.objects.create(category=category1, name="tshirt boys 4", price=10.56, quantity=10)
         item1.save()
         item2 = Item.objects.create(category=category1, name="jacket", price=13.50, quantity=18)
@@ -90,30 +104,30 @@ class Command(BaseCommand):
         checkin.save()
         print("Checkin has been created.")
 
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago, ageRange=a9to12)
         checkout.items.add(tx4)
         checkout.items.add(tx1)
         checkout.save()
 
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago, ageRange=a0to1)
         checkout.items.add(tx2)
         checkout.items.add(tx1)
         checkout.items.add(tx4)
         checkout.save()
 
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=five_days_ago, ageRange=a0to1, childName="Sunny")
         checkout.items.add(tx3)
         checkout.save()
 
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=ten_days_ago)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=ten_days_ago, ageRange=a6to8, childName="Sean")
         checkout.items.add(tx3)
         checkout.save()
         
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today, ageRange=a3to5, childName="Luke")
         checkout.items.add(tx5)
         checkout.save()
         
-        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today)
+        checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today, ageRange=a1to2)
         checkout.items.add(tx5)
         checkout.save()
         print("Checkout has been created.")
