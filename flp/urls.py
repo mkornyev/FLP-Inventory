@@ -33,7 +33,6 @@ urlpatterns = [
     path('report/', views.generate_report, name='Report'),
     path('checkin/', views.checkin_action, name='Checkin'),
     path('checkout/', views.checkout_action, name='Checkout'),
-    path('additem/<str:location>/', views.addtocart_action, name='AddItem'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
     path('analytics/analytics/', views.analytics, name='Analytics'),
 
