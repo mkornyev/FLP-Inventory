@@ -62,7 +62,7 @@
                 <div class="col-sm">
                     <h6>Data Type</h6>
                     <select class="form-select" id="chart-type">
-                        <option value="cout" selected>Checkouts</option>
+                        <option value="cout" selected>Children</option>
                         <option value="fam">Families</option>
                     </select>
                 </div>
@@ -83,13 +83,14 @@
     var labelsCoutJson = '{{ labels_couts|safe }}';
     var dataCoutJson = '{{ data_couts|safe }}';
 
+    // Note that the real values displayed are checkout counts but we display it as Children in the UI
     var ctx = document.getElementById('cout_chart').getContext('2d');
     var chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: JSON.parse(labelsCoutJson),
             datasets: [{
-                label: 'Number of Checkouts',
+                label: 'Number of Children',
                 data: JSON.parse(dataCoutJson),
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
@@ -99,7 +100,7 @@
         options: {
             title: {
                 display: true,
-                text: 'Checkouts by Month',
+                text: 'Child Checkouts per Month',
             },
             scales: {
                 yAxes: [{
@@ -130,7 +131,7 @@
         options: {
             title: {
                 display: true,
-                text: 'Families by Month'
+                text: 'Family Checkouts per Month'
             },
             scales: {
                 yAxes: [{
