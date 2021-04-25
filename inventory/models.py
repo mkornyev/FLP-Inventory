@@ -13,7 +13,7 @@ class Family(models.Model):
   fname = models.CharField(max_length=50, blank=True, null=True, verbose_name='First Name')
   lname = models.CharField(max_length=50, blank=False, null=False,verbose_name='Last Name') # Only the last_name is required
   phone = PhoneNumberField(blank=True, null=True)
-  name = models.CharField(max_length=100, blank=True, null=True, verbose_name='Full Name')
+  displayName = models.CharField(max_length=150, blank=True, null=True, verbose_name='Family name and phone')
   # created_at = models.DateTimeField(default=timezone.now)
   # USE Family.child_set OR .children TO GET QuerySet<Child>
 
@@ -30,7 +30,7 @@ class Family(models.Model):
     verbose_name_plural = "families"
 
   def save(self, *args, **kwargs):
-    self.name = self.__str__()
+    self.displayName = self.__str__() + f" : ({self.phone})"
     super(Family, self).save(*args, **kwargs)
 
 

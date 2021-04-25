@@ -344,12 +344,7 @@ def createFamily_action(request):
 
         family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
-        famName = ''
-        if fname:                
-            famName = '{}, {}'.format(lname, fname)
-        else: 
-            famName = lname
-        request.session['createdFamily'] = famName
+        request.session['createdFamily'] = family.displayName
         messages.success(request, 'Family created')
         return redirect(reverse('Checkout'))
 
@@ -577,15 +572,10 @@ def autocomplete_item(request):
   
 def autocomplete_family(request):
     if 'term' in request.GET:
-        qs = Family.objects.filter(
-            Q(fname__icontains=request.GET.get('term')) | Q(lname__icontains=request.GET.get('term'))
-        )
+        qs = Family.objects.filter(Q(displayName__icontains=request.GET.get('term')) )
         names = list()
-        for fam in qs:
-            if fam.fname:                
-                names.append('{}, {}'.format(fam.lname, fam.fname))
-            else: 
-                names.append(fam.lname)
+        for fam in qs: 
+            names.append(fam.displayName)
         return JsonResponse(names, safe=False)
   
 ######################### DATABASE VIEWS #########################
