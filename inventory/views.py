@@ -306,7 +306,7 @@ def analytics(request):
     context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts, 'id')
     context['labels_fams'], context['data_fams'] = chart_info_by_month(all_checkouts, 'family')
 
-    return render(request, 'inventory/analytics.html', context)
+    return render(request, 'inventory/analytics/analytics.html', context)
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
@@ -327,7 +327,7 @@ def createFamily_action(request):
     if request.method == 'GET':
         context['form'] = CreateFamilyForm()
         
-        return render(request, 'inventory/createFamily.html', context)
+        return render(request, 'inventory/families/create.html', context)
 
     if request.method == 'POST':
         form = CreateFamilyForm(request.POST)
@@ -335,7 +335,7 @@ def createFamily_action(request):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createFamily.html', context)
+            return render(request, 'inventory/families/create.html', context)
 
         # category = form.cleaned_data['category']
         fname = form.cleaned_data['first_name']
@@ -358,7 +358,7 @@ def createItem_action(request, location):
     if request.method == 'GET':
         context['form'] = CreateItemForm()
         
-        return render(request, 'inventory/createitem.html', context)
+        return render(request, 'inventory/items/create.html', context)
 
     if request.method == 'POST':
         form = CreateItemForm(request.POST)
@@ -366,7 +366,7 @@ def createItem_action(request, location):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createitem.html', context)
+            return render(request, 'inventory/items/create.html', context)
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
