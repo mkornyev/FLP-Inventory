@@ -17,7 +17,7 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'category', 'quantity', 'price', )
+    list_display = ('id', 'name', 'category', 'quantity', 'new_price', 'used_price', )
 admin.site.register(Item, ItemAdmin)
 
 class ItemTransactionAdmin(admin.ModelAdmin):

@@ -48,13 +48,13 @@ class Command(BaseCommand):
         category3.save()
         print("Category has been created.")
 
-        item1 = Item.objects.create(category=category1, name="tshirt boys 4", price=10.56, quantity=10)
+        item1 = Item.objects.create(category=category1, name="tshirt boys 4", new_price=10.56, used_price=7.20, quantity=10)
         item1.save()
-        item2 = Item.objects.create(category=category1, name="jacket", price=13.50, quantity=18)
+        item2 = Item.objects.create(category=category1, name="jacket", new_price=13.50, used_price=5.70, quantity=18)
         item2.save()
-        item3 = Item.objects.create(category=category3, name="stroller", price=45.00, quantity=5)
+        item3 = Item.objects.create(category=category3, name="stroller", new_price=45.00, quantity=5)
         item3.save()
-        item4 = Item.objects.create(category=category2, name="formula", price=5.56, quantity=15)
+        item4 = Item.objects.create(category=category2, name="formula", used_price=5.56, quantity=15)
         item4.save()
         item5 = Item.objects.create(category=category1, name="t shirt girls 4", quantity=3) # No Price 
         item5.save()
