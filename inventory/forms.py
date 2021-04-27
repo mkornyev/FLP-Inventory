@@ -108,6 +108,7 @@ class AddItemForm(forms.Form):
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    is_new = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}), label="New")
     required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more

@@ -86,3 +86,13 @@ label.required::after {
   content: ' *';
   color: red;
 }
+
+.form-checkbox {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+label {
+  padding-top: 10px;
+}
