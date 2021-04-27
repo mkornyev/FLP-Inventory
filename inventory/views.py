@@ -107,23 +107,21 @@ def generate_report(request):
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
             if qs is not None:
-                writer.writerow(["item", "new/used", "category", "quantity", "price", "total value"])
+                writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
 
                 uniqueItems = {} 
 
                 for c in qs:
                     for tx in c.items.all():
+                        item_key = (tx.item.id, tx.is_new)
                         try: 
                             originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
-                            print(tx.is_new, tx.item.new_price, tx.item.used_price)
-                            print(originalPrice)
                             adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', originalPrice))
-                            print(adjustedPrice, "adj")
                         except ValueError:
                             adjustedPrice = 0
 
-                        if tx.item.id not in uniqueItems: 
-                            uniqueItems[tx.item.id] = [
+                        if item_key not in uniqueItems: 
+                            uniqueItems[item_key] = [
                                 tx.item.name,
                                 "New" if tx.is_new else "Used",
                                 tx.item.category.name,
@@ -132,11 +130,13 @@ def generate_report(request):
                                 0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
                             ]
                         else: 
-                            uniqueItems[tx.item.id][3] += tx.quantity
-                            uniqueItems[tx.item.id][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
-                            round(uniqueItems[tx.item.id][5], 2)
+                            item_key = (tx.item.id, tx.is_new)
+                            uniqueItems[item_key][3] += tx.quantity
+                            uniqueItems[item_key][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                            round(uniqueItems[item_key][5], 2)
                 
-                for item in uniqueItems.values():
+                sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
+                for item in sorted_items:
                     writer.writerow(item)
 
             return response
@@ -195,7 +195,7 @@ def generate_report(request):
                         newUniqueItems[item_key]['new_value'] += 0 if tx.item.new_price  is None else tx.quantity*tx.item.new_price 
                         newUniqueItems[item_key]['used_value'] += 0 if tx.item.used_price  is None else tx.quantity*tx.item.used_price 
 
-            context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], x['is_new'])))
+            context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/reports/generate_report.html', context)
