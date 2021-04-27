@@ -85,7 +85,10 @@ class Checkin(models.Model):
   def getValue(self):
     val = 0
     for tx in self.items.all().select_related("item"):
-      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
+      if tx.is_new:
+        val += 0 if tx.item.new_price is None else (tx.item.new_price * tx.quantity)
+      else:
+        val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
     return val
 
   def __str__(self):
@@ -113,8 +116,25 @@ class Checkout(models.Model):
   def getValue(self):
     val = 0
     for tx in self.items.all().select_related("item"):
-      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
+      if tx.is_new:
+        val += 0 if tx.item.new_price is None else (tx.item.new_price * tx.quantity)
+      else:
+        val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
     return val
+
+  # def getNewValue(self):
+  #   val = 0
+  #   for tx in self.items.all().select_related("item"):
+  #     if tx.is_new:
+  #       val += 0 if tx.item.new_price is None else (tx.item.new_price * tx.quantity)
+  #   return val
+  
+  # def getUsedValue(self):
+  #   val = 0
+  #   for tx in self.items.all().select_related("item"):
+  #     if not tx.is_new:
+  #       val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
+  #   return val
 
   def __str__(self):
     return "({}, {}, {})".format(self.family, self.out_items)
