@@ -449,10 +449,11 @@ def checkin_action(request):
         # category = form.cleaned_data['category']
         name = form.cleaned_data['name']
         quantity = form.cleaned_data['quantity']
+        is_new = form.cleaned_data['is_new']
 
         item = Item.objects.filter(name=name).first()
     
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
         if not 'transactions-in' in request.session or not request.session['transactions-in']:
             saved_list = []
         else:
@@ -532,10 +533,11 @@ def checkout_action(request):
         # category = form.cleaned_data['category']
         name = form.cleaned_data['name']
         quantity = form.cleaned_data['quantity']
+        is_new = form.cleaned_data['is_new']
 
         item = Item.objects.filter(name=name).first()
     
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
         if not 'transactions-out' in request.session or not request.session['transactions-out']:
             saved_list = []
         else:

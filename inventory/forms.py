@@ -154,6 +154,10 @@ class AddItemForm(forms.Form):
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
         return quantity
+    
+    def clean_is_new(self):
+        is_new = self.cleaned_data.get('is_new')
+        return is_new
 
 class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,
