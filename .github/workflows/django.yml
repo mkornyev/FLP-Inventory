@@ -19,6 +19,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
       env:
         DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        EMAIL_APP_PASS: ${{ secrets.EMAIL_APP_PASS }}
         
     - name: Install Dependencies
       run: |
@@ -26,8 +27,6 @@ jobs:
         pip install -r requirements.txt
 
     - name: Collect Static Files
-      env:
-        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
       run: |
         python manage.py collectstatic
     
@@ -37,7 +36,5 @@ jobs:
         bandit --configfile bandit.yaml -r inventory
         
     - name: Run Tests
-      env:
-        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
       run: |
         python manage.py test
