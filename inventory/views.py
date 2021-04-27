@@ -107,29 +107,34 @@ def generate_report(request):
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
             if qs is not None:
-                writer.writerow(["item", "category", "quantity", "price", "total value"])
+                writer.writerow(["item", "new/used", "category", "quantity", "price", "total value"])
 
                 uniqueItems = {} 
 
                 for c in qs:
                     for tx in c.items.all():
                         try: 
-                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', tx.item.price))
+                            originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
+                            print(tx.is_new, tx.item.new_price, tx.item.used_price)
+                            print(originalPrice)
+                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', originalPrice))
+                            print(adjustedPrice, "adj")
                         except ValueError:
                             adjustedPrice = 0
 
                         if tx.item.id not in uniqueItems: 
                             uniqueItems[tx.item.id] = [
                                 tx.item.name,
+                                "New" if tx.is_new else "Used",
                                 tx.item.category.name,
                                 tx.quantity,
                                 adjustedPrice,
                                 0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
                             ]
                         else: 
-                            uniqueItems[tx.item.id][2] += tx.quantity
-                            uniqueItems[tx.item.id][4] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
-                            round(uniqueItems[tx.item.id][4], 2)
+                            uniqueItems[tx.item.id][3] += tx.quantity
+                            uniqueItems[tx.item.id][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                            round(uniqueItems[tx.item.id][5], 2)
                 
                 for item in uniqueItems.values():
                     writer.writerow(item)

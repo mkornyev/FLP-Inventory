@@ -38,7 +38,9 @@
       {% endif %}
 
       {% if tx == 'Checkout' and itemizedOutput %}
-        <input id="{{c.id}}-adjustment" type="hidden" name="{{c.id}}-adjustment" value="{% if c.price %}{{ c.price }}{% else %}0.00{% endif %}">
+        <input id="{{c.id}}-adjustment" type="hidden" name="{{c.id}}-adjustment" value="{% if c.is_new and c.new_price %}{{ c.new_price }}
+        {% elif not c.is_new and c.used_price %}{{ c.used_price }}
+        {% else %}0{% endif %}">
       {% endif %}
 
       {% if tx_type == 'Checkout' %}
