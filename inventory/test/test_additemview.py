@@ -17,7 +17,8 @@ class AddItemTestCase(TestCase):
         response = self.client.post(
             "/checkin/", data={"additem": "",
                                "name": "ValidItem",
-                               "quantity": 2}, follow=True
+                               "quantity": 2,
+                               "is_new": True}, follow=True
         )
 
         self.assertEqual(response.status_code, 200)
@@ -33,9 +34,9 @@ class AddItemTestCase(TestCase):
         session = self.client.session
 
         self.assertEqual(session['transactions-in'],
-                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2}}]'])
+                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2, "is_new": true}}]'])
         self.assertEqual(session['transactions-out'],
-                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 1}}]'])
+                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 1, "is_new": false}}]'])
 
     def test_post_error(self):
         self.client.login(username='testuser', password='12345')
