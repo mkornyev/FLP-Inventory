@@ -27,10 +27,10 @@
         <td>{% if c.is_new %}New{% else %}Used{% endif %}</td>
       {% endif %}
       <td>{{ c.category }}</td>
-      <td id="{{c.id}}-quantity">{{ c.quantity }}</td>
+      <td id="{{c.id}}-{{c.is_new}}-quantity">{{ c.quantity }}</td>
 
       {% if tx == 'Checkout' %}
-        <td id="{{c.id}}-price" class="edit-in-place">
+        <td id="{{c.id}}-{{c.is_new}}-price" class="edit-in-place">
           {% if c.is_new and c.new_price %}{{ c.new_price }}
           {% elif not c.is_new and c.used_price %}{{ c.used_price }}
           {% else %}0{% endif %}
@@ -38,13 +38,13 @@
       {% endif %}
 
       {% if tx == 'Checkout' and itemizedOutput %}
-        <input id="{{c.id}}-adjustment" type="hidden" name="{{c.id}}-adjustment" value="{% if c.is_new and c.new_price %}{{ c.new_price }}
+        <input id="{{c.id}}-{{c.is_new}}-adjustment" type="hidden" name="{{c.id}}-{{c.is_new}}-adjustment" value="{% if c.is_new and c.new_price %}{{ c.new_price }}
         {% elif not c.is_new and c.used_price %}{{ c.used_price }}
         {% else %}0{% endif %}">
       {% endif %}
 
       {% if tx_type == 'Checkout' %}
-        <td id="{{c.id}}-value">{{ c.value }}</td>
+        <td id="{{c.id}}-{{c.is_new}}-value">{{ c.value }}</td>
       {% else %}
         <td>
           {% if c.new_price %}{{ c.new_price }}{% else %}0{% endif %}
