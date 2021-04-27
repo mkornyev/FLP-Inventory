@@ -153,20 +153,25 @@ def generate_report(request):
             newUniqueItems = {}
             for res in context['results']: 
                 for tx in res.items.all(): 
-                    if tx.item.id not in newUniqueItems:
-                        newUniqueItems[tx.item.id] = {
+                    if context['tx_type'] == 'Checkin':
+                        item_key = tx.item.id
+                    else:
+                        item_key = (tx.item.id, tx.is_new)
+                    if item_key not in newUniqueItems:
+                        newUniqueItems[item_key] = {
                             'id': tx.item.id,
                             'item': tx.item.name,
                             'category': tx.item.category.name,
+                            'is_new': tx.is_new,
                             'quantity': tx.quantity,
                             'price': tx.item.price,
                             'value': 0 if tx.item.price is None else tx.quantity*tx.item.price
                         }
                     else: 
-                        newUniqueItems[tx.item.id]['quantity'] += tx.quantity
-                        newUniqueItems[tx.item.id]['value'] += 0 if tx.item.price is None else tx.quantity*tx.item.price
+                        newUniqueItems[item_key]['quantity'] += tx.quantity
+                        newUniqueItems[item_key]['value'] += 0 if tx.item.price is None else tx.quantity*tx.item.price
 
-            context['results'] = list(newUniqueItems.values())
+            context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], x['is_new'])))
 
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/reports/generate_report.html', context)

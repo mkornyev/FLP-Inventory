@@ -3,6 +3,9 @@
   <thead>
     <tr>
       <th scope="col">Item</th>
+      {% if tx_type == 'Checkout' %}
+        <th scope="col">New/Used</th>
+      {% endif %}
       <th scope="col">Category</th>
       <th scope="col">Quantity</th>
       <th scope="col">Price</th>
@@ -13,6 +16,9 @@
     {% for c in results %}
     <tr>
       <td>{{ c.item }}</td>
+      {% if tx_type == 'Checkout' %}
+        <td>{% if c.is_new %}New{% else %}Used{% endif %}</td>
+      {% endif %}
       <td>{{ c.category }}</td>
       <td id="{{c.id}}-quantity">{{ c.quantity }}</td>
       <td id="{{c.id}}-price" class="edit-in-place">{% if c.price %}{{ c.price }}{% else %}0{% endif %}</td>
