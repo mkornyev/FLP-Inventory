@@ -116,7 +116,7 @@ def generate_report(request):
                         item_key = (tx.item.id, tx.is_new)
                         try: 
                             originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
-                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', originalPrice))
+                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-' + str(tx.is_new) + '-adjustment', originalPrice))
                         except ValueError:
                             adjustedPrice = 0
 
