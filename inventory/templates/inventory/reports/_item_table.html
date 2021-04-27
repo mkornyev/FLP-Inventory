@@ -8,7 +8,7 @@
       {% endif %}
       <th scope="col">Category</th>
       <th scope="col">Quantity</th>
-      <th scope="col">Price</th>
+      <th scope="col">New/Used Price</th>
       <th scope="col">Value</th>
     </tr>
   </thead>
@@ -21,7 +21,11 @@
       {% endif %}
       <td>{{ c.category }}</td>
       <td id="{{c.id}}-quantity">{{ c.quantity }}</td>
-      <td id="{{c.id}}-price" class="edit-in-place">{% if c.price %}{{ c.price }}{% else %}0{% endif %}</td>
+      <td id="{{c.id}}-price" class="edit-in-place">
+        {% if c.is_new and c.new_price %}{{ c.new_price }}
+        {% elif not c.is_new and c.used_price %}{{ c.used_price }}
+        {% else %}0{% endif %}
+      </td>
 
       {% if tx == 'Checkout' and itemizedOutput %}
         <input id="{{c.id}}-adjustment" type="hidden" name="{{c.id}}-adjustment" value="{% if c.price %}{{ c.price }}{% else %}0.00{% endif %}">

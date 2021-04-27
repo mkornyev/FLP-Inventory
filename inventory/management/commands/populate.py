@@ -50,13 +50,13 @@ class Command(BaseCommand):
 
         item1 = Item.objects.create(category=category1, name="tshirt boys 4", new_price=10.56, used_price=7.20, quantity=10)
         item1.save()
-        item2 = Item.objects.create(category=category1, name="jacket", new_price=13.50, used_price=5.70, quantity=18)
+        item2 = Item.objects.create(category=category1, name="jacket", quantity=18) # No Price 
         item2.save()
         item3 = Item.objects.create(category=category3, name="stroller", new_price=45.00, quantity=5)
         item3.save()
-        item4 = Item.objects.create(category=category2, name="formula", used_price=5.56, quantity=15)
+        item4 = Item.objects.create(category=category2, name="formula", used_price=5.50, quantity=15)
         item4.save()
-        item5 = Item.objects.create(category=category1, name="t shirt girls 4", quantity=3) # No Price 
+        item5 = Item.objects.create(category=category1, name="t shirt girls 4", new_price=2.00, used_price=1.00, quantity=3)
         item5.save()
         print("Item has been created.")
 
@@ -70,7 +70,7 @@ class Command(BaseCommand):
         tx1.save()
         tx5 = ItemTransaction.objects.create(item=item5, quantity=3, is_new=True)
         tx5.save()
-        tx6 = ItemTransaction.objects.create(item=item5, quantity=1, is_new=True)
+        tx6 = ItemTransaction.objects.create(item=item5, quantity=1)
         tx6.save()
         
         print("Transaction has been created.")
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         checkout.save()
         
         checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today, notes="Not sure what these shirts cost??? - Krissy")
-        checkout.items.add(tx5)
+        checkout.items.add(tx6)
         checkout.save()
         print("Checkout has been created.")
     

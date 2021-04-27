@@ -157,6 +157,11 @@ def generate_report(request):
                         item_key = tx.item.id
                     else:
                         item_key = (tx.item.id, tx.is_new)
+                    item_price = None
+                    if tx.is_new and tx.item.new_price != None:
+                        item_price = tx.item.new_price
+                    elif not tx.is_new and tx.item.used_price != None:
+                        item_price = tx.item.used_price
                     if item_key not in newUniqueItems:
                         newUniqueItems[item_key] = {
                             'id': tx.item.id,
@@ -164,12 +169,13 @@ def generate_report(request):
                             'category': tx.item.category.name,
                             'is_new': tx.is_new,
                             'quantity': tx.quantity,
-                            'price': tx.item.price,
-                            'value': 0 if tx.item.price is None else tx.quantity*tx.item.price
+                            'new_price': tx.item.new_price,
+                            'used_price': tx.item.used_price,
+                            'value': 0 if item_price is None else tx.quantity*item_price
                         }
                     else: 
                         newUniqueItems[item_key]['quantity'] += tx.quantity
-                        newUniqueItems[item_key]['value'] += 0 if tx.item.price is None else tx.quantity*tx.item.price
+                        newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
 
             context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], x['is_new'])))
 
