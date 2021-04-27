@@ -62,15 +62,15 @@ class Command(BaseCommand):
 
         tx2 = ItemTransaction.objects.create(item=item3, quantity=1)
         tx2.save()
-        tx3 = ItemTransaction.objects.create(item=item2, quantity=5)
+        tx3 = ItemTransaction.objects.create(item=item2, quantity=5, is_new=True)
         tx3.save()
         tx4 = ItemTransaction.objects.create(item=item4, quantity=3)
         tx4.save()
         tx1 = ItemTransaction.objects.create(item=item1, quantity=2)
         tx1.save()
-        tx5 = ItemTransaction.objects.create(item=item5, quantity=3)
+        tx5 = ItemTransaction.objects.create(item=item5, quantity=3, is_new=True)
         tx5.save()
-        tx6 = ItemTransaction.objects.create(item=item5, quantity=1)
+        tx6 = ItemTransaction.objects.create(item=item5, quantity=1, is_new=True)
         tx6.save()
         
         print("Transaction has been created.")

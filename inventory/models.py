@@ -70,6 +70,7 @@ class Item(models.Model):
 class ItemTransaction(models.Model):
   item = models.ForeignKey(Item, on_delete=models.PROTECT, blank=True, null=True)
   quantity = models.IntegerField(default=0)
+  is_new = models.BooleanField(default=False)
 
   def __str__(self):
     return "({}, {})".format(self.item, self.quantity)
