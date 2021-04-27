@@ -73,7 +73,8 @@ class ItemTransaction(models.Model):
   is_new = models.BooleanField(default=False)
 
   def __str__(self):
-    return "({}, {})".format(self.item, self.quantity)
+    new_str = "New" if self.is_new else "Used"
+    return "({}, {}, {})".format(self.item, self.quantity, new_str)
 
 class Checkin(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
@@ -91,7 +92,12 @@ class Checkin(models.Model):
 
   @property
   def in_items(self):
-        return ", ".join([str(i) for i in self.items.all()])
+    def itemTransaction_checkin_str(it):
+      '''
+      Returns the item and quantity of an item transaction as a string, ignoring new/used.
+      '''
+      return "({}, {})".format(it.item, it.quantity)
+    return ", ".join([itemTransaction_checkin_str(i) for i in self.items.all()])
   
   class Meta:
     ordering = ['-datetime']
@@ -110,7 +116,7 @@ class Checkout(models.Model):
     return val
 
   def __str__(self):
-    return "({}, {})".format(self.family, self.out_items)
+    return "({}, {}, {})".format(self.family, self.out_items)
   
   @property
   def out_items(self):
