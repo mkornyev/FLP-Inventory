@@ -376,10 +376,11 @@ def createItem_action(request, location):
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
-        price = form.cleaned_data['price']
+        new_price = form.cleaned_data['new_price']
+        used_price = form.cleaned_data['used_price']
         quantity = form.cleaned_data['quantity']
 
-        item = Item(category=category, name=name, price=price, quantity=quantity)
+        item = Item(category=category, name=name, new_price=new_price, used_price=used_price, quantity=quantity)
         item.save()
 
         if location == 'in' or location == 'out':

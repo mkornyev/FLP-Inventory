@@ -53,7 +53,8 @@ class CreateItemForm(forms.Form):
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
+    new_price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
+    used_price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
     required_css_class = 'required' 
     
     # Customizes form validation for properties that apply to more
@@ -90,16 +91,26 @@ class CreateItemForm(forms.Form):
         # dictionary
         return quantity
 
-    # Customizes form validation for the quantity field.
-    def clean_price(self):
-        # Confirms the quantity is above zero
-        price = self.cleaned_data.get('price')
+    # Customizes form validation for the new price field.
+    def clean_new_price(self):
+        # Confirms the new price is above zero
+        price = self.cleaned_data.get('new_price')
 
         if price and price < 0:
-            raise forms.ValidationError("Price must be above zero.")
+            raise forms.ValidationError("New price must be above zero.")
 
-        # We must return the cleaned data we got from the cleaned_data
-        # dictionary
+        # We must return the cleaned data we got from the cleaned_data dictionary
+        return price
+    
+    # Customizes form validation for the used price field.
+    def clean_used_price(self):
+        # Confirms the used price is above zero
+        price = self.cleaned_data.get('used_price')
+
+        if price and price < 0:
+            raise forms.ValidationError("Used price must be above zero.")
+
+        # We must return the cleaned data we got from the cleaned_data dictionary
         return price
 
 class AddItemForm(forms.Form):
