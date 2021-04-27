@@ -21,7 +21,7 @@ class ItemAdmin(admin.ModelAdmin):
 admin.site.register(Item, ItemAdmin)
 
 class ItemTransactionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'item', 'quantity', )
+    list_display = ('id', 'item', 'quantity', 'is_new', )
 admin.site.register(ItemTransaction, ItemTransactionAdmin)
 
 class CheckinAdmin(admin.ModelAdmin):
