@@ -86,6 +86,7 @@ def generate_report(request):
             context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
         else:
             context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+        context['tx_type'] = request.POST['tx-type']
 
         context['totalValue'] = 0 
         for result in context['results']:
