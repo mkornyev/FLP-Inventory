@@ -91,6 +91,15 @@ def generate_report(request):
         context['totalValue'] = 0 
         for result in context['results']:
             context['totalValue'] = result.getValue() + context['totalValue']
+        
+        if context['tx_type'] == 'Checkin':
+            context['newTotalValue'] = 0 
+            for result in context['results']:
+                context['newTotalValue'] = result.getNewValue() + context['newTotalValue']
+            
+            context['usedTotalValue'] = 0 
+            for result in context['results']:
+                context['usedTotalValue'] = result.getUsedValue() + context['usedTotalValue']
 
         if 'export' in request.POST:
             qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
@@ -171,11 +180,15 @@ def generate_report(request):
                             'quantity': tx.quantity,
                             'new_price': tx.item.new_price,
                             'used_price': tx.item.used_price,
-                            'value': 0 if item_price is None else tx.quantity*item_price
+                            'value': 0 if item_price is None else tx.quantity*item_price,
+                            'new_value': 0 if tx.item.new_price is None else tx.quantity*tx.item.new_price, # always use new price
+                            'used_value': 0 if tx.item.used_price is None else tx.quantity*tx.item.used_price # always use used price
                         }
                     else: 
                         newUniqueItems[item_key]['quantity'] += tx.quantity
                         newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
+                        newUniqueItems[item_key]['new_value'] += 0 if tx.item.new_price  is None else tx.quantity*tx.item.new_price 
+                        newUniqueItems[item_key]['used_value'] += 0 if tx.item.used_price  is None else tx.quantity*tx.item.used_price 
 
             context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], x['is_new'])))
 
