@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from inventory.models import Item, Checkout, Family
+from inventory.models import Item, Checkout, Family, AgeRange
 
 class CheckoutTestCase(TestCase):
     def setUp(self):
@@ -13,6 +13,9 @@ class CheckoutTestCase(TestCase):
 
         item = Item.objects.create(name="ValidItem", quantity=5)
         item.save()
+
+        ageRange = AgeRange.objects.create(low=3, high=5) # will have value 1
+        ageRange.save()
 
     def test_invalid_not_logged_in(self):
         response = self.client.get("/checkout/")
@@ -36,7 +39,7 @@ class CheckoutTestCase(TestCase):
     def test_invalid_no_items(self):
         self.client.login(username='testuser', password='12345')
 
-        response = self.client.post('/checkout/', data={"checkout": "", "family":"ValidFamily"})
+        response = self.client.post('/checkout/', data={"checkout": "", "family":"ValidFamily", "child": "Big Chungus", "age": "1"})
 
         # Check if invalid
         self.assertEqual(response.status_code, 400)
@@ -57,7 +60,7 @@ class CheckoutTestCase(TestCase):
         session['transactions-out'] = ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2}}]']
         session.save()
 
-        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily"}, follow=True)
+        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily", "child": "Big Chungus", "age": "1"}, follow=True)
 
         # Check if valid
         self.assertEqual(response.status_code, 200)
