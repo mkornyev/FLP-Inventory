@@ -30,7 +30,10 @@ class Family(models.Model):
     verbose_name_plural = "families"
 
   def save(self, *args, **kwargs):
-    self.displayName = self.__str__() + f" : ({self.phone})"
+    if self.phone:
+      self.displayName = self.__str__() + f" : ({self.phone})"
+    else:
+      self.displayName = self.__str__() + " : (None)"
     super(Family, self).save(*args, **kwargs)
 
 
