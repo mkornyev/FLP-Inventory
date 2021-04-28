@@ -44,15 +44,15 @@
                     </div>
                     <br>
 
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=item_week_checkouts group_by="item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=item_month_checkouts group_by="item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=item_six_month_checkouts group_by="item" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=item_all_time_checkouts group_by="item" %}
-
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=cat_week_checkouts group_by="category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=cat_month_checkouts group_by="category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=cat_six_month_checkouts group_by="category" %}
-                    {% include "inventory/checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=cat_all_time_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=item_week_checkouts group_by="item" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=item_month_checkouts group_by="item" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=item_six_month_checkouts group_by="item" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=item_all_time_checkouts group_by="item" %}
+                    
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_week' date_since=one_week_ago checkouts=cat_week_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_month' date_since=one_month_ago checkouts=cat_month_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='last_six_months' date_since=six_months_ago checkouts=cat_six_month_checkouts group_by="category" %}
+                    {% include "inventory/analytics/_checkout_quantities_table.html" with date_period='all_time' date_since=all_time checkouts=cat_all_time_checkouts group_by="category" %}
                     
             </form>
             {% csrf_token %}
@@ -62,7 +62,7 @@
                 <div class="col-sm">
                     <h6>Data Type</h6>
                     <select class="form-select" id="chart-type">
-                        <option value="cout" selected>Checkouts</option>
+                        <option value="cout" selected>Children</option>
                         <option value="fam">Families</option>
                     </select>
                 </div>
@@ -83,13 +83,14 @@
     var labelsCoutJson = '{{ labels_couts|safe }}';
     var dataCoutJson = '{{ data_couts|safe }}';
 
+    // Note that the real values displayed are checkout counts but we display it as Children in the UI
     var ctx = document.getElementById('cout_chart').getContext('2d');
     var chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: JSON.parse(labelsCoutJson),
             datasets: [{
-                label: 'Number of Checkouts',
+                label: 'Number of Children',
                 data: JSON.parse(dataCoutJson),
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
@@ -99,7 +100,7 @@
         options: {
             title: {
                 display: true,
-                text: 'Checkouts by Month',
+                text: 'Child Checkouts per Month',
             },
             scales: {
                 yAxes: [{
@@ -130,7 +131,7 @@
         options: {
             title: {
                 display: true,
-                text: 'Families by Month'
+                text: 'Family Checkouts per Month'
             },
             scales: {
                 yAxes: [{

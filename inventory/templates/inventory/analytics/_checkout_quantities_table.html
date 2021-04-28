@@ -44,37 +44,9 @@
 
         <!-- Pagination -->
         {% if checkouts.has_other_pages %}
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    {% if checkouts.has_previous %}
-                        <li class="page-item">
-                            <button type="submit" name="page" value="{{ checkouts.previous_page_number }}" class="page-link" aria-label="Previous">Previous</button>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
-                    {% endif %}
 
-                    {% for i in checkouts.paginator.page_range %}
-                        {% if checkouts.number == i %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ i }}</span>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                <button type="submit" name="page" value="{{ i }}" class="page-link">{{ i }}</button>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
+            {% include 'inventory/_pagination.html' with results=checkouts %}
 
-                    {% if checkouts.has_next %}
-                        <li class="page-item">
-                            <button type="submit" name="page" value="{{ checkouts.next_page_number }}" class="page-link" aria-label="Next">Next</button>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><span class="page-link">Next</span></li>
-                    {% endif %}
-                </ul>
-            </nav>
         {% endif %}
         {% csrf_token %}
     </div>

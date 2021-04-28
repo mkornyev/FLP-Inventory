@@ -72,7 +72,7 @@
                 <th scope="row">{{ tx.item}}</td>
                 <td>{{ tx.quantity }}</td>
                 <td>
-                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger">
+                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger save-notes-on-click">
                     Remove
                   </a>
                 </td
@@ -98,15 +98,27 @@
           </div>
           {% endfor %}
           {% csrf_token %}
-          <p class="create-family">Can't find the family you're looking for?<br/><a href="{% url 'CreateFamily' %}">Create a new family.</a></p>
+          <p class="create-family">Can't find the family you're looking for?<br/><a id="createFam-btn" href="{% url 'CreateFamily' %}">Create a new family.</a></p>
+        </div>
+
+        <div id="notesCollapse" class="collapse">
+          <label for="id_checkout_notes">Notes:</label>
+          <textarea name="checkout_notes" cols="25" rows="4" class="form-control" maxlength="500" id="id_checkout_notes" spellcheck="false"></textarea>
+          <br>
         </div>
 
         <div class="row">
-          {% if transactions %}
             <div class="col">
-              <button name="checkout" id="checkout-btn" class="btn btn-success" type="submit">Check Out Items</button>
+              <button id="addNotes-btn" class="btn btn-warning mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#notesCollapse" aria-expanded="false" aria-controls="notesCollapse">
+                Add Notes &#x270E;
+              </button>
+              <button id="checkout-btn" name="checkout" class="btn btn-success mt-2" type="submit" {% if not transactions %}disabled{% endif %}>Check Out Items</button>
             </div>
-          {% endif %}
+            <!-- <div class="col">
+              <button id="addNotes-btn" class="btn btn-warning mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#notesCollapse" aria-expanded="false" aria-controls="notesCollapse">
+                Add Notes &#x270E;
+              </button>
+            </div> -->
         </div>
       </form>
     </div>
@@ -127,11 +139,11 @@
           {% csrf_token %}
           <br>
           {% if user.is_superuser %}
-            <p>Can't find what you're looking for?<br/><a href="{% url 'CreateItem' location='out' %}">Create a new item.</a></p>
+            <p>Can't find what you're looking for?<br/><a id="createItem-btn" href="{% url 'CreateItem' location='out' %}">Create a new item.</a></p>
           {% else %}
             <p>Can't find what you're looking for? Ask an admin to create a new item.</p>
           {% endif %}
-          <button name="additem" class="btn btn-warning" type="submit">Add Item +</button>
+          <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add Item +</button>
       </form>
     </div>
   </div>
@@ -139,41 +151,46 @@
   {% if createdFamily %}
     <div id="fromCreatedFamilyRedirect" value="{{ createdFamily }}" style="display: none;"></div>
   {% endif %}
+
+  <br>
 </div>
 
 {% endblock %}
 
 {% block page_specific_scripts %}
+  <script>
+    $(document).ready(function(){
+      // -------------- FAMILY SCRIPTS: --------------
 
-<script>
-  $(document).ready(function() {
-    var createdFamily = $("#fromCreatedFamilyRedirect").first().attr('value')
+      var createdFamily = $("#fromCreatedFamilyRedirect").first().attr('value')
 
-    if (createdFamily != 'no family') { localStorage.setItem("family", createdFamily); }
-    else if (!localStorage.getItem("family")) { localStorage.setItem("family", ""); }
+      if (createdFamily != 'no family') { localStorage.setItem("family", createdFamily); }
+      else if (!localStorage.getItem("family")) { localStorage.setItem("family", ""); }
 
-    $("#id_family").val(function () {
-      return localStorage.getItem("family");
-    });
-    $("#id_family").on("change", function () {
-      localStorage.setItem("family", $(this).val());
-    });
-    $("#id_family").on("click", function () {
-      $(this).val("");
-    });
-    $("#id_family").autocomplete({
-      source: '{% url 'autocomplete_family' %}',
-      minLength: 2
-    });
-    $("#checkout-btn").on('click', function(){
-      localStorage.removeItem("family")
+      $("#id_family").val(function () {
+        return localStorage.getItem("family");
+      });
+      $("#id_family").on("change", function () {
+        localStorage.setItem("family", $(this).val());
+      });
+      $("#id_family").on("click", function () {
+        $(this).val("");
+      });
+      $("#id_family").autocomplete({
+        source: '{% url 'autocomplete_family' %}',
+        minLength: 2
+      });
+      $("#checkout-btn").on('click', function(){
+        localStorage.removeItem("family")
+      })
+
+      $("#id_name").autocomplete({
+        source: '{% url 'autocomplete_item' %}',
+        minLength: 2
+      })
     })
+  </script>
 
-    $("#id_name").autocomplete({
-    	source: '{% url 'autocomplete_item' %}',
-    	minLength: 2
-    });
-  });
-</script>
-
+  {% load static %}
+  <script src="{% static 'inventory/checkout_scripts.js' %}"></script>
 {% endblock %}

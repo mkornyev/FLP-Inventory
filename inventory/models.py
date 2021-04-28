@@ -13,7 +13,7 @@ class Family(models.Model):
   fname = models.CharField(max_length=50, blank=True, null=True, verbose_name='First Name')
   lname = models.CharField(max_length=50, blank=False, null=False,verbose_name='Last Name') # Only the last_name is required
   phone = PhoneNumberField(blank=True, null=True)
-  name = models.CharField(max_length=100, blank=True, null=True, verbose_name='Full Name')
+  displayName = models.CharField(max_length=150, blank=True, null=True, verbose_name='Family name and phone')
   # created_at = models.DateTimeField(default=timezone.now)
   # USE Family.child_set OR .children TO GET QuerySet<Child>
 
@@ -25,9 +25,12 @@ class Family(models.Model):
     if self.fname: 
       return "{}, {}".format(self.lname, self.fname)
     return "{}".format(self.lname)
+  
+  class Meta:
+    verbose_name_plural = "families"
 
   def save(self, *args, **kwargs):
-    self.name = self.__str__()
+    self.displayName = self.__str__() + f" : ({self.phone})"
     super(Family, self).save(*args, **kwargs)
 
 
@@ -37,6 +40,9 @@ class Child(models.Model):
 
   def __str__(self):
     return "{}".format(self.name)
+  
+  class Meta:
+    verbose_name_plural = "children"
 
 class Category(models.Model):
   name = models.CharField(max_length=50, blank=False, null=False, unique=True)
@@ -54,6 +60,8 @@ class AgeRange(models.Model):
   high = models.CharField(max_length=50, blank=False, null=False, unique=True)
   def __str__(self):
     return "{} - {}".format(self.low, self.high)
+  class Meta:
+    verbose_name_plural = "categories"
 
 class Item(models.Model):
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True) # CASCADE - deletes all items if a Category is deleted
@@ -83,7 +91,7 @@ class Checkin(models.Model):
     return val
 
   def __str__(self):
-    return "({}, {})".format(self.datetime, self.in_items())
+    return "({}, {})".format(self.datetime, self.in_items)
 
   @property
   def in_items(self):
@@ -99,6 +107,7 @@ class Checkout(models.Model):
   datetime = models.DateTimeField(default=timezone.now)
   childName = models.CharField(max_length=50, blank=True, null=True, verbose_name='Child')
   ageRange = models.ForeignKey(AgeRange, on_delete=models.PROTECT, blank=True, null=True)
+  notes = models.CharField(max_length=500, blank=True, null=True)
 
   def getValue(self):
     val = 0
@@ -107,7 +116,7 @@ class Checkout(models.Model):
     return val
 
   def __str__(self):
-    return "({}, {})".format(self.family, self.out_items())
+    return "({}, {})".format(self.family, self.out_items)
   
   @property
   def out_items(self):

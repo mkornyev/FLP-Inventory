@@ -30,9 +30,9 @@ class LoginForm(forms.Form):
 
 class CreateFamilyForm(forms.Form):
     first_name = forms.CharField(max_length=50,
-                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False, label='Caregiver first name')
     last_name = forms.CharField(max_length=50,
-                           widget=forms.TextInput(attrs={'class': 'form-control'}))
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), label='Caregiver last name')
     phone = PhoneNumberField(widget=forms.TextInput(attrs={'class': 'form-control', 'type':'tel'}),
                             required=False)
     required_css_class = 'required'

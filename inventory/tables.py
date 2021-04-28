@@ -19,7 +19,7 @@ class FamilyTable(tables.Table):
     class Meta:
         model = Family
         template_name = "django_tables2/bootstrap.html"
-        sequence = "id", "lname", "fname", "phone", "child_names"
+        fields = ("id", "lname", "fname", "phone", "child_names")
         order_by = 'lname'
 
 class CategoryTable(NameTable):
@@ -49,5 +49,5 @@ class CheckoutTable(tables.Table):
     class Meta:
         model = Checkout
         template_name = "django_tables2/bootstrap.html"
-        fields = ("id", "user", "family", "datetime", "out_items", )
+        fields = ("id", "user", "family__displayName", "datetime", "out_items", "notes")
         order_by = '-datetime'

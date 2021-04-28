@@ -18,9 +18,11 @@
     <div class="col">
       <h1>Items</h1> 
     </div>
-    <div class="col">
-      <a class="btn btn-warning float-end" href="{% url 'CreateItem' %}">Create Item +</a>
-    </div>
+    {% if user.is_superuser %}
+      <div class="col">
+        <a class="btn btn-warning float-end" href="{% url 'CreateItem' location='Items'%}">Create Item +</a>
+      </div>
+    {% endif %}
   </div>
 
   {% render_table table %}

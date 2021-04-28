@@ -2,14 +2,13 @@
 	<nav id="app-nav" {% if user.is_superuser %} class="navbar navbar-expand-lg navbar-dark bg-dark" {% else %} class="navbar navbar-expand-lg navbar-light bg-light" {% endif %}>
 
 		<!-- Render the logo -->
-		
 		<a class="navbar-brand" href="{% url 'Home' %}">
 			{% load static %}
 			<img src="{% static 'inventory/logo.png' %}" width="35" height="33" class="d-inline-block align-top" alt="FLP Logo">
-			{% if user.is_superuser %}
-			<b>&nbsp;&nbsp;Foster Love Project (Admin)&nbsp;&nbsp;</b>
-			{% elif user.is_staff %}
+			{% if user.is_superuser %} <!-- Note that is_staff != Staff in UI -->
 			<b>&nbsp;&nbsp;Foster Love Project (Staff)&nbsp;&nbsp;</b>
+			{% elif user.is_staff %}
+			<b>&nbsp;&nbsp;Foster Love Project (Volunteer)&nbsp;&nbsp;</b>
 			{% else %}
 			<b>&nbsp;&nbsp;Foster Love Project&nbsp;&nbsp;</b>
 			{% endif %}
@@ -21,7 +20,7 @@
 		</button>
 		
 		<div class="collapse navbar-collapse" id="navbarText">
-			<ul class="navbar-nav ml-auto">
+			<ul class="navbar-nav me-auto">
 
 				{% if user.is_staff %}
 					<li class="nav-item dropdown">
@@ -56,32 +55,36 @@
 					</li>
 				{% endif %}
 
-        
-				<!-- Only show the log out link if the user is logged in -->
-				{% if user.is_authenticated %}
-					<li class="nav-item">
-						<a class="nav-link" href="{% url 'Logout' %}">Log Out</a>
-					</li>
-					{% if user.is_superuser %}
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'admin:index' %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Admin Site">&#x2699;</a>
-						</li>
-					{% endif %}
-					
-				{% else %}
-
-					<!-- Only show the log in link if the user is logged out -->
-					<li class="nav-item">
-						{% url 'Login' as login_url %}
-						<a class="nav-link {% if request.path == login_url %}active{% endif %}" href="{{ login_url }}">Log In</a>
-					</li>
-
+				{% if not user.is_authenticated %}
 					<!-- Only show the about link if the user is logged out -->
 					<li class="nav-item">
 						{% url 'About' as about_url %}
 						<a class="nav-link {% if request.path == about_url %}active{% endif %}" href="{{ about_url }}">About</a>
 					</li>
 				{% endif %}
+			
+			</ul>
+			<ul class="navbar-nav ms-auto">
+
+				<!-- Only show the log out link if the user is logged in -->
+				{% if user.is_authenticated %}
+					<span class="navbar-text nav-hi">Hi, {{ user.first_name }}</span>
+					{% if user.is_superuser %}
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'admin:index' %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Admin Site">&#x2699;</a>
+						</li>
+					{% endif %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'Logout' %}">Log Out</a>
+					</li>
+				{% else %}
+					<!-- Only show the log in link if the user is logged out -->
+					<li class="nav-item">
+						{% url 'Login' as login_url %}
+						<a class="nav-link {% if request.path == login_url %}active{% endif %}" href="{{ login_url }}">Log In</a>
+					</li>
+				{% endif %}
+
 			</ul>
 		</div>
 	</nav>

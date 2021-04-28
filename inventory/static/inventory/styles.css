@@ -36,11 +36,31 @@ a:hover {
   margin-bottom: 10%;
 }
 
+/* Nav Bar */
+
+.navbar {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.nav-hi::after {
+  content: '|';
+  padding-left: .5em;
+	padding-right: .5em;
+}
+
 /* Text Styles */
 
 .bold { font-weight: 800; }
 
 .blue { color: #095cb5; }
+
+/* Item Cart Panel */
+
+@media only screen and (max-width: 767px) {
+  #additemform { border-left: none !important; }
+  div#additemform h4 { margin-top: 50px; }
+}
 
 /* Report Generation: */
 

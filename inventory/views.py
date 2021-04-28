@@ -306,7 +306,7 @@ def analytics(request):
     context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts, 'id')
     context['labels_fams'], context['data_fams'] = chart_info_by_month(all_checkouts, 'family')
 
-    return render(request, 'inventory/analytics.html', context)
+    return render(request, 'inventory/analytics/analytics.html', context)
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
@@ -327,7 +327,7 @@ def createFamily_action(request):
     if request.method == 'GET':
         context['form'] = CreateFamilyForm()
         
-        return render(request, 'inventory/createFamily.html', context)
+        return render(request, 'inventory/families/create.html', context)
 
     if request.method == 'POST':
         form = CreateFamilyForm(request.POST)
@@ -335,7 +335,7 @@ def createFamily_action(request):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createFamily.html', context)
+            return render(request, 'inventory/families/create.html', context)
 
         # category = form.cleaned_data['category']
         fname = form.cleaned_data['first_name']
@@ -344,12 +344,7 @@ def createFamily_action(request):
 
         family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
-        famName = ''
-        if fname:                
-            famName = '{}, {}'.format(lname, fname)
-        else: 
-            famName = lname
-        request.session['createdFamily'] = famName
+        request.session['createdFamily'] = family.displayName
         messages.success(request, 'Family created')
         return redirect(reverse('Checkout'))
 
@@ -363,7 +358,7 @@ def createItem_action(request, location):
     if request.method == 'GET':
         context['form'] = CreateItemForm()
         
-        return render(request, 'inventory/createitem.html', context)
+        return render(request, 'inventory/items/create.html', context)
 
     if request.method == 'POST':
         form = CreateItemForm(request.POST)
@@ -371,7 +366,7 @@ def createItem_action(request, location):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createitem.html', context)
+            return render(request, 'inventory/items/create.html', context)
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
@@ -381,8 +376,11 @@ def createItem_action(request, location):
         item = Item(category=category, name=name, price=price, quantity=quantity)
         item.save()
 
-        messages.success(request, 'Item created')
-        return redirect(reverse('Check' + location))
+        if location == 'in' or location == 'out':
+            messages.success(request, 'Item created')
+            return redirect(reverse('Check' + location))
+        else:
+            return redirect(reverse(location))
 
 # Checkin view
 @login_required
@@ -545,7 +543,11 @@ def checkout_action(request):
             messages.warning(request, 'Could not create checkout: No items added')
             return render(request, 'inventory/checkout.html', context, status=400)
 
-        checkout = Checkout(family=family_object[0], user=request.user, childName=childName, ageRange=ageRange)
+        notes = None
+        if 'checkout_notes' in request.POST and request.POST['checkout_notes'] != '': 
+            notes = request.POST['checkout_notes']
+        
+        checkout = Checkout(family=family_object[0], user=request.user, notes=notes, childName=childName, ageRange=ageRange)
         checkout.save()
 
         for tx in transactions:
@@ -572,15 +574,10 @@ def autocomplete_item(request):
   
 def autocomplete_family(request):
     if 'term' in request.GET:
-        qs = Family.objects.filter(
-            Q(fname__icontains=request.GET.get('term')) | Q(lname__icontains=request.GET.get('term'))
-        )
+        qs = Family.objects.filter(Q(displayName__icontains=request.GET.get('term')) )
         names = list()
-        for fam in qs:
-            if fam.fname:                
-                names.append('{}, {}'.format(fam.lname, fam.fname))
-            else: 
-                names.append(fam.lname)
+        for fam in qs: 
+            names.append(fam.displayName)
         return JsonResponse(names, safe=False)
   
 ######################### DATABASE VIEWS #########################
