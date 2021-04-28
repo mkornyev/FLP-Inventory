@@ -526,16 +526,7 @@ def checkout_action(request):
 
         family = form.cleaned_data['family'].strip()
 
-        if ',' in family: 
-            comma = family.index(',')
-            lname = family[0:comma]
-            fname = family[comma+2:]
-
-            family_object = Family.objects.filter(
-                Q(fname__exact=fname) and Q(lname__exact=lname)
-            )
-        else: 
-            family_object = Family.objects.filter(lname__exact=family)
+        family_object = Family.objects.filter(displayName__exact=family)
 
         if not transactions:
             messages.warning(request, 'Could not create checkout: No items added')
