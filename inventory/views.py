@@ -558,6 +558,8 @@ def checkout_action(request):
             return render(request, 'inventory/checkout.html', context, status=400)
 
         family = form.cleaned_data['family'].strip()
+        childName = form.cleaned_data['child'].strip()
+        ageRange = form.cleaned_data['age']
 
         if ',' in family: 
             comma = family.index(',')
@@ -578,7 +580,7 @@ def checkout_action(request):
         if 'checkout_notes' in request.POST and request.POST['checkout_notes'] != '': 
             notes = request.POST['checkout_notes']
         
-        checkout = Checkout(family=family_object[0], user=request.user, notes=notes)
+        checkout = Checkout(family=family_object[0], user=request.user, notes=notes, childName=childName, ageRange=ageRange)
         checkout.save()
 
         for tx in transactions:

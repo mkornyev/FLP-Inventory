@@ -54,9 +54,15 @@ class Category(models.Model):
   
   def __str__(self):
     return "{}".format(self.name)
-
   class Meta:
     verbose_name_plural = "categories"
+
+class AgeRange(models.Model):
+  low = models.CharField(max_length=50, blank=False, null=False, unique=True)
+  high = models.CharField(max_length=50, blank=False, null=False, unique=True)
+  def __str__(self):
+    return "{} - {}".format(self.low, self.high)
+  
 
 class Item(models.Model):
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True) # CASCADE - deletes all items if a Category is deleted
@@ -129,6 +135,8 @@ class Checkout(models.Model):
   family = models.ForeignKey(Family, on_delete=models.PROTECT, blank=True, null=True)
   items = models.ManyToManyField(ItemTransaction, blank=False)
   datetime = models.DateTimeField(default=timezone.now)
+  childName = models.CharField(max_length=50, blank=True, null=True, verbose_name='Child')
+  ageRange = models.ForeignKey(AgeRange, on_delete=models.PROTECT, blank=True, null=True)
   notes = models.CharField(max_length=500, blank=True, null=True)
 
   def getValue(self):
