@@ -162,19 +162,8 @@ class CheckOutForm(forms.Form):
         # Confirms the family exists
         family = self.cleaned_data.get('family').strip()
 
-        if ',' in family: 
-            comma = family.index(',')
-            lname = family[0:comma]
-            fname = family[comma+2:]
-
-            if not Family.objects.filter(
-                Q(fname__exact=fname) and Q(lname__exact=lname)
-            ):
-                raise forms.ValidationError("Family does not exist.")
-        
-        else: 
-            if not Family.objects.filter(lname__exact=family):
-                raise forms.ValidationError("Family does not exist.")
+        if not Family.objects.filter(Q(displayName__exact=family)):
+            raise forms.ValidationError("Family does not exist.")
 
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
