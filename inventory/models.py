@@ -108,12 +108,7 @@ class Checkin(models.Model):
 
   @property
   def in_items(self):
-    def itemTransaction_checkin_str(it):
-      '''
-      Returns the item and quantity of an item transaction as a string, ignoring new/used.
-      '''
-      return "({}, {})".format(it.item, it.quantity)
-    return ", ".join([itemTransaction_checkin_str(i) for i in self.items.all()])
+        return ", ".join([str(i) for i in self.items.all()])
   
   class Meta:
     ordering = ['-datetime']
@@ -141,7 +136,7 @@ class Checkout(models.Model):
   
   @property
   def out_items(self):
-        return ", ".join([str(i) for i in self.items.all()])
+    return ", ".join([str(i) for i in self.items.all()])
   
   class Meta:
     ordering = ['-datetime']
