@@ -8,7 +8,7 @@ $(document).ready(function() {
   $('td.' + EDIT_IN_PLACE_CLASSNAME).css('cursor', 'pointer')
   $('td.' + EDIT_IN_PLACE_CLASSNAME).on('click', replaceWithInput)    
   $(window).on('click', closeAllOpenInputs)
-  $(window).on('keypress', checkEnter) // Preven ENTER from submitting form (when filling out price)
+  $(window).on('keypress', checkEnter) // Prevent ENTER from submitting form (when filling out price)
 
   function replaceWithInput(){
     var input = document.createElement('input')

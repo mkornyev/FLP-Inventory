@@ -88,11 +88,11 @@ class Checkin(models.Model):
 
 class Checkout(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
-  family = models.ForeignKey(Family, on_delete=models.PROTECT, blank=True, null=True)
-  items = models.ManyToManyField(ItemTransaction, blank=False)
   datetime = models.DateTimeField(default=timezone.now)
+  family = models.ForeignKey(Family, on_delete=models.PROTECT, blank=True, null=True)
   childName = models.CharField(max_length=50, blank=True, null=True, verbose_name='Child')
   ageRange = models.ForeignKey(AgeRange, on_delete=models.PROTECT, blank=True, null=True)
+  items = models.ManyToManyField(ItemTransaction, blank=False)
   notes = models.CharField(max_length=500, blank=True, null=True)
 
   def getValue(self):
