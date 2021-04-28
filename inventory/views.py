@@ -91,15 +91,6 @@ def generate_report(request):
         context['totalValue'] = 0 
         for result in context['results']:
             context['totalValue'] = result.getValue() + context['totalValue']
-        
-        if context['tx_type'] == 'Checkin':
-            context['newTotalValue'] = 0 
-            for result in context['results']:
-                context['newTotalValue'] = result.getNewValue() + context['newTotalValue']
-            
-            context['usedTotalValue'] = 0 
-            for result in context['results']:
-                context['usedTotalValue'] = result.getUsedValue() + context['usedTotalValue']
 
         if 'export' in request.POST:
             qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()

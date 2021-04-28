@@ -84,24 +84,6 @@ class Checkin(models.Model):
       else:
         val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
     return val
-  
-  def getNewValue(self):
-    '''
-    Returns price assuming every item is new.
-    '''
-    val = 0
-    for tx in self.items.all().select_related("item"):
-      val += 0 if tx.item.new_price is None else (tx.item.new_price * tx.quantity)
-    return val
-  
-  def getUsedValue(self):
-    '''
-    Returns price assuming every item is used.
-    '''
-    val = 0
-    for tx in self.items.all().select_related("item"):
-      val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
-    return val
 
   def __str__(self):
     return "({}, {})".format(self.datetime, self.in_items)
