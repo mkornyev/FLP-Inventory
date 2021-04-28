@@ -15,7 +15,7 @@
     {% for c in results %}
     <tr>
       <td>{{ c.item }}</td>
-      <td>{{ c.is_new }}</td>
+      <td>{% if c.is_new %}New{% else %}Used{% endif %}</td>
       <td>{{ c.category }}</td>
       <td id="{{c.id}}-{{c.is_new}}-quantity">{{ c.quantity }}</td>
 

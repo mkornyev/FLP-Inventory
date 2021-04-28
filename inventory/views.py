@@ -169,7 +169,7 @@ def generate_report(request):
                             'id': tx.item.id,
                             'item': tx.item.name,
                             'category': tx.item.category.name,
-                            'is_new': "New" if tx.is_new else "Used",
+                            'is_new': tx.is_new,
                             'quantity': tx.quantity,
                             'new_price': tx.item.new_price,
                             'used_price': tx.item.used_price,
@@ -184,7 +184,7 @@ def generate_report(request):
                         if res.notes and currNotes and str(res.id) not in currNotes: 
                             currNotes = currNotes + "<br>" + res.notes_description()
                             newUniqueItems[item_key]['tx_notes'] = currNotes
-            context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], x['is_new'])))
+            context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/reports/generate_report.html', context)
