@@ -158,10 +158,7 @@ def generate_report(request):
             newUniqueItems = {}
             for res in context['results']: 
                 for tx in res.items.all(): 
-                    if context['tx_type'] == 'Checkin':
-                        item_key = tx.item.id
-                    else:
-                        item_key = (tx.item.id, tx.is_new)
+                    item_key = (tx.item.id, tx.is_new)
                     item_price = None
                     if tx.is_new and tx.item.new_price != None:
                         item_price = tx.item.new_price
@@ -177,14 +174,10 @@ def generate_report(request):
                             'new_price': tx.item.new_price,
                             'used_price': tx.item.used_price,
                             'value': 0 if item_price is None else tx.quantity*item_price,
-                            'new_value': 0 if tx.item.new_price is None else tx.quantity*tx.item.new_price, # always use new price
-                            'used_value': 0 if tx.item.used_price is None else tx.quantity*tx.item.used_price # always use used price
                         }
                     else: 
                         newUniqueItems[item_key]['quantity'] += tx.quantity
                         newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
-                        newUniqueItems[item_key]['new_value'] += 0 if tx.item.new_price  is None else tx.quantity*tx.item.new_price 
-                        newUniqueItems[item_key]['used_value'] += 0 if tx.item.used_price  is None else tx.quantity*tx.item.used_price 
 
             context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 
