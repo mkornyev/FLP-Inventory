@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Q
 
-from inventory.models import Item, Family, Category
+from inventory.models import Item, Family, Category, AgeRange
 
 from django.contrib.auth import authenticate
 from phonenumber_field.formfields import PhoneNumberField
@@ -147,6 +147,10 @@ class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     required_css_class = 'required'
+    child = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    age   = forms.ModelChoiceField(queryset=AgeRange.objects.all(),
+                                        widget=forms.Select(attrs={'class': 'form-select'}))
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
