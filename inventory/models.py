@@ -16,10 +16,6 @@ class Family(models.Model):
   displayName = models.CharField(max_length=150, blank=True, null=True, verbose_name='Family name and phone')
   # created_at = models.DateTimeField(default=timezone.now)
   # USE Family.child_set OR .children TO GET QuerySet<Child>
-
-  @property
-  def child_names(self):
-    return ','.join(map(lambda c: c.name, self.children.all()))
   
   def __str__(self):
     if self.fname: 
@@ -32,17 +28,6 @@ class Family(models.Model):
   def save(self, *args, **kwargs):
     self.displayName = self.__str__() + f" : ({self.phone})"
     super(Family, self).save(*args, **kwargs)
-
-
-class Child(models.Model): 
-  name = models.CharField(max_length=50, blank=False, null=False)
-  family = models.ForeignKey(Family, related_name='children', on_delete=models.CASCADE, blank=False, null=False)
-
-  def __str__(self):
-    return "{}".format(self.name)
-  
-  class Meta:
-    verbose_name_plural = "children"
 
 class Category(models.Model):
   name = models.CharField(max_length=50, blank=False, null=False, unique=True)
