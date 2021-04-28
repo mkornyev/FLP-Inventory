@@ -53,6 +53,6 @@ class Command(BaseCommand):
         self._destroy_item_transactions()
         self._destroy_items()
         self._destroy_categories()
-        self._destroy_children()
+        self._destroy_age_ranges()
         self._destroy_families()
         self._destroy_users()

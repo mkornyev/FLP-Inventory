@@ -14,12 +14,10 @@ class NameTable(tables.Table):
         return (queryset, True)
 
 class FamilyTable(tables.Table):
-    child_names = tables.Column(accessor='child_names', orderable=False)
-
     class Meta:
         model = Family
         template_name = "django_tables2/bootstrap.html"
-        fields = ("id", "lname", "fname", "phone", "child_names")
+        fields = ("id", "lname", "fname", "phone", )
         order_by = 'lname'
 
 class CategoryTable(NameTable):
