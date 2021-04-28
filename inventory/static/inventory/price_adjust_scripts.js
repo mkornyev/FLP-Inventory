@@ -8,7 +8,7 @@ $(document).ready(function() {
   $('td.' + EDIT_IN_PLACE_CLASSNAME).css('cursor', 'pointer')
   $('td.' + EDIT_IN_PLACE_CLASSNAME).on('click', replaceWithInput)    
   $(window).on('click', closeAllOpenInputs)
-  $(window).on('keypress', checkEnter) // Preven ENTER from submitting form (when filling out price)
+  $(window).on('keypress', checkEnter) // Prevent ENTER from submitting form (when filling out price)
 
   function replaceWithInput(){
     var input = document.createElement('input')
@@ -38,19 +38,25 @@ $(document).ready(function() {
         i.parentNode.replaceChild(td, i)
 
         // Update Tot Value 
-        var itemId = i.id.substring(0, i.id.indexOf('-'))
-        var quantity = $('#'+itemId+'-quantity').first().text()
+        var firstHyphen = i.id.indexOf('-');
+        var itemId = i.id.substring(0, firstHyphen);
+        var secondHyphen = i.id.indexOf('-', firstHyphen + 1);
+        var is_new = i.id.substring(firstHyphen + 1, secondHyphen)
+        var quantity = $('#'+itemId+'-'+is_new+'-quantity').first().text()
         var newValue = (parseFloat(quantity) * parseFloat(i.value)).toFixed(2)
-        var oldValue = $('#'+itemId+'-value').text()
-        $('#'+itemId+'-value').text(newValue).css('color', UPDATED_COLOR).css('font-weight', '800')
+        var oldValue = $('#'+itemId+'-'+is_new+'-value').text()
+        $('#'+itemId+'-'+is_new+'-value').text(newValue).css('color', UPDATED_COLOR).css('font-weight', '800')
 
         var oldStrTotal = $('#report_total').text()
         var oldNumTotal = parseFloat(oldStrTotal.substring(oldStrTotal.indexOf('$')+1, oldStrTotal.length))
         var newNumTotal = oldNumTotal + parseFloat(newValue) - parseFloat(oldValue)
         $('#report_total').text('$'+newNumTotal.toFixed(2))
+        console.log(i.id)
+        console.log(is_new)
+        console.log('#'+itemId+'-'+is_new+'-adjustment')
 
         // Update Hidden Input
-        $('#'+itemId+'-adjustment').attr('value', i.value)
+        $('#'+itemId+'-'+is_new+'-adjustment').attr('value', i.value)
       })
       currInputs = []
     }
