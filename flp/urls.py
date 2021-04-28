@@ -36,11 +36,13 @@ urlpatterns = [
     path('createitem/<str:location>/', views.createItem_action, name='CreateItem'),
     path('createFamily/<str:location>/', views.createFamily_action, name='CreateFamily'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
-    path('analytics/', views.analytics, name='Analytics'),
+    path('analytics/analytics/', views.analytics, name='Analytics'),
 
     path('families/index/', views.FamilyIndexView.as_view(), name="Families"),
+    path('families/create/', views.createFamily_action, name='CreateFamily'),
     path('categories/index/', views.CategoryIndexView.as_view(), name="Categories"),
     path('items/index/', views.ItemIndexView.as_view(), name="Items"),
+    path('items/create/<str:location>/', views.createItem_action, name='CreateItem'),
     path('checkins/index/', views.CheckinIndexView.as_view(), name="Checkins"),
     path('checkouts/index/', views.CheckoutIndexView.as_view(), name="Checkouts"),
 ]

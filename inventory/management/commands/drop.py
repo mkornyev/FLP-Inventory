@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from inventory.models import User, Family, Child, Category, Item, ItemTransaction, Checkin, Checkout
+from inventory.models import User, Family, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
 
 # DROP SCRIPT
 
@@ -17,10 +17,10 @@ class Command(BaseCommand):
 
         print("Families deleted.")
 
-    def _destroy_children(self):
-        Child.objects.all().delete() 
+    def _destroy_age_ranges(self):
+        AgeRange.objects.all().delete() 
 
-        print("Children deleted.")
+        print("AgeRanges deleted.")
 
     def _destroy_categories(self):
         Category.objects.all().delete() 
@@ -53,6 +53,6 @@ class Command(BaseCommand):
         self._destroy_item_transactions()
         self._destroy_items()
         self._destroy_categories()
-        self._destroy_children()
+        self._destroy_age_ranges()
         self._destroy_families()
         self._destroy_users()

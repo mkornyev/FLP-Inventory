@@ -25,7 +25,11 @@
       <div class="col">
         {% if results %}
 
-          <h4>Filtered {{ tx }}s | <span id="report_total" class="monetary-value">${{ totalValue }}</span>:</h4>
+          <h4>Filtered {{ tx }}s | <span id="report_total" class="monetary-value">
+            {% if tx_type == "Checkin" %}
+              New: ${{ newTotalValue }} | Used: ${{ usedTotalValue }}
+            {% else %}${{ totalValue }}
+            </span> {% endif %}:</h4>
           {% if tx == 'Checkout' and itemizedOutput %}
           <p>To make a price adjustment: click the <span class="bold">Price</span> field, update it, and Export.
             <br>Temporary adjustments appear in <span class="bold blue">blue</span>.
@@ -42,7 +46,7 @@
           <!-- Pagination -->
           {% if results.has_other_pages %}
 
-            {% include 'inventory/reports/_tx_table.html' %}_pagination.html
+            {% include 'inventory/_pagination.html' %}
           
           {% endif %}
 
@@ -63,7 +67,6 @@
             </div>
           </div>
         {% endif %}
-        <br>
 
       </div>
     </div>
