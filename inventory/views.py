@@ -86,10 +86,20 @@ def generate_report(request):
             context['results'] = Checkin.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
         else:
             context['results'] = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+        context['tx_type'] = request.POST['tx-type']
 
         context['totalValue'] = 0 
         for result in context['results']:
             context['totalValue'] = result.getValue() + context['totalValue']
+        
+        if context['tx_type'] == 'Checkin':
+            context['newTotalValue'] = 0 
+            for result in context['results']:
+                context['newTotalValue'] = result.getNewValue() + context['newTotalValue']
+            
+            context['usedTotalValue'] = 0 
+            for result in context['results']:
+                context['usedTotalValue'] = result.getUsedValue() + context['usedTotalValue']
 
         if 'export' in request.POST:
             qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
@@ -97,31 +107,36 @@ def generate_report(request):
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
             if qs is not None:
-                writer.writerow(["item", "category", "quantity", "price", "total value"])
+                writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
 
                 uniqueItems = {} 
 
                 for c in qs:
                     for tx in c.items.all():
+                        item_key = (tx.item.id, tx.is_new)
                         try: 
-                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-adjustment', tx.item.price))
+                            originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
+                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-' + str(tx.is_new) + '-adjustment', originalPrice))
                         except ValueError:
                             adjustedPrice = 0
 
-                        if tx.item.id not in uniqueItems: 
-                            uniqueItems[tx.item.id] = [
+                        if item_key not in uniqueItems: 
+                            uniqueItems[item_key] = [
                                 tx.item.name,
+                                "New" if tx.is_new else "Used",
                                 tx.item.category.name,
                                 tx.quantity,
                                 adjustedPrice,
                                 0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
                             ]
                         else: 
-                            uniqueItems[tx.item.id][2] += tx.quantity
-                            uniqueItems[tx.item.id][4] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
-                            round(uniqueItems[tx.item.id][4], 2)
+                            item_key = (tx.item.id, tx.is_new)
+                            uniqueItems[item_key][3] += tx.quantity
+                            uniqueItems[item_key][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                            round(uniqueItems[item_key][5], 2)
                 
-                for item in uniqueItems.values():
+                sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
+                for item in sorted_items:
                     writer.writerow(item)
 
             return response
@@ -152,20 +167,35 @@ def generate_report(request):
             newUniqueItems = {}
             for res in context['results']: 
                 for tx in res.items.all(): 
-                    if tx.item.id not in newUniqueItems:
-                        newUniqueItems[tx.item.id] = {
+                    if context['tx_type'] == 'Checkin':
+                        item_key = tx.item.id
+                    else:
+                        item_key = (tx.item.id, tx.is_new)
+                    item_price = None
+                    if tx.is_new and tx.item.new_price != None:
+                        item_price = tx.item.new_price
+                    elif not tx.is_new and tx.item.used_price != None:
+                        item_price = tx.item.used_price
+                    if item_key not in newUniqueItems:
+                        newUniqueItems[item_key] = {
                             'id': tx.item.id,
                             'item': tx.item.name,
                             'category': tx.item.category.name,
+                            'is_new': tx.is_new,
                             'quantity': tx.quantity,
-                            'price': tx.item.price,
-                            'value': 0 if tx.item.price is None else tx.quantity*tx.item.price
+                            'new_price': tx.item.new_price,
+                            'used_price': tx.item.used_price,
+                            'value': 0 if item_price is None else tx.quantity*item_price,
+                            'new_value': 0 if tx.item.new_price is None else tx.quantity*tx.item.new_price, # always use new price
+                            'used_value': 0 if tx.item.used_price is None else tx.quantity*tx.item.used_price # always use used price
                         }
                     else: 
-                        newUniqueItems[tx.item.id]['quantity'] += tx.quantity
-                        newUniqueItems[tx.item.id]['value'] += 0 if tx.item.price is None else tx.quantity*tx.item.price
+                        newUniqueItems[item_key]['quantity'] += tx.quantity
+                        newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
+                        newUniqueItems[item_key]['new_value'] += 0 if tx.item.new_price  is None else tx.quantity*tx.item.new_price 
+                        newUniqueItems[item_key]['used_value'] += 0 if tx.item.used_price  is None else tx.quantity*tx.item.used_price 
 
-            context['results'] = list(newUniqueItems.values())
+            context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 
         context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
         return render(request, 'inventory/reports/generate_report.html', context)
@@ -306,7 +336,7 @@ def analytics(request):
     context['labels_couts'], context['data_couts'] = chart_info_by_month(all_checkouts, 'id')
     context['labels_fams'], context['data_fams'] = chart_info_by_month(all_checkouts, 'family')
 
-    return render(request, 'inventory/analytics.html', context)
+    return render(request, 'inventory/analytics/analytics.html', context)
 
   
 ###################### CHECKIN/CHECKOUT VIEWS ######################
@@ -327,7 +357,7 @@ def createFamily_action(request):
     if request.method == 'GET':
         context['form'] = CreateFamilyForm()
         
-        return render(request, 'inventory/createFamily.html', context)
+        return render(request, 'inventory/families/create.html', context)
 
     if request.method == 'POST':
         form = CreateFamilyForm(request.POST)
@@ -335,7 +365,7 @@ def createFamily_action(request):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createFamily.html', context)
+            return render(request, 'inventory/families/create.html', context)
 
         # category = form.cleaned_data['category']
         fname = form.cleaned_data['first_name']
@@ -344,12 +374,7 @@ def createFamily_action(request):
 
         family = Family(fname=fname, lname=lname, phone=phone)
         family.save()
-        famName = ''
-        if fname:                
-            famName = '{}, {}'.format(lname, fname)
-        else: 
-            famName = lname
-        request.session['createdFamily'] = famName
+        request.session['createdFamily'] = family.displayName
         messages.success(request, 'Family created')
         return redirect(reverse('Checkout'))
 
@@ -363,7 +388,7 @@ def createItem_action(request, location):
     if request.method == 'GET':
         context['form'] = CreateItemForm()
         
-        return render(request, 'inventory/createitem.html', context)
+        return render(request, 'inventory/items/create.html', context)
 
     if request.method == 'POST':
         form = CreateItemForm(request.POST)
@@ -371,18 +396,22 @@ def createItem_action(request, location):
         context['form'] = form
 
         if not form.is_valid():
-            return render(request, 'inventory/createitem.html', context)
+            return render(request, 'inventory/items/create.html', context)
 
         category = form.cleaned_data['category']
         name = form.cleaned_data['name']
-        price = form.cleaned_data['price']
+        new_price = form.cleaned_data['new_price']
+        used_price = form.cleaned_data['used_price']
         quantity = form.cleaned_data['quantity']
 
-        item = Item(category=category, name=name, price=price, quantity=quantity)
+        item = Item(category=category, name=name, new_price=new_price, used_price=used_price, quantity=quantity)
         item.save()
 
-        messages.success(request, 'Item created')
-        return redirect(reverse('Check' + location))
+        if location == 'in' or location == 'out':
+            messages.success(request, 'Item created')
+            return redirect(reverse('Check' + location))
+        else:
+            return redirect(reverse(location))
 
 # Checkin view
 @login_required
@@ -420,10 +449,11 @@ def checkin_action(request):
         # category = form.cleaned_data['category']
         name = form.cleaned_data['name']
         quantity = form.cleaned_data['quantity']
+        is_new = form.cleaned_data['is_new']
 
         item = Item.objects.filter(name=name).first()
     
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
         if not 'transactions-in' in request.session or not request.session['transactions-in']:
             saved_list = []
         else:
@@ -503,10 +533,11 @@ def checkout_action(request):
         # category = form.cleaned_data['category']
         name = form.cleaned_data['name']
         quantity = form.cleaned_data['quantity']
+        is_new = form.cleaned_data['is_new']
 
         item = Item.objects.filter(name=name).first()
     
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity), ])
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
         if not 'transactions-out' in request.session or not request.session['transactions-out']:
             saved_list = []
         else:
@@ -527,6 +558,8 @@ def checkout_action(request):
             return render(request, 'inventory/checkout.html', context, status=400)
 
         family = form.cleaned_data['family'].strip()
+        childName = form.cleaned_data['child'].strip()
+        ageRange = form.cleaned_data['age']
 
         if ',' in family: 
             comma = family.index(',')
@@ -543,7 +576,11 @@ def checkout_action(request):
             messages.warning(request, 'Could not create checkout: No items added')
             return render(request, 'inventory/checkout.html', context, status=400)
 
-        checkout = Checkout(family=family_object[0], user=request.user)
+        notes = None
+        if 'checkout_notes' in request.POST and request.POST['checkout_notes'] != '': 
+            notes = request.POST['checkout_notes']
+        
+        checkout = Checkout(family=family_object[0], user=request.user, notes=notes, childName=childName, ageRange=ageRange)
         checkout.save()
 
         for tx in transactions:
@@ -570,15 +607,10 @@ def autocomplete_item(request):
   
 def autocomplete_family(request):
     if 'term' in request.GET:
-        qs = Family.objects.filter(
-            Q(fname__icontains=request.GET.get('term')) | Q(lname__icontains=request.GET.get('term'))
-        )
+        qs = Family.objects.filter(Q(displayName__icontains=request.GET.get('term')) )
         names = list()
-        for fam in qs:
-            if fam.fname:                
-                names.append('{}, {}'.format(fam.lname, fam.fname))
-            else: 
-                names.append(fam.lname)
+        for fam in qs: 
+            names.append(fam.displayName)
         return JsonResponse(names, safe=False)
   
 ######################### DATABASE VIEWS #########################

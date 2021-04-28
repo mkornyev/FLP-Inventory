@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Q
 
-from inventory.models import Item, Family, Category
+from inventory.models import Item, Family, Category, AgeRange
 
 from django.contrib.auth import authenticate
 from phonenumber_field.formfields import PhoneNumberField
@@ -30,9 +30,9 @@ class LoginForm(forms.Form):
 
 class CreateFamilyForm(forms.Form):
     first_name = forms.CharField(max_length=50,
-                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False, label='Caregiver first name')
     last_name = forms.CharField(max_length=50,
-                           widget=forms.TextInput(attrs={'class': 'form-control'}))
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), label='Caregiver last name')
     phone = PhoneNumberField(widget=forms.TextInput(attrs={'class': 'form-control', 'type':'tel'}),
                             required=False)
     required_css_class = 'required'
@@ -53,7 +53,8 @@ class CreateItemForm(forms.Form):
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
+    new_price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
+    used_price = forms.DecimalField(max_digits=6, decimal_places=2, required=False)
     required_css_class = 'required' 
     
     # Customizes form validation for properties that apply to more
@@ -90,16 +91,26 @@ class CreateItemForm(forms.Form):
         # dictionary
         return quantity
 
-    # Customizes form validation for the quantity field.
-    def clean_price(self):
-        # Confirms the quantity is above zero
-        price = self.cleaned_data.get('price')
+    # Customizes form validation for the new price field.
+    def clean_new_price(self):
+        # Confirms the new price is above zero
+        price = self.cleaned_data.get('new_price')
 
         if price and price < 0:
-            raise forms.ValidationError("Price must be above zero.")
+            raise forms.ValidationError("New price must be above zero.")
 
-        # We must return the cleaned data we got from the cleaned_data
-        # dictionary
+        # We must return the cleaned data we got from the cleaned_data dictionary
+        return price
+    
+    # Customizes form validation for the used price field.
+    def clean_used_price(self):
+        # Confirms the used price is above zero
+        price = self.cleaned_data.get('used_price')
+
+        if price and price < 0:
+            raise forms.ValidationError("Used price must be above zero.")
+
+        # We must return the cleaned data we got from the cleaned_data dictionary
         return price
 
 class AddItemForm(forms.Form):
@@ -108,6 +119,7 @@ class AddItemForm(forms.Form):
     name = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    is_new = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}), label="New")
     required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
@@ -142,11 +154,19 @@ class AddItemForm(forms.Form):
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
         return quantity
+    
+    def clean_is_new(self):
+        is_new = self.cleaned_data.get('is_new')
+        return is_new
 
 class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     required_css_class = 'required'
+    child = forms.CharField(max_length=50,
+                           widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    age   = forms.ModelChoiceField(queryset=AgeRange.objects.all(),
+                                        widget=forms.Select(attrs={'class': 'form-select'}))
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.

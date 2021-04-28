@@ -4,11 +4,14 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Date</th>
-      {% if results.0.family %}
+      {% if tx == 'Checkout' %}
         <th scope="col">Family</th>
       {% endif %}
       <th scope="col">Value</th>
       <th scope="col">Items</th>
+      {% if tx == 'Checkout' %}
+        <th scope="col">Notes</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -16,15 +19,24 @@
     <tr>
       <th scope="row">{{ c.id }}</th>
       <td>{{ c.datetime }}</td>
-      {% if c.family %}
-        <td>{{ c.family.name }}</td>
+      {% if tx == 'Checkout' %}
+        <td>{{ c.family }}</td>
       {% endif %}
       <td>{{ c.getValue }}</td>
       <td>
       {% for tx in c.items.all %}
-        {{ tx.item.name }}({{ tx.quantity }}){% if not forloop.last %}, {% endif %}
+        {{ tx.item.name }}
+        {% if tx_type == 'Checkout' %}
+          ({{ tx.quantity }}, {% if tx.is_new %} New{% else %} Used{% endif %})
+        {% else %}
+          ({{ tx.quantity }})
+        {% endif %}
+        {% if not forloop.last %}, {% endif %}
       {% endfor %}
       </td>
+      {% if tx == 'Checkout' %}
+        <td>{% if c.notes %}{{ c.notes }}{% endif %}</td>
+      {% endif %}
     </tr>
     {% endfor %}
   </tbody>
