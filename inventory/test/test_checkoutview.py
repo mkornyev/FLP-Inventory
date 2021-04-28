@@ -39,7 +39,7 @@ class CheckoutTestCase(TestCase):
     def test_invalid_no_items(self):
         self.client.login(username='testuser', password='12345')
 
-        response = self.client.post('/checkout/', data={"checkout": "", "family":"ValidFamily", "child": "Big Chungus", "age": "1"})
+        response = self.client.post('/checkout/', data={"checkout": "", "family":"ValidFamily : (None)", "child": "Big Chungus", "age": "1"})
 
         # Check if invalid
         self.assertEqual(response.status_code, 400)
@@ -60,7 +60,7 @@ class CheckoutTestCase(TestCase):
         session['transactions-out'] = ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2}}]']
         session.save()
 
-        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily", "child": "Big Chungus", "age": "1"}, follow=True)
+        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily : (None)", "child": "Big Chungus", "age": "1"}, follow=True)
 
         # Check if valid
         self.assertEqual(response.status_code, 200)
