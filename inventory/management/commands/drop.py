@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from inventory.models import User, Family, Child, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
+from inventory.models import User, Family, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
 
 # DROP SCRIPT
 
