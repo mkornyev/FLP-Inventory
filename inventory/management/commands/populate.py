@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from inventory.models import User, Family, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
 from datetime import date, timedelta
+import os
 
 # POPULATE SCRIPT
 
@@ -9,14 +10,14 @@ class Command(BaseCommand):
     help = 'Run this script to create sample model objects.'
 
     def _create_users(self):
-        admin = User.objects.create_user(username='admin', password='admin', first_name='Kelly', last_name='Hughes', email='flpadmin@gmail.com')
+        admin = User.objects.create_user(username='admin', password=os.environ['ADMIN_USER_PASS'], first_name='Kelly', last_name='Hughes', email='flpadmin@gmail.com')
         admin.is_staff = True 
         admin.is_superuser = True
         admin.save()
         
         print("\nAdmin has been created.")
 
-        sow = User.objects.create_user(username='staff', password='staff', first_name='Max', last_name='K', email='mk@gmail.com')
+        sow = User.objects.create_user(username='staff', password=os.environ['STAFF_USER_PASS'], first_name='Max', last_name='K', email='mk@gmail.com')
         sow.is_staff = True 
         sow.is_superuser = False
         sow.save()
