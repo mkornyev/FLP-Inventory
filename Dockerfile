@@ -1,6 +1,6 @@
 FROM python:3.6-alpine
 
-EXPOSE 8000
+EXPOSE 80
 
 RUN apk add --no-cache gcc python3-dev musl-dev
 
@@ -10,8 +10,8 @@ WORKDIR /django_ec2
 
 RUN pip install -r requirements.txt
 
-RUN python manage.py makemigrations
+RUN export $(cat .env) && python manage.py makemigrations
 
-RUN python manage.py migrate
+RUN export $(cat .env) && python manage.py migrate
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD export $(cat .env) && python manage.py runserver 0.0.0.0:80
