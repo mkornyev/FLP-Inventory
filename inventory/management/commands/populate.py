@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from inventory.models import User, Family, Child, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
+from inventory.models import User, Family, Category, Item, ItemTransaction, Checkin, Checkout, AgeRange
 from datetime import date, timedelta
 
 # POPULATE SCRIPT
@@ -35,10 +35,6 @@ class Command(BaseCommand):
         family = Family.objects.create(fname="Paulo", lname="Merson", phone="1234567891")
         family.save()
         print("Family has been created.")
-
-        child = Child.objects.create(name="Paulo Jr", family=family)
-        child.save()
-        print("Children have been created.")
 
         category1 = Category.objects.create(name="Clothes")
         category1.save()
