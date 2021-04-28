@@ -67,7 +67,8 @@ class AgeRange(models.Model):
 class Item(models.Model):
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True) # CASCADE - deletes all items if a Category is deleted
   name = models.CharField(max_length=50, blank=False, null=False, unique=True)
-  price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True) 
+  new_price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+  used_price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
   quantity = models.IntegerField(default=0)
   
   def __str__(self):
@@ -76,9 +77,11 @@ class Item(models.Model):
 class ItemTransaction(models.Model):
   item = models.ForeignKey(Item, on_delete=models.PROTECT, blank=True, null=True)
   quantity = models.IntegerField(default=0)
+  is_new = models.BooleanField(default=False)
 
   def __str__(self):
-    return "({}, {})".format(self.item, self.quantity)
+    new_str = "New" if self.is_new else "Used"
+    return "({}, {}, {})".format(self.item, self.quantity, new_str)
 
 class Checkin(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
@@ -88,7 +91,28 @@ class Checkin(models.Model):
   def getValue(self):
     val = 0
     for tx in self.items.all().select_related("item"):
-      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
+      if tx.is_new:
+        val += 0 if tx.item.new_price is None else (tx.item.new_price * tx.quantity)
+      else:
+        val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
+    return val
+  
+  def getNewValue(self):
+    '''
+    Returns price assuming every item is new.
+    '''
+    val = 0
+    for tx in self.items.all().select_related("item"):
+      val += 0 if tx.item.new_price is None else (tx.item.new_price * tx.quantity)
+    return val
+  
+  def getUsedValue(self):
+    '''
+    Returns price assuming every item is used.
+    '''
+    val = 0
+    for tx in self.items.all().select_related("item"):
+      val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
     return val
 
   def __str__(self):
@@ -96,7 +120,12 @@ class Checkin(models.Model):
 
   @property
   def in_items(self):
-        return ", ".join([str(i) for i in self.items.all()])
+    def itemTransaction_checkin_str(it):
+      '''
+      Returns the item and quantity of an item transaction as a string, ignoring new/used.
+      '''
+      return "({}, {})".format(it.item, it.quantity)
+    return ", ".join([itemTransaction_checkin_str(i) for i in self.items.all()])
   
   class Meta:
     ordering = ['-datetime']
@@ -113,7 +142,10 @@ class Checkout(models.Model):
   def getValue(self):
     val = 0
     for tx in self.items.all().select_related("item"):
-      val += 0 if tx.item.price is None else (tx.item.price * tx.quantity)
+      if tx.is_new:
+        val += 0 if tx.item.new_price is None else (tx.item.new_price * tx.quantity)
+      else:
+        val += 0 if tx.item.used_price is None else (tx.item.used_price * tx.quantity)
     return val
 
   def __str__(self):
