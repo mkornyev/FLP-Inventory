@@ -48,6 +48,7 @@ class Command(BaseCommand):
         category3.save()
         print("Category has been created.")
 
+
         a0to1 = AgeRange.objects.create(low=0, high=1)
         a1to2 = AgeRange.objects.create(low=1, high=2)
         a3to5 = AgeRange.objects.create(low=3, high=5)
@@ -62,27 +63,27 @@ class Command(BaseCommand):
         a13to15.save()
         print("Age ranges created")
 
-        item1 = Item.objects.create(category=category1, name="tshirt boys 4", price=10.56, quantity=10)
+        item1 = Item.objects.create(category=category1, name="tshirt boys 4", new_price=10.56, used_price=7.20, quantity=10)
         item1.save()
-        item2 = Item.objects.create(category=category1, name="jacket", price=13.50, quantity=18)
+        item2 = Item.objects.create(category=category1, name="jacket", quantity=18) # No Price 
         item2.save()
-        item3 = Item.objects.create(category=category3, name="stroller", price=45.00, quantity=5)
+        item3 = Item.objects.create(category=category3, name="stroller", new_price=45.00, quantity=5)
         item3.save()
-        item4 = Item.objects.create(category=category2, name="formula", price=5.56, quantity=15)
+        item4 = Item.objects.create(category=category2, name="formula", used_price=5.50, quantity=15)
         item4.save()
-        item5 = Item.objects.create(category=category1, name="t shirt girls 4", quantity=3) # No Price 
+        item5 = Item.objects.create(category=category1, name="t shirt girls 4", new_price=2.00, used_price=1.00, quantity=3)
         item5.save()
         print("Item has been created.")
 
         tx2 = ItemTransaction.objects.create(item=item3, quantity=1)
         tx2.save()
-        tx3 = ItemTransaction.objects.create(item=item2, quantity=5)
+        tx3 = ItemTransaction.objects.create(item=item2, quantity=5, is_new=True)
         tx3.save()
         tx4 = ItemTransaction.objects.create(item=item4, quantity=3)
         tx4.save()
         tx1 = ItemTransaction.objects.create(item=item1, quantity=2)
         tx1.save()
-        tx5 = ItemTransaction.objects.create(item=item5, quantity=3)
+        tx5 = ItemTransaction.objects.create(item=item5, quantity=3, is_new=True)
         tx5.save()
         tx6 = ItemTransaction.objects.create(item=item5, quantity=1)
         tx6.save()
@@ -126,9 +127,9 @@ class Command(BaseCommand):
         checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today, ageRange=a3to5, childName="Luke")
         checkout.items.add(tx5)
         checkout.save()
-        
+
         checkout = Checkout.objects.create(user=staffUsr, family=family, datetime=today, ageRange=a1to2, notes="Not sure what these shirts cost??? - Krissy")
-        checkout.items.add(tx5)
+        checkout.items.add(tx6)
         checkout.save()
         print("Checkout has been created.")
     
