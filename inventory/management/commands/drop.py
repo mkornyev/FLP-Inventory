@@ -18,11 +18,6 @@ class Command(BaseCommand):
         print("Families deleted.")
 
     def _destroy_children(self):
-        Child.objects.all().delete() 
-
-        print("Children deleted.")
-
-    def _destroy_children(self):
         AgeRange.objects.all().delete() 
 
         print("AgeRange deleted.")
