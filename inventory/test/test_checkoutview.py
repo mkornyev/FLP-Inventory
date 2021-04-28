@@ -60,11 +60,7 @@ class CheckoutTestCase(TestCase):
         session['transactions-out'] = ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2}}]']
         session.save()
 
-<<<<<<< HEAD
-        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily : (None)"}, follow=True)
-=======
-        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily", "child": "Big Chungus", "age": "1"}, follow=True)
->>>>>>> master
+        response = self.client.post('/checkout/', data={"checkout": "", "family": "ValidFamily : (None)", "child": "Big Chungus", "age": "1"}, follow=True)
 
         # Check if valid
         self.assertEqual(response.status_code, 200)
