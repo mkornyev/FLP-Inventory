@@ -100,7 +100,7 @@
           </div>
           {% endfor %}
           {% csrf_token %}
-          <p class="create-family">Can't find the family you're looking for?<br/><a id="createFam-btn" href="{% url 'CreateFamily' %}">Create a new family.</a></p>
+          <p class="create-family">Can't find the family you're looking for?<br/><a id="createFam-btn" href="{% url 'CreateFamily' location='Checkout' %}">Create a new family.</a></p>
         </div>
 
         <div id="notesCollapse" class="collapse">
