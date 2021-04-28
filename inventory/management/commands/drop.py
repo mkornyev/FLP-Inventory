@@ -17,10 +17,10 @@ class Command(BaseCommand):
 
         print("Families deleted.")
 
-    def _destroy_children(self):
+    def _destroy_age_ranges(self):
         AgeRange.objects.all().delete() 
 
-        print("AgeRange deleted.")
+        print("AgeRanges deleted.")
 
     def _destroy_categories(self):
         Category.objects.all().delete() 
