@@ -17,6 +17,7 @@
         <th scope="col">Used Price</th>
         <th scope="col">Used Value</th>
       {% endif %}
+      <th scope="col">Notes</th>
     </tr>
   </thead>
   <tbody>
@@ -56,7 +57,22 @@
         <td>{{ c.used_value }}</td>
       {% endif %}
 
+      <td>
+        {% if c.tx_notes %}
+        <a href="" class="notes-arrow" data-bs-toggle="collapse" data-bs-target="#row-collapse-{{ c.id }}" aria-expanded="false">
+          &#x2936;
+        </a>
+        {% endif %}
+      </td>
+
     </tr>
+    
+    {% if c.tx_notes %}
+      <tr class="collapse" id="row-collapse-{{ c.id }}">
+        <td colspan="8">{{ c.tx_notes|safe }}</td>
+      </tr>
+    {% endif %}
+
     {% endfor %}
   </tbody>
 </table>
