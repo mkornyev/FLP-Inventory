@@ -43,6 +43,7 @@
           <tr>
               <th scope="col">Name</th>
               <th scope="col">Quantity</th>
+              <th scope="col">New/Used</th>
               <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -51,6 +52,7 @@
             <tr> 
                 <th scope="row">{{ tx.item }}</td>
                 <td>{{ tx.quantity }}</td>
+                <td>{% if tx.is_new %} New {% else %} Used {% endif %}</td>
                 <td>
                   <a href="{% url 'RemoveItem' index=forloop.counter0 location='in' %}" class="btn-sm btn-danger save-notes-on-click">
                     Remove
@@ -87,17 +89,15 @@
       <h4>Add To Cart</h4>
       <form method="POST" action="{% url 'Checkin' %}">
           {% for field in formadditem %}
-            {% if field.field.required %} {# Ignore is_new field for checkins #}
-              <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
-                  {{ field.label_tag }}
-                  {{ field }}
-                  {% if field.errors %}
-                    {% for error in field.errors %}
-                      <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
-                  {% endif %}
-              </div>
-            {% endif %}
+            <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                  {% for error in field.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+            </div>
           {% endfor %}
           {% csrf_token %}
           <br>
