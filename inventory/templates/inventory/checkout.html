@@ -153,6 +153,9 @@
   {% if createdFamily %}
     <div id="fromCreatedFamilyRedirect" value="{{ createdFamily }}" style="display: none;"></div>
   {% endif %}
+  {% if formcheckout.errors %}
+    <div id="fromInvalidCheckoutRedirect" style="display: none;"></div>
+  {% endif %}
 
   <br>
 </div>
