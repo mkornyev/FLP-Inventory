@@ -3,39 +3,26 @@
   <thead>
     <tr>
       <th scope="col">Item</th>
-      {% if tx_type == 'Checkout' %}
-        <th scope="col">New/Used</th>
-      {% endif %}
+      <th scope="col">New/Used</th>
       <th scope="col">Category</th>
       <th scope="col">Quantity</th>
-      {% if tx_type == 'Checkout' %}
-        <th scope="col">New/Used Price</th>
-        <th scope="col">Value</th>
-      {% else %}
-        <th scope="col">New Price</th>
-        <th scope="col">New Value</th>
-        <th scope="col">Used Price</th>
-        <th scope="col">Used Value</th>
-      {% endif %}
+      <th scope="col">New/Used Price</th>
+      <th scope="col">Value</th>
     </tr>
   </thead>
   <tbody>
     {% for c in results %}
     <tr>
       <td>{{ c.item }}</td>
-      {% if tx_type == 'Checkout' %}
-        <td>{% if c.is_new %}New{% else %}Used{% endif %}</td>
-      {% endif %}
+      <td>{% if c.is_new %}New{% else %}Used{% endif %}</td>
       <td>{{ c.category }}</td>
       <td id="{{c.id}}-{{c.is_new}}-quantity">{{ c.quantity }}</td>
 
-      {% if tx == 'Checkout' %}
-        <td id="{{c.id}}-{{c.is_new}}-price" class="edit-in-place">
-          {% if c.is_new and c.new_price %}{{ c.new_price }}
-          {% elif not c.is_new and c.used_price %}{{ c.used_price }}
-          {% else %}0{% endif %}
-        </td>
-      {% endif %}
+      <td id="{{c.id}}-{{c.is_new}}-price" class="edit-in-place">
+        {% if c.is_new and c.new_price %}{{ c.new_price }}
+        {% elif not c.is_new and c.used_price %}{{ c.used_price }}
+        {% else %}0{% endif %}
+      </td>
 
       {% if tx == 'Checkout' and itemizedOutput %}
         <input id="{{c.id}}-{{c.is_new}}-adjustment" type="hidden" name="{{c.id}}-{{c.is_new}}-adjustment" value="{% if c.is_new and c.new_price %}{{ c.new_price }}
@@ -43,18 +30,7 @@
         {% else %}0{% endif %}">
       {% endif %}
 
-      {% if tx_type == 'Checkout' %}
-        <td id="{{c.id}}-{{c.is_new}}-value">{{ c.value }}</td>
-      {% else %}
-        <td>
-          {% if c.new_price %}{{ c.new_price }}{% else %}0{% endif %}
-        </td>
-        <td>{{ c.new_value }}</td>
-        <td>
-          {% if c.used_price %}{{ c.used_price }}{% else %}0{% endif %}
-        </td>
-        <td>{{ c.used_value }}</td>
-      {% endif %}
+      <td id="{{c.id}}-{{c.is_new}}-value">{{ c.value }}</td>
 
     </tr>
     {% endfor %}

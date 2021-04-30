@@ -27,12 +27,7 @@
       <td>{{ c.getValue }}</td>
       <td>
       {% for tx in c.items.all %}
-        {{ tx.item.name }}
-        {% if tx_type == 'Checkout' %}
-          ({{ tx.quantity }}, {% if tx.is_new %} New{% else %} Used{% endif %})
-        {% else %}
-          ({{ tx.quantity }})
-        {% endif %}
+        {{ tx.item.name }}({{ tx.quantity }}, {% if tx.is_new %} New{% else %} Used{% endif %})
         {% if not forloop.last %}, {% endif %}
       {% endfor %}
       </td>
