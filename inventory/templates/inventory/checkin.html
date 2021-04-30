@@ -64,14 +64,12 @@
         <p style="font-style: italic;">No items added...</p>
       {% endif %}
       <div class="row">
-        {% if transactions %}
           <div class="col">
             <form method="POST" action="{% url 'Checkin' %}">
               {% csrf_token %}
-              <button name="checkin" class="btn btn-success" type="submit">Check In Items</button>
+              <button name="checkin" class="btn btn-success" type="submit" {% if not transactions %}disabled{% endif %}>Check In Items</button>
             </form>
           </div>
-        {% endif %}
       </div>
     </div>
 
