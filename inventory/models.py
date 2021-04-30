@@ -75,6 +75,7 @@ class Checkin(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
   datetime = models.DateTimeField(default=timezone.now)
   items = models.ManyToManyField(ItemTransaction, blank=False)
+  notes = models.CharField(max_length=500, blank=True, null=True)
 
   def getValue(self):
     val = 0

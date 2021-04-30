@@ -54,7 +54,7 @@
                 <td>{{ tx.quantity }}</td>
                 <td>{% if tx.is_new %} New {% else %} Used {% endif %}</td>
                 <td>
-                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='in' %}" class="btn-sm btn-danger">
+                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='in' %}" class="btn-sm btn-danger save-notes-on-click">
                     Remove
                   </a>
                 </td>
@@ -65,16 +65,24 @@
       {% if not transactions %}
         <p style="font-style: italic;">No items added...</p>
       {% endif %}
-      <div class="row">
-        {% if transactions %}
-          <div class="col">
-            <form method="POST" action="{% url 'Checkin' %}">
-              {% csrf_token %}
-              <button name="checkin" class="btn btn-success" type="submit">Check In Items</button>
-            </form>
-          </div>
-        {% endif %}
-      </div>
+      
+      <form method="POST" action="{% url 'Checkin' %}">
+        <div id="notesCollapse" class="collapse">
+          <label for="id_checkin_notes">Notes:</label>
+          <textarea name="checkin_notes" cols="25" rows="4" class="form-control" maxlength="500" id="id_checkin_notes" spellcheck="false"></textarea>
+          <br>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                {% csrf_token %}
+                <button id="addNotes-btn" class="btn btn-warning mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#notesCollapse" aria-expanded="false" aria-controls="notesCollapse">
+                  Add Notes &#x270E;
+                </button>
+                <button id="checkin-btn" name="checkin" class="btn btn-success mt-2" type="submit" {% if not transactions %}disabled{% endif %}>Check In Items</button>
+            </div>
+        </div>
+      </form>
     </div>
 
     <div class="col-md-4" id="additemform">
@@ -94,11 +102,11 @@
           {% csrf_token %}
           <br>
           {% if user.is_superuser %}
-            <p>Can't find what you're looking for?<br/><a href="{% url 'CreateItem' location='in' %}">Create a new item.</a></p>
+            <p>Can't find what you're looking for?<br/><a id="createItem-btn" href="{% url 'CreateItem' location='in' %}">Create a new item.</a></p>
           {% else %}
             <p>Can't find what you're looking for? Ask an admin to create a new item.</p>
           {% endif %}
-          <button name="additem" class="btn btn-warning" type="submit">Add Item +</button>
+          <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add Item +</button>
       </form>
     </div>
   </div>
@@ -116,5 +124,8 @@
     	});
 	});
 </script>
+
+{% load static %}
+<script src="{% static 'inventory/checkin_scripts.js' %}"></script>
 
 {% endblock %}
