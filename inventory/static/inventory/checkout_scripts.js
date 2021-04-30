@@ -2,6 +2,14 @@ $(document).ready(function() {
 
   // -------------- NOTES SCRIPTS: --------------
 
+  // Replace notes field w/oldNotes if present
+  var invalidCheckout = $('#fromInvalidCheckoutRedirect')
+  if(invalidCheckout.length != 0){
+    var oldNotes = localStorage.getItem('old-notes-field')
+    localStorage.setItem('notes-field', oldNotes)
+    localStorage.removeItem('old-notes-field')
+  }
+
   var notesFieldValue = localStorage.getItem('notes-field')
   if (notesFieldValue) {
     $('#id_checkout_notes').val(notesFieldValue)
@@ -38,6 +46,8 @@ $(document).ready(function() {
 
   // Clear notes on Checkout
   $('#checkout-btn').on('click', function(){
+    var oldNotes = $('#id_checkout_notes').val()
     localStorage.removeItem('notes-field')
+    localStorage.setItem('old-notes-field', oldNotes) // in case a Checkout validation fails 
   })
 });
