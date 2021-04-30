@@ -473,7 +473,6 @@ def checkin_action(request):
             messages.warning(request, 'Could not create checkin: No items added')
             return render(request, 'inventory/checkin.html', context, status=400)
 
-        print(request.POST)
         if 'checkin_notes' in request.POST and len(request.POST['checkin_notes']) > 0: 
             checkin = Checkin(user=request.user, notes=request.POST['checkin_notes'])
         else: 
