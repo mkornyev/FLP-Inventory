@@ -28,7 +28,6 @@
       <td>
       {% for tx in c.items.all %}
         <div class="{% if not tx.has_price %} zero_value {% endif %}">{{ tx.item.name }}({{ tx.quantity }}, {% if tx.is_new %} New{% else %} Used{% endif %})</div>
-        {% if not forloop.last %}, {% endif %}
       {% endfor %}
       </td>
       <td>{% if c.notes %}{{ c.notes }}{% endif %}</td>
