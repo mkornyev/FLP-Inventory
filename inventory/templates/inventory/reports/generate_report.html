@@ -25,7 +25,7 @@
       <div class="col">
         {% if results %}
 
-          <h4>Filtered {{ tx }}s | <span id="report_total" class="monetary-value">${{ totalValue }}</span>:</h4>
+          <h4>Filtered {{ tx }}s | <span id="report_total" class="monetary-value {% if hasNonePrice %} zero_value {% endif %}">${{ totalValue }}</span>:</h4>
           {% if tx == 'Checkout' and itemizedOutput %}
           <p>To make a price adjustment: click the <span class="bold">Price</span> field, update it, and Export.
             <br>Temporary adjustments appear in <span class="bold blue">blue</span>.
