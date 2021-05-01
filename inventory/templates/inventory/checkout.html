@@ -190,6 +190,12 @@
       $("#id_child").on("click", function () {
         $(this).val("");
       });
+      $("#id_age").val(function () {
+        return localStorage.getItem("age");
+      });
+      $("#id_age").on("change", function () {
+        localStorage.setItem("age", $(this).val());
+      });
       $("#id_family").autocomplete({
         source: '{% url 'autocomplete_family' %}',
         minLength: 2
