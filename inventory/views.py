@@ -435,7 +435,7 @@ def checkin_action(request):
             return render(request, 'inventory/checkin.html', context)
 
         # category = form.cleaned_data['category']
-        name = form.cleaned_data['name']
+        name = form.cleaned_data['item']
         quantity = form.cleaned_data['quantity']
         is_new = form.cleaned_data['is_new']
 
@@ -522,7 +522,7 @@ def checkout_action(request):
             return render(request, 'inventory/checkout.html', context)
 
         # category = form.cleaned_data['category']
-        name = form.cleaned_data['name']
+        name = form.cleaned_data['item']
         quantity = form.cleaned_data['quantity']
         is_new = form.cleaned_data['is_new']
 

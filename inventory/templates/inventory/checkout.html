@@ -191,7 +191,7 @@
         localStorage.removeItem("family")
       })
 
-      $("#id_name").autocomplete({
+      $("#id_item").autocomplete({
         source: '{% url 'autocomplete_item' %}',
         minLength: 2
       })
