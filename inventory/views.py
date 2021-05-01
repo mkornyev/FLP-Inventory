@@ -148,7 +148,7 @@ def generate_report(request):
             writer = csv.writer(response)
 
             if len(qs) != 0:
-                field_names = [f.name for f in qs.model._meta.fields]
+                field_names = [f.name for f in qs.model._meta.get_fields()]
                 writer.writerow(field_names)
                 for i in qs:
                     row = []
