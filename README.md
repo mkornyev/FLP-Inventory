@@ -64,8 +64,12 @@ The following will set up a python environment for this project using `virtualen
 
 * Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker
 
+* Use `docker exec` to run `source .env` (.env file in the google drive) and all of the following commands
+
 * Next, run `python manage.py drop` then `python manage.py import MANAGE_INVENTORY_FILE MANAGE_ITEMS_FILE` (these are also in the google drive)
 
 * Run `nohup email_backups.py &` to send db backup emails
 
 * Make starter staff superuser and volunteer account
+
+* Finally run the server on port 80 (still using docker exec, `python manage.py runserver 80`. For exact commands you can scroll the bash history)
