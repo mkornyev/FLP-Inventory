@@ -89,11 +89,8 @@ def generate_report(request):
         context['tx_type'] = request.POST['tx-type']
 
         context['totalValue'] = 0 
-        context['hasNonePrice'] = False
         for result in context['results']:
             context['totalValue'] = result.getValue() + context['totalValue']
-            if not result.has_all_prices():
-                context['hasNonePrice'] = True
 
         if 'export' in request.POST:
             qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()

@@ -18,10 +18,11 @@
       <td>{{ c.category }}</td>
       <td id="{{c.id}}-{{c.is_new}}-quantity">{{ c.quantity }}</td>
 
+      {# Itemized tables only highlight 0 prices instead of None prices #}
       <td id="{{c.id}}-{{c.is_new}}-price" class="edit-in-place">
         {% if c.is_new and c.new_price %}{{ c.new_price }}
         {% elif not c.is_new and c.used_price %}{{ c.used_price }}
-        {% else %}0{% endif %}
+        {% else %}0<span class="{% if c.value == 0 %} zero_value {% endif %}"></span>{% endif %}
       </td>
 
       {% if tx == 'Checkout' and itemizedOutput %}

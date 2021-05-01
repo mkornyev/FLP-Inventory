@@ -51,9 +51,6 @@ $(document).ready(function() {
         var oldNumTotal = parseFloat(oldStrTotal.substring(oldStrTotal.indexOf('$')+1, oldStrTotal.length))
         var newNumTotal = oldNumTotal + parseFloat(newValue) - parseFloat(oldValue)
         $('#report_total').text('$'+newNumTotal.toFixed(2))
-        console.log(i.id)
-        console.log(is_new)
-        console.log('#'+itemId+'-'+is_new+'-adjustment')
 
         // Update Hidden Input
         $('#'+itemId+'-'+is_new+'-adjustment').attr('value', i.value)
