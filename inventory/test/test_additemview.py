@@ -5,7 +5,7 @@ from inventory.models import Item
 
 class AddItemTestCase(TestCase):
     def setUp(self):
-        item = Item.objects.create(item="ValidItem", quantity=5)
+        item = Item.objects.create(name="ValidItem", quantity=5)
         item.save()
 
         user = User.objects.create_superuser(username='testuser', password='12345')
