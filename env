@@ -1,0 +1,4 @@
+export EMAIL_APP_PASS=uecpbzslvsrbjniu
+export DJANGO_SECRET_KEY='zle1$_!k12vs&@qol@ql(!)^qngsosfnu$t4i@1vf8n3ra8@5r'
+export ADMIN_USER_PASS=flp21
+export STAFF_USER_PASS=flp21
