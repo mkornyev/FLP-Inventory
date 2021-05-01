@@ -57,3 +57,15 @@ The following will set up a python environment for this project using `virtualen
 ### Test Suite 
 
 * Run the suite with `./manage.py test`
+
+### Deployment
+
+* To SSH into AWS, you can find our private key file in Google Drive and use the AWS login credentials in the handoff doc to get the public DNS
+
+* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker
+
+* Next, run `python manage.py drop` then `python manage.py import MANAGE_INVENTORY_FILE MANAGE_ITEMS_FILE` (these are also in the google drive)
+
+* Run `nohup email_backups.py &` to send db backup emails
+
+* Make starter staff superuser and volunteer account
