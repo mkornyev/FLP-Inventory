@@ -396,6 +396,7 @@ def createItem_action(request, location):
         item.save()
 
         if location == 'in' or location == 'out':
+            request.session["itemInfo"] = (item.name, item.quantity)
             messages.success(request, 'Item created')
             return redirect(reverse('Check' + location))
         else:
@@ -423,7 +424,14 @@ def checkin_action(request):
     context['transactions'] = transactions
 
     if request.method == 'GET':
-        context['formadditem'] = AddItemForm()
+        addItemForm = AddItemForm()
+        if ('itemInfo' in request.session):
+            itemInfo = request.session['itemInfo']
+            addItemForm.fields['name'].initial = itemInfo[0]
+            addItemForm.fields['quantity'].initial = itemInfo[1]
+            del request.session['itemInfo']
+
+        context['formadditem'] = addItemForm
         return render(request, 'inventory/checkin.html', context)
 
     if request.method == 'POST' and 'additem' in request.POST:
@@ -500,7 +508,8 @@ def checkout_action(request):
     context['transactions'] = transactions
 
     if request.method == 'GET':
-        context['formadditem'] = AddItemForm()
+        addItemForm = AddItemForm()
+        context['formadditem'] = addItemForm
         form = CheckOutForm()
         context['formcheckout'] = form
 
@@ -509,6 +518,12 @@ def checkout_action(request):
             form.fields['family'].initial = famName
             context['createdFamily'] = famName
             del request.session['createdFamily']
+
+        if ('itemInfo' in request.session):
+            itemInfo = request.session['itemInfo']
+            addItemForm.fields['name'].initial = itemInfo[0]
+            addItemForm.fields['quantity'].initial = itemInfo[1]
+            del request.session['itemInfo']
 
         return render(request, 'inventory/checkout.html', context)
 
