@@ -181,6 +181,15 @@
       $("#id_family").on("click", function () {
         $(this).val("");
       });
+      $("#id_child").val(function () {
+        return localStorage.getItem("child");
+      });
+      $("#id_child").on("change", function () {
+        localStorage.setItem("child", $(this).val());
+      });
+      $("#id_child").on("click", function () {
+        $(this).val("");
+      });
       $("#id_family").autocomplete({
         source: '{% url 'autocomplete_family' %}',
         minLength: 2
