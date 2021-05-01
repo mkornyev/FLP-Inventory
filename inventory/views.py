@@ -424,7 +424,14 @@ def checkin_action(request):
     context['transactions'] = transactions
 
     if request.method == 'GET':
-        context['formadditem'] = AddItemForm()
+        addItemForm = AddItemForm()
+        if ('itemInfo' in request.session):
+            itemInfo = request.session['itemInfo']
+            addItemForm.fields['name'].initial = itemInfo[0]
+            addItemForm.fields['quantity'].initial = itemInfo[1]
+            del request.session['itemInfo']
+
+        context['formadditem'] = addItemForm
         return render(request, 'inventory/checkin.html', context)
 
     if request.method == 'POST' and 'additem' in request.POST:
