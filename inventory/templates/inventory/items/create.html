@@ -9,6 +9,11 @@
     .form-group {
       padding: 5px 0;
     }
+
+    .split {
+      display: flex;
+      justify-content: space-between;
+    }
   </style>
 {% endblock %}
 
@@ -39,7 +44,10 @@
                 {% endfor %}
                 {% csrf_token %}
                 <br>
-                <button class="btn btn-warning" type="submit">Create Item</button>
+                <div class="split">
+                  <button class="btn btn-link" value="Previous Page" onClick="javascript:history.go(-1);">Back</button>
+                  <button class="btn btn-warning" type="submit">Create Item</button>
+                </div>
             </form>
         </div>
     </div>
