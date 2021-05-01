@@ -81,6 +81,11 @@ span#reportGroupingTooltip {
   top: 6px;
 }
 
+.zero_value::after{
+  content: '*';
+  color: red;
+}
+
 /* Forms */
 label.required::after {
   content: ' *';
