@@ -5,7 +5,7 @@ from inventory.models import Item
 
 class AddItemTestCase(TestCase):
     def setUp(self):
-        item = Item.objects.create(name="ValidItem", quantity=5)
+        item = Item.objects.create(item="ValidItem", quantity=5)
         item.save()
 
         user = User.objects.create_superuser(username='testuser', password='12345')
@@ -16,7 +16,7 @@ class AddItemTestCase(TestCase):
 
         response = self.client.post(
             "/checkin/", data={"additem": "",
-                               "name": "ValidItem",
+                               "item": "ValidItem",
                                "quantity": 2,
                                "is_new": True}, follow=True
         )
@@ -25,7 +25,7 @@ class AddItemTestCase(TestCase):
 
         response = self.client.post(
             "/checkout/", data={"additem": "",
-                                "name": "ValidItem",
+                                "item": "ValidItem",
                                 "quantity": 1}, follow=True
         )
 
@@ -43,7 +43,7 @@ class AddItemTestCase(TestCase):
 
         response = self.client.post(
             "/checkin/", data={"additem": "",
-                               "name": "InvalidItem",
+                               "item": "InvalidItem",
                                "quantity": 1}
         )
 
