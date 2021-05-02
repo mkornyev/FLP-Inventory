@@ -15,14 +15,17 @@
 
     .checkout-form {
       display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
     }
 
     .checkout-form .fieldWrapper{
-      padding-right: 20px;
+      margin-right: 20px;
+      width: 45%;
     }
 
     .create-family {
-      padding-top: 15px;
+      padding-top: 25px;
     }
 
     .ui-autocomplete {
@@ -145,7 +148,7 @@
           {% else %}
             <p>Can't find what you're looking for? Ask an admin to create a new item.</p>
           {% endif %}
-          <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add Item +</button>
+          <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add To Cart</button>
       </form>
     </div>
   </div>
@@ -204,7 +207,7 @@
         localStorage.removeItem("family")
       })
 
-      $("#id_name").autocomplete({
+      $("#id_item").autocomplete({
         source: '{% url 'autocomplete_item' %}',
         minLength: 2
       })

@@ -116,7 +116,7 @@ class CreateItemForm(forms.Form):
 class AddItemForm(forms.Form):
     # category   = forms.ModelChoiceField(queryset=Category.objects.all(),
     #                                     widget=forms.Select(attrs={'class': 'form-select'}))
-    name = forms.CharField(max_length=50,
+    item = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     is_new = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}), label="New")
@@ -133,10 +133,10 @@ class AddItemForm(forms.Form):
         return cleaned_data
 
     # Customizes form validation for the name field.
-    def clean_name(self):
+    def clean_item(self):
         # Confirms that the username is already present in the
         # Item model database.
-        name = self.cleaned_data.get('name')
+        name = self.cleaned_data.get('item')
         if not Item.objects.filter(name__exact=name):
             raise forms.ValidationError("Item does not exist.")
 

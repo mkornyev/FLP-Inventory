@@ -33,7 +33,6 @@ a:hover {
 
 .pagination li {
   padding: 5px;
-  margin-bottom: 10%;
 }
 
 /* Nav Bar */
@@ -79,6 +78,11 @@ span.monetary-value {
 span#reportGroupingTooltip {
   position: relative;
   top: 6px;
+}
+
+.zero_value::after{
+  content: '*';
+  color: red;
 }
 
 /* Forms */

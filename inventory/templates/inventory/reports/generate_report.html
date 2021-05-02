@@ -46,6 +46,12 @@
           
           {% endif %}
 
+          {% if itemizedOutput %}
+            <span style="color: red">*</span> Price is zero
+          {% else %}
+            <span style="color: red">*</span> Price is missing
+          {% endif %}
+
         {% else %}
           <p>No results for the specified filters.</p>
         {% endif %}
