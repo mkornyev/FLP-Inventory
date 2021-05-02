@@ -174,10 +174,18 @@ def generate_report(request):
                             'new_price': tx.item.new_price,
                             'used_price': tx.item.used_price,
                             'value': 0 if item_price is None else tx.quantity*item_price,
+                            'new_value': 0 if tx.item.new_price is None else tx.quantity*tx.item.new_price, # always use new price
+                            'used_value': 0 if tx.item.used_price is None else tx.quantity*tx.item.used_price, # always use used price
+                            'tx_notes': res.notes_description()
                         }
                     else: 
                         newUniqueItems[item_key]['quantity'] += tx.quantity
                         newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
+
+                        currNotes = newUniqueItems[item_key]['tx_notes']
+                        if res.notes and currNotes and str(res.id) not in currNotes: 
+                            currNotes = currNotes + "<br>" + res.notes_description()
+                            newUniqueItems[item_key]['tx_notes'] = currNotes
 
             context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 

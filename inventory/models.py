@@ -89,6 +89,9 @@ class Checkin(models.Model):
   def __str__(self):
     return "({}, {})".format(self.datetime, self.in_items)
 
+  def notes_description(self): 
+    return f"<b>Checkin #{self.id}:</b> " + self.notes + " <b>&nbsp;|&nbsp;</b> " + self.in_items if self.notes else None
+
   @property
   def in_items(self):
         return ", ".join([str(i) for i in self.items.all()])
@@ -117,6 +120,9 @@ class Checkout(models.Model):
   def __str__(self):
     return "({}, {})".format(self.family, self.out_items)
   
+  def notes_description(self): 
+    return f"<b>Checkout #{self.id}:</b> " + self.notes + " <b>&nbsp;|&nbsp;</b> " + self.out_items if self.notes else None
+
   @property
   def out_items(self):
     return ", ".join([str(i) for i in self.items.all()])
