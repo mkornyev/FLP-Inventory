@@ -106,6 +106,7 @@ def generate_report(request):
             response = HttpResponse()
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
+    
             if qs is not None:
                 writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
 
@@ -139,27 +140,6 @@ def generate_report(request):
                 for item in sorted_items:
                     writer.writerow(item)
 
-            return response
-
-        if 'export_table' in request.POST:
-            qs = context['results']
-            response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
-            writer = csv.writer(response)
-
-            if len(qs) != 0:
-                field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
-                writer.writerow(field_names)
-                for i in qs:
-                    row = []
-                    for f in field_names:
-                        if f == "items":
-                            txs = ', '.join([str(tx) for tx in i.items.all()])
-                            row.append(txs)
-                        else:
-                            row.append(getattr(i, f))
-                    row.append(i.getValue())
-                    writer.writerow(row)
             return response
 
         if 'itemizedOutput' in request.POST:
@@ -204,8 +184,38 @@ def generate_report(request):
 
             context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 
-        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
-        return render(request, 'inventory/reports/generate_report.html', context)
+        if 'export_table' not in request.POST:
+            context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+            return render(request, 'inventory/reports/generate_report.html', context)
+
+        if 'export_table' in request.POST:
+            qs = context['results']
+            response = HttpResponse()
+            response['Content-Disposition'] = 'attachment; filename=data.csv'
+            writer = csv.writer(response)
+
+            if 'itemizedOutput' in request.POST:
+                if len(context.get('results', [])) != 0:
+                    writer.writerow(context['results'][0].keys())
+                    for i in context['results']:
+                        writer.writerow(i.values())
+                return response
+
+            if len(qs) != 0:
+                field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
+                writer.writerow(field_names)
+                for i in qs:
+                    row = []
+                    for f in field_names:
+                        if f == "items":
+                            txs = ', '.join([str(tx) for tx in i.items.all()])
+                            row.append(txs)
+                        elif f == "value":
+                            row.append(i.getValue())
+                        else:
+                            row.append(getattr(i, f))
+                    writer.writerow(row)
+            return response
 
     today = date.today()
     weekAgo = today - timedelta(days=7)
