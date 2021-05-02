@@ -97,6 +97,7 @@ def generate_report(request):
             response = HttpResponse()
             response['Content-Disposition'] = 'attachment; filename=data.csv'
             writer = csv.writer(response)
+    
             if qs is not None:
                 writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
 
@@ -132,26 +133,6 @@ def generate_report(request):
 
             return response
 
-        if 'export_table' in request.POST:
-            qs = context['results']
-            response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
-            writer = csv.writer(response)
-
-            if len(qs) != 0:
-                field_names = [f.name for f in qs.model._meta.fields]
-                writer.writerow(field_names)
-                for i in qs:
-                    row = []
-                    for f in field_names:
-                        if f == "items":
-                            txs = ', '.join([str(tx) for tx in i.items.all()])
-                            row.append(txs)
-                        else:
-                            row.append(getattr(i, f))
-                    writer.writerow(row)
-            return response
-
         if 'itemizedOutput' in request.POST:
             context['itemizedOutput'] = request.POST['itemizedOutput']
 
@@ -174,8 +155,6 @@ def generate_report(request):
                             'new_price': tx.item.new_price,
                             'used_price': tx.item.used_price,
                             'value': 0 if item_price is None else tx.quantity*item_price,
-                            'new_value': 0 if tx.item.new_price is None else tx.quantity*tx.item.new_price, # always use new price
-                            'used_value': 0 if tx.item.used_price is None else tx.quantity*tx.item.used_price, # always use used price
                             'tx_notes': res.notes_description()
                         }
                     else: 
@@ -187,10 +166,57 @@ def generate_report(request):
                             currNotes = currNotes + "<br>" + res.notes_description()
                             newUniqueItems[item_key]['tx_notes'] = currNotes
 
+                        currNotes = newUniqueItems[item_key]['tx_notes']
+                        if res.notes and currNotes and str(res.id) not in currNotes: 
+                            currNotes = currNotes + "<br>" + res.notes_description()
+                            newUniqueItems[item_key]['tx_notes'] = currNotes
+
             context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 
-        context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
-        return render(request, 'inventory/reports/generate_report.html', context)
+        if 'export_table' not in request.POST:
+            context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
+            return render(request, 'inventory/reports/generate_report.html', context)
+
+        if 'export_table' in request.POST:
+            qs = context['results']
+            response = HttpResponse()
+            response['Content-Disposition'] = 'attachment; filename=data.csv'
+            writer = csv.writer(response)
+
+            if 'itemizedOutput' in request.POST:
+                if len(context.get('results', [])) != 0:
+                    headers = list(context['results'][0].keys())
+                    headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
+                    headers.append('new/used price')
+                    writer.writerow(headers)
+                    for i in context['results']:
+                        row = []
+                        for h in headers:
+                            if h == "new/used price":
+                                if i['is_new']:
+                                    row.append(i['new_price'])
+                                else:
+                                    row.append(i['used_price'])
+                            else:
+                                row.append(i[h])
+                        writer.writerow(row)
+                return response
+
+            if len(qs) != 0:
+                field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
+                writer.writerow(field_names)
+                for i in qs:
+                    row = []
+                    for f in field_names:
+                        if f == "items":
+                            txs = ', '.join([str(tx) for tx in i.items.all()])
+                            row.append(txs)
+                        elif f == "value":
+                            row.append(i.getValue())
+                        else:
+                            row.append(getattr(i, f))
+                    writer.writerow(row)
+            return response
 
     today = date.today()
     weekAgo = today - timedelta(days=7)

@@ -6,15 +6,8 @@
       <th scope="col">New/Used</th>
       <th scope="col">Category</th>
       <th scope="col">Quantity</th>
-      {% if tx_type == 'Checkout' %}
-        <th scope="col">New/Used Price</th>
-        <th scope="col">Value</th>
-      {% else %}
-        <th scope="col">New Price</th>
-        <th scope="col">New Value</th>
-        <th scope="col">Used Price</th>
-        <th scope="col">Used Value</th>
-      {% endif %}
+      <th scope="col">New/Used Price</th>
+      <th scope="col">Value</th>
       <th scope="col">Notes</th>
     </tr>
   </thead>
@@ -43,7 +36,7 @@
 
       <td>
         {% if c.tx_notes %}
-        <a href="" class="notes-arrow" data-bs-toggle="collapse" data-bs-target="#row-collapse-{{ c.id }}" aria-expanded="false">
+        <a href="" class="notes-arrow" data-bs-toggle="collapse" data-bs-target="#row-collapse-{{ c.id }}-{{ c.is_new }}" aria-expanded="false">
           &#x2936;
         </a>
         {% endif %}
@@ -52,7 +45,7 @@
     </tr>
     
     {% if c.tx_notes %}
-      <tr class="collapse" id="row-collapse-{{ c.id }}">
+      <tr class="collapse" id="row-collapse-{{ c.id }}-{{ c.is_new}}">
         <td colspan="8">{{ c.tx_notes|safe }}</td>
       </tr>
     {% endif %}
