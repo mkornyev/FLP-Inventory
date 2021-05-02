@@ -16,7 +16,7 @@ class AddItemTestCase(TestCase):
 
         response = self.client.post(
             "/checkin/", data={"additem": "",
-                               "name": "ValidItem",
+                               "item": "ValidItem",
                                "quantity": 2,
                                "is_new": True}, follow=True
         )
@@ -25,7 +25,7 @@ class AddItemTestCase(TestCase):
 
         response = self.client.post(
             "/checkout/", data={"additem": "",
-                                "name": "ValidItem",
+                                "item": "ValidItem",
                                 "quantity": 1}, follow=True
         )
 
@@ -43,7 +43,7 @@ class AddItemTestCase(TestCase):
 
         response = self.client.post(
             "/checkin/", data={"additem": "",
-                               "name": "InvalidItem",
+                               "item": "InvalidItem",
                                "quantity": 1}
         )
 
