@@ -155,8 +155,6 @@ def generate_report(request):
                             'new_price': tx.item.new_price,
                             'used_price': tx.item.used_price,
                             'value': 0 if item_price is None else tx.quantity*item_price,
-                            'new_value': 0 if tx.item.new_price is None else tx.quantity*tx.item.new_price, # always use new price
-                            'used_value': 0 if tx.item.used_price is None else tx.quantity*tx.item.used_price, # always use used price
                             'tx_notes': res.notes_description()
                         }
                     else: 
