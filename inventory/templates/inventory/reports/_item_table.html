@@ -36,7 +36,7 @@
 
       <td>
         {% if c.tx_notes %}
-        <a href="" class="notes-arrow" data-bs-toggle="collapse" data-bs-target="#row-collapse-{{ c.id }}" aria-expanded="false">
+        <a href="" class="notes-arrow" data-bs-toggle="collapse" data-bs-target="#row-collapse-{{ c.id }}-{{ c.is_new }}" aria-expanded="false">
           &#x2936;
         </a>
         {% endif %}
@@ -45,7 +45,7 @@
     </tr>
     
     {% if c.tx_notes %}
-      <tr class="collapse" id="row-collapse-{{ c.id }}">
+      <tr class="collapse" id="row-collapse-{{ c.id }}-{{ c.is_new}}">
         <td colspan="8">{{ c.tx_notes|safe }}</td>
       </tr>
     {% endif %}
