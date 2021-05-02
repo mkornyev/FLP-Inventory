@@ -91,15 +91,6 @@ def generate_report(request):
         context['totalValue'] = 0 
         for result in context['results']:
             context['totalValue'] = result.getValue() + context['totalValue']
-        
-        if context['tx_type'] == 'Checkin':
-            context['newTotalValue'] = 0 
-            for result in context['results']:
-                context['newTotalValue'] = result.getNewValue() + context['newTotalValue']
-            
-            context['usedTotalValue'] = 0 
-            for result in context['results']:
-                context['usedTotalValue'] = result.getUsedValue() + context['usedTotalValue']
 
         if 'export' in request.POST:
             qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
@@ -167,10 +158,7 @@ def generate_report(request):
             newUniqueItems = {}
             for res in context['results']: 
                 for tx in res.items.all(): 
-                    if context['tx_type'] == 'Checkin':
-                        item_key = tx.item.id
-                    else:
-                        item_key = (tx.item.id, tx.is_new)
+                    item_key = (tx.item.id, tx.is_new)
                     item_price = None
                     if tx.is_new and tx.item.new_price != None:
                         item_price = tx.item.new_price
@@ -193,8 +181,6 @@ def generate_report(request):
                     else: 
                         newUniqueItems[item_key]['quantity'] += tx.quantity
                         newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
-                        newUniqueItems[item_key]['new_value'] += 0 if tx.item.new_price  is None else tx.quantity*tx.item.new_price 
-                        newUniqueItems[item_key]['used_value'] += 0 if tx.item.used_price  is None else tx.quantity*tx.item.used_price 
 
                         currNotes = newUniqueItems[item_key]['tx_notes']
                         if res.notes and currNotes and str(res.id) not in currNotes: 
@@ -418,6 +404,7 @@ def createItem_action(request, location):
         item.save()
 
         if location == 'in' or location == 'out':
+            request.session["itemInfo"] = (item.name, item.quantity)
             messages.success(request, 'Item created')
             return redirect(reverse('Check' + location))
         else:
@@ -445,7 +432,14 @@ def checkin_action(request):
     context['transactions'] = transactions
 
     if request.method == 'GET':
-        context['formadditem'] = AddItemForm()
+        addItemForm = AddItemForm()
+        if ('itemInfo' in request.session):
+            itemInfo = request.session['itemInfo']
+            addItemForm.fields['name'].initial = itemInfo[0]
+            addItemForm.fields['quantity'].initial = itemInfo[1]
+            del request.session['itemInfo']
+
+        context['formadditem'] = addItemForm
         return render(request, 'inventory/checkin.html', context)
 
     if request.method == 'POST' and 'additem' in request.POST:
@@ -522,7 +516,8 @@ def checkout_action(request):
     context['transactions'] = transactions
 
     if request.method == 'GET':
-        context['formadditem'] = AddItemForm()
+        addItemForm = AddItemForm()
+        context['formadditem'] = addItemForm
         form = CheckOutForm()
         context['formcheckout'] = form
 
@@ -531,6 +526,12 @@ def checkout_action(request):
             form.fields['family'].initial = famName
             context['createdFamily'] = famName
             del request.session['createdFamily']
+
+        if ('itemInfo' in request.session):
+            itemInfo = request.session['itemInfo']
+            addItemForm.fields['name'].initial = itemInfo[0]
+            addItemForm.fields['quantity'].initial = itemInfo[1]
+            del request.session['itemInfo']
 
         return render(request, 'inventory/checkout.html', context)
 
