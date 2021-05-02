@@ -75,6 +75,7 @@ class Checkin(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
   datetime = models.DateTimeField(default=timezone.now)
   items = models.ManyToManyField(ItemTransaction, blank=False)
+  notes = models.CharField(max_length=500, blank=True, null=True)
 
   def getValue(self):
     val = 0
@@ -105,6 +106,9 @@ class Checkin(models.Model):
 
   def __str__(self):
     return "({}, {})".format(self.datetime, self.in_items)
+
+  def notes_description(self): 
+    return f"<b>Checkin #{self.id}:</b> " + self.notes + " <b>&nbsp;|&nbsp;</b> " + self.in_items if self.notes else None
 
   @property
   def in_items(self):
@@ -139,6 +143,9 @@ class Checkout(models.Model):
   def __str__(self):
     return "({}, {})".format(self.family, self.out_items)
   
+  def notes_description(self): 
+    return f"<b>Checkout #{self.id}:</b> " + self.notes + " <b>&nbsp;|&nbsp;</b> " + self.out_items if self.notes else None
+
   @property
   def out_items(self):
         return ", ".join([str(i) for i in self.items.all()])

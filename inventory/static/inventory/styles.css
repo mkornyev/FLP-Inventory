@@ -96,3 +96,7 @@ label.required::after {
 label {
   padding-top: 10px;
 }
+
+a.notes-arrow {
+  font-size: 1.5em;
+}
