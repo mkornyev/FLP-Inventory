@@ -24,11 +24,10 @@
         <td>{{ c.childName }}</td>
         <td>{{ c.ageRange }}</td>
       {% endif %}
-      <td>{{ c.getValue }}</td>
+      <td class="{% if not c.has_all_prices %} zero_value {% endif %}">{{ c.getValue }}</td>
       <td>
       {% for tx in c.items.all %}
-        {{ tx.item.name }}({{ tx.quantity }}, {% if tx.is_new %} New{% else %} Used{% endif %})
-        {% if not forloop.last %}, {% endif %}
+        <div class="{% if not tx.has_price %} zero_value {% endif %}">{{ tx.item.name }}({{ tx.quantity }}, {% if tx.is_new %} New{% else %} Used{% endif %})</div>
       {% endfor %}
       </td>
       <td>{% if c.notes %}{{ c.notes }}{% endif %}</td>
