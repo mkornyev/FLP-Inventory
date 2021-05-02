@@ -187,7 +187,11 @@ def generate_report(request):
                 if len(context.get('results', [])) != 0:
                     writer.writerow(context['results'][0].keys())
                     for i in context['results']:
-                        writer.writerow(i.values())
+                        row = list(i.values())
+                        if i.get('tx_notes', None):
+                            note = str(row[-1]).replace('&nbsp;', '').replace('|', '').replace('<b>', '').replace('</b>', '') 
+                            row[-1] = note
+                        writer.writerow(row)
                 return response
 
             if len(qs) != 0:
