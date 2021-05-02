@@ -9,7 +9,7 @@ class FamilyAdmin(admin.ModelAdmin):
 admin.site.register(Family, FamilyAdmin)
 
 class AgeRangeAdmin(admin.ModelAdmin):
-    list_display = ('low', 'high', )
+    list_display = ('id', 'low', 'high', )
 admin.site.register(AgeRange, AgeRangeAdmin)
 
 class CategoryAdmin(admin.ModelAdmin):
