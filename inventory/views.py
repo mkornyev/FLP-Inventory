@@ -185,12 +185,13 @@ def generate_report(request):
 
             if 'itemizedOutput' in request.POST:
                 if len(context.get('results', [])) != 0:
-                    writer.writerow(context['results'][0].keys())
+                    headers = list(context['results'][0].keys())
+                    headers.remove('tx_notes')
+                    writer.writerow(headers)
                     for i in context['results']:
                         row = list(i.values())
                         if i.get('tx_notes', None):
-                            note = str(row[-1]).replace('&nbsp;', '').replace('|', '').replace('<b>', '').replace('</b>', '') 
-                            row[-1] = note
+                            row = row[:-1]
                         writer.writerow(row)
                 return response
 
