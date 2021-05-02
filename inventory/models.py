@@ -70,6 +70,9 @@ class ItemTransaction(models.Model):
   def __str__(self):
     new_str = "New" if self.is_new else "Used"
     return "({}, {}, {})".format(self.item, self.quantity, new_str)
+  
+  def has_price(self):
+    return (self.is_new and self.item.new_price != None ) or ((not self.is_new) and self.item.used_price != None)
 
 class Checkin(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
@@ -94,7 +97,12 @@ class Checkin(models.Model):
 
   @property
   def in_items(self):
-        return ", ".join([str(i) for i in self.items.all()])
+    return ", ".join([str(i) for i in self.items.all()])
+  
+  def has_all_prices(self):
+    for tx in self.items.all():
+      if not tx.has_price(): return False
+    return True
   
   class Meta:
     ordering = ['-datetime']
@@ -126,6 +134,11 @@ class Checkout(models.Model):
   @property
   def out_items(self):
     return ", ".join([str(i) for i in self.items.all()])
+
+  def has_all_prices(self):
+    for tx in self.items.all():
+      if not tx.has_price(): return False
+    return True
   
   class Meta:
     ordering = ['-datetime']
