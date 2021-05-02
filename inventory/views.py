@@ -186,12 +186,19 @@ def generate_report(request):
             if 'itemizedOutput' in request.POST:
                 if len(context.get('results', [])) != 0:
                     headers = list(context['results'][0].keys())
-                    headers.remove('tx_notes')
+                    headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
+                    headers.append('new/used price')
                     writer.writerow(headers)
                     for i in context['results']:
-                        row = list(i.values())
-                        if i.get('tx_notes', None):
-                            row = row[:-1]
+                        row = []
+                        for h in headers:
+                            if h == "new/used price":
+                                if i['is_new']:
+                                    row.append(i['new_price'])
+                                else:
+                                    row.append(i['used_price'])
+                            else:
+                                row.append(i[h])
                         writer.writerow(row)
                 return response
 
