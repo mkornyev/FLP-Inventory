@@ -3,7 +3,6 @@
 
 {% block page_specific_styles %}
   {% load static %}
-  <!-- <link href="{% static 'inventory/index_styles.css' %}" rel="stylesheet" type="text/css"> -->
 {% endblock %}
 
 {% block title %}
@@ -43,7 +42,7 @@
 <script>
   $(document).ready(function() {
     $("#id_family__displayName").autocomplete({
-      source: '{% url 'autocomplete_family' %}',
+      source: '{% url "autocomplete_family" %}',
       minLength: 2
     });
 
@@ -58,7 +57,7 @@
       localStorage.setItem("family-filter", $(this).val());
     });
     $("#id_family").autocomplete({
-      source: '{% url 'autocomplete_family' %}',
+      source: '{% url "autocomplete_family" %}',
       minLength: 2
     });
   });

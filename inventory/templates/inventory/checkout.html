@@ -71,9 +71,7 @@
         <tbody>
           {% for tx in transactions %}
             <tr> 
-          <tr> 
-            <tr> 
-                <th scope="row">{{ tx.item}}</td>
+                <th scope="row">{{ tx.item}}</th>
                 <td>{{ tx.quantity }}</td>
                 <td>{% if tx.is_new %} New {% else %} Used {% endif %}</td>
                 <td>
@@ -119,11 +117,6 @@
               </button>
               <button id="checkout-btn" name="checkout" class="btn btn-success mt-2" type="submit" {% if not transactions %}disabled{% endif %}>Check Out Items</button>
             </div>
-            <!-- <div class="col">
-              <button id="addNotes-btn" class="btn btn-warning mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#notesCollapse" aria-expanded="false" aria-controls="notesCollapse">
-                Add Notes &#x270E;
-              </button>
-            </div> -->
         </div>
       </form>
     </div>
@@ -200,7 +193,7 @@
         localStorage.setItem("age", $(this).val());
       });
       $("#id_family").autocomplete({
-        source: '{% url 'autocomplete_family' %}',
+        source: '{% url "autocomplete_family" %}',
         minLength: 2
       });
       $("#checkout-btn").on('click', function(){
@@ -208,7 +201,7 @@
       })
 
       $("#id_item").autocomplete({
-        source: '{% url 'autocomplete_item' %}',
+        source: '{% url "autocomplete_item" %}',
         minLength: 2
       })
     })
