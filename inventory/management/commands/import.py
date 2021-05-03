@@ -20,15 +20,21 @@ class Command(BaseCommand):
         inventory_sheet = openpyxl.load_workbook(INVENTORY_FILE_PATH).active
         items_sheet = openpyxl.load_workbook(ITEMS_FILE_PATH).active
 
+        seen_items = set()
+        seen_categories = set()
+
         for r in items_sheet.iter_rows(min_row=2):
             item_name = r[1].value
             item_category = r[2].value
             print(f"adding {item_name} w category {item_category}")
             qs = Category.objects.filter(name__exact="Clothing")
             if len(qs) == 0:
-                Category.objects.create(name=item_category)
-            else:
+                if item_category not in seen_items:
+                    Category.objects.create(name=item_category)
+                    seen_categories.add(item_category)
+            elif item_name not in seen_items:
                 Item.objects.create(category=qs[0], name=item_name, quantity=0)
+                seen_items.add(item_name)
 
         for r in inventory_sheet.iter_rows(min_row=2): # skip header
             item_name = r[1].value
