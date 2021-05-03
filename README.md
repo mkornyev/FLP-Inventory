@@ -62,7 +62,7 @@ The following will set up a python environment for this project using `virtualen
 
 * To SSH into AWS, you can find our private key file in Google Drive and use the AWS login credentials in the handoff doc to get the public DNS
 
-* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - note you must comment out the `psycopg2==2.8.6` line in requirements.txt
+* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - note you must comment out the `psycopg2==2.8.6` line in requirements.txt, also please make sure you turn off debug mode in settings.py!
 
 * Use `docker exec` to run `source .env` (.env file in the google drive) and all of the following commands
 
