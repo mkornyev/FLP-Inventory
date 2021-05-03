@@ -71,9 +71,7 @@
         <tbody>
           {% for tx in transactions %}
             <tr> 
-          <tr> 
-            <tr> 
-                <th scope="row">{{ tx.item}}</td>
+                <th scope="row">{{ tx.item}}</th>
                 <td>{{ tx.quantity }}</td>
                 <td>{% if tx.is_new %} New {% else %} Used {% endif %}</td>
                 <td>
@@ -200,7 +198,7 @@
         localStorage.setItem("age", $(this).val());
       });
       $("#id_family").autocomplete({
-        source: '{% url 'autocomplete_family' %}',
+        source: '{% url "autocomplete_family" %}',
         minLength: 2
       });
       $("#checkout-btn").on('click', function(){
@@ -208,7 +206,7 @@
       })
 
       $("#id_item").autocomplete({
-        source: '{% url 'autocomplete_item' %}',
+        source: '{% url "autocomplete_item" %}',
         minLength: 2
       })
     })
