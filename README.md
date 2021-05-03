@@ -68,7 +68,7 @@ The following will set up a python environment for this project using `virtualen
 
 * Next, run `python manage.py drop` then `python manage.py import MANAGE_INVENTORY_FILE MANAGE_ITEMS_FILE` (these are also in the google drive)
 
-* Run `nohup email_backups.py &` to send db backup emails
+* Run `email_backups.py &` to send db backup emails weekly
 
 * Make starter staff superuser and volunteer account
 
