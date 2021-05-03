@@ -28,7 +28,7 @@ class Command(BaseCommand):
             if len(qs) == 0:
                 Category.objects.create(name=item_category)
             else:
-                Item.objects.create(category=qs[0], name=item_name, price=None, quantity=0)
+                Item.objects.create(category=qs[0], name=item_name, quantity=0)
 
         for r in inventory_sheet.iter_rows(min_row=2): # skip header
             item_name = r[1].value
