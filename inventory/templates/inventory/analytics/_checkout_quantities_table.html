@@ -1,5 +1,5 @@
-{% if checkouts %}
-    <div class="table_div" id="{{ date_period }}_{{ group_by }}">
+<div class="table_div" id="{{ date_period }}_{{ group_by }}">
+    {% if checkouts %}
         {% if date_since == all_time %}
             {% if group_by == "item" %}
                 <h4>Items Checked Out ({{ date_since }})</h4>
@@ -49,7 +49,7 @@
 
         {% endif %}
         {% csrf_token %}
-    </div>
-{% else %}
-    <p>No items have been checked out for this period.</p>
-{% endif %}
+    {% else %}
+        <p>No items have been checked out for this period.</p>
+    {% endif %}
+</div>
