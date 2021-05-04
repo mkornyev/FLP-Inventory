@@ -461,7 +461,7 @@ def checkin_action(request):
         addItemForm = AddItemForm()
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
-            addItemForm.fields['name'].initial = itemInfo[0]
+            addItemForm.fields['item'].initial = itemInfo[0]
             addItemForm.fields['quantity'].initial = itemInfo[1]
             del request.session['itemInfo']
 
@@ -555,7 +555,7 @@ def checkout_action(request):
 
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
-            addItemForm.fields['name'].initial = itemInfo[0]
+            addItemForm.fields['item'].initial = itemInfo[0]
             addItemForm.fields['quantity'].initial = itemInfo[1]
             del request.session['itemInfo']
 
