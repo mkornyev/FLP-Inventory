@@ -114,8 +114,6 @@ class CreateItemForm(forms.Form):
         return price
 
 class AddItemForm(forms.Form):
-    # category   = forms.ModelChoiceField(queryset=Category.objects.all(),
-    #                                     widget=forms.Select(attrs={'class': 'form-select'}))
     item = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))

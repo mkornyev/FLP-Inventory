@@ -19,6 +19,7 @@
 <div class="container">
     <div class="row">
       <div class="col-md-5">
+        <button class="btn btn-link back" value="Previous Page" onClick="javascript:history.go(-1);">Back</button>
         <h1>Create Family:</h1>
 
             <form method="POST" action="{% url 'CreateFamily' location=location %}">
