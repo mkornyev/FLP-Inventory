@@ -104,3 +104,9 @@ label {
 a.notes-arrow {
   font-size: 1.5em;
 }
+
+/* Create Item */
+
+.back {
+  padding-left: 0px;
+}

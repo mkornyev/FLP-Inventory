@@ -28,6 +28,7 @@
 <div class="container">
     <div class="row">
       <div class="col-md-5">
+        <button class="btn btn-link back" value="Previous Page" onClick="javascript:history.go(-1);">Back</button>
         <h1>Create Item:</h1>
 
             <form method="POST" action="{% url 'CreateItem' location=location %}">
@@ -44,13 +45,11 @@
                 {% endfor %}
                 {% csrf_token %}
                 <br>
-                <div class="split">
-                  <button class="btn btn-link" value="Previous Page" onClick="javascript:history.go(-1);">Back</button>
-                  <button class="btn btn-warning" type="submit">Create Item</button>
-                </div>
+                <button class="btn btn-warning" type="submit">Create Item</button>
             </form>
         </div>
     </div>
+    
 </div>
 
 {% endblock %}
@@ -60,7 +59,7 @@
 <script>
 	$(document).ready(function() {
     	$("#id_name").autocomplete({
-    		source: '{% url 'autocomplete_item' %}',
+    		source: '{% url "autocomplete_item" %}',
     		minLength: 2
     	});
 	});
