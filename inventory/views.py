@@ -109,7 +109,7 @@ def generate_report(request):
                         try: 
                             originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
                             adjustedPrice = float(request.POST.get(str(tx.item.id) + '-' + str(tx.is_new) + '-adjustment', originalPrice))
-                        except (ValueError, TypeError) as _:
+                        except (ValueError, TypeError) as _: # noqa: F841
                             adjustedPrice = 0
 
                         if item_key not in uniqueItems: 
