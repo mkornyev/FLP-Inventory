@@ -2,7 +2,7 @@ import django_filters
 from .models import Checkout, Item
 
 class CheckoutFilter(django_filters.FilterSet):
-    family__displayName = django_filters.CharFilter(lookup_expr='iexact')
+    family__displayName = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = Checkout
