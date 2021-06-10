@@ -23,7 +23,45 @@
       </div>
     {% endif %}
   </div>
-
+  <form action="" method="get" class="form form-inline">
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <input 
+            type="text" name="item__name" class="form-control ui-autocomplete-input" placeholder="Item name" title="" id="id_item__name" autocomplete="off">
+        </div>
+      </div>
+      <div class="col filter-button-container">
+        <button class="btn btn-primary">Filter</button>
+      </div>
+    </div>
+  </form>
   {% render_table table %}
 </div>
+{% endblock %}
+
+{% block page_specific_scripts %}
+<script>
+  $(document).ready(function() {
+    $("#id_item__name").autocomplete({
+      source: '{% url "autocomplete_item" %}',
+      minLength: 2
+    });
+
+    $("#id_item__name").val(function () {
+      return localStorage.getItem("item-filter");
+    });
+    $("#id_item__name").on("change", function () {
+      localStorage.setItem("item-filter", $(this).val());
+    });
+    $("#id_item__name").on("click", function () {
+      $(this).val("");
+      localStorage.setItem("item-filter", $(this).val());
+    });
+    $("#id_item").autocomplete({
+      source: '{% url "autocomplete_item" %}',
+      minLength: 2
+    });
+  });
+</script>
 {% endblock %}
