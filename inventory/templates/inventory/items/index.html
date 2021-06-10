@@ -28,7 +28,7 @@
       <div class="col">
         <div class="form-group">
           <input 
-            type="text" name="item__name" class="form-control ui-autocomplete-input" placeholder="Item name" title="" id="id_item__name" autocomplete="off">
+            type="text" name="name" class="form-control ui-autocomplete-input" placeholder="Item name" title="" id="id_name" autocomplete="off">
         </div>
       </div>
       <div class="col filter-button-container">
@@ -43,24 +43,20 @@
 {% block page_specific_scripts %}
 <script>
   $(document).ready(function() {
-    $("#id_item__name").autocomplete({
+    $("#id_name").autocomplete({
       source: '{% url "autocomplete_item" %}',
       minLength: 2
     });
 
-    $("#id_item__name").val(function () {
+    $("#id_name").val(function () {
       return localStorage.getItem("item-filter");
     });
-    $("#id_item__name").on("change", function () {
+    $("#id_name").on("change", function () {
       localStorage.setItem("item-filter", $(this).val());
     });
-    $("#id_item__name").on("click", function () {
+    $("#id_name").on("click", function () {
       $(this).val("");
       localStorage.setItem("item-filter", $(this).val());
-    });
-    $("#id_item").autocomplete({
-      source: '{% url "autocomplete_item" %}',
-      minLength: 2
     });
   });
 </script>

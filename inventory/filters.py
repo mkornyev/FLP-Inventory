@@ -9,8 +9,8 @@ class CheckoutFilter(django_filters.FilterSet):
         fields = ['family__displayName']
 
 class ItemFilter(django_filters.FilterSet):
-    item__name = django_filters.CharFilter(lookup_expr='iexact')
+    name = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = Item
-        fields = ['item__name']
+        fields = ['name']
