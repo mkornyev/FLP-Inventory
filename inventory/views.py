@@ -116,7 +116,7 @@ def generate_report(request):
                             uniqueItems[item_key] = [
                                 tx.item.name,
                                 "New" if tx.is_new else "Used",
-                                tx.item.category.name,
+                                "No category" if tx.item.category is None else tx.item.category.name,
                                 tx.quantity,
                                 adjustedPrice,
                                 0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
@@ -149,7 +149,7 @@ def generate_report(request):
                         newUniqueItems[item_key] = {
                             'id': tx.item.id,
                             'item': tx.item.name,
-                            'category': tx.item.category.name,
+                            'category': "No category" if tx.item.category is None else tx.item.category.name,
                             'is_new': tx.is_new,
                             'quantity': tx.quantity,
                             'new_price': tx.item.new_price,
