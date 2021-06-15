@@ -5,7 +5,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django_tables2 import SingleTableView, SingleTableMixin
 from django_filters.views import FilterView
-from .filters import CheckoutFilter
+from .filters import CheckoutFilter, ItemFilter
 from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, CheckoutTable
 
 from django.contrib import messages
@@ -656,10 +656,11 @@ class CategoryIndexView(LoginRequiredMixin, SingleTableView):
     table_class = CategoryTable
     template_name = "inventory/categories/index.html"
 
-class ItemIndexView(LoginRequiredMixin, SingleTableView):
+class ItemIndexView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Item
     table_class = ItemTable
     template_name = "inventory/items/index.html"
+    filterset_class = ItemFilter
 
 class CheckinIndexView(LoginRequiredMixin, SingleTableView):
     model = Checkin
