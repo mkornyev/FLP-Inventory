@@ -34,9 +34,10 @@ class Command(BaseCommand):
                 qs = ItemTransaction.objects.filter(item__exact=item)
                 if len(qs) != 0:
                     transaction = qs[0]
+                    print("transaction before", transaction)
                     transaction.item = new_item
                     transaction.save()
-                    print("transaction, transitem: ", transaction, transaction.item)
+                    print("transaction after", transaction)
                 else:
                     print("not found: ", item)
 
