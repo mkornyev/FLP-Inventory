@@ -34,11 +34,11 @@ class Command(BaseCommand):
             for item in items_to_merge:
                 qs = ItemTransaction.objects.filter(item__exact=item)
                 if len(qs) != 0:
-                    transaction = qs[0]
-                    print("transaction before", transaction)
-                    transaction.item = new_item
-                    transaction.save()
-                    print("transaction after", transaction)
+                    for transaction in qs:
+                        print("transaction before", transaction)
+                        transaction.item = new_item
+                        transaction.save()
+                        print("transaction after", transaction)
                 else:
                     print("not found: ", item)
             
