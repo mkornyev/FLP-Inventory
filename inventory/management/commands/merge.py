@@ -30,12 +30,15 @@ class Command(BaseCommand):
             print("new item quantity: ", quantity)
             print("new item: ", new_item)
 
-            # for item in items_to_merge:
-            #     qs = ItemTransaction.objects.filter(item__exact=item)
-            #     transaction = qs[0]
-            #     transaction.item = new_item
-            #     transaction.save()
-            #     print("transaction, transitem: ", transaction, transaction.item)
+            for item in items_to_merge:
+                qs = ItemTransaction.objects.filter(item__exact=item)
+                if len(qs) != 0:
+                    transaction = qs[0]
+                    transaction.item = new_item
+                    transaction.save()
+                    print("transaction, transitem: ", transaction, transaction.item)
+                else:
+                    print("not found: ", item, item.name)
 
             # search for these in transactions and replace them
             # delete old items
