@@ -40,8 +40,8 @@ class Command(BaseCommand):
                     print("transaction after", transaction)
                 else:
                     print("not found: ", item)
-
-            # search for these in transactions and replace them
-            # delete old items
+            
+            for item in items_to_merge:
+                item.delete()
 
             
