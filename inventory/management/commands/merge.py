@@ -2,6 +2,7 @@
 from django.core.management.base import BaseCommand
 from inventory.models import Item, Category, ItemTransaction
 import openpyxl
+from django.db.models.deletion import Collector
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -42,6 +43,8 @@ class Command(BaseCommand):
                     print("not found: ", item)
             
             for item in items_to_merge:
+                collector = Collector(using='default')
+                collector.collect(item)
+                if collector.dependencies:
+                    raise Exception("delete will cascade", collector.dependencies)
                 item.delete()
-
-            
