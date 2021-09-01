@@ -44,7 +44,7 @@ class Command(BaseCommand):
             
             for item in items_to_merge:
                 collector = Collector(using='default')
-                collector.collect(item)
+                collector.collect([item])
                 if collector.dependencies:
                     raise Exception("delete will cascade", collector.dependencies)
                 item.delete()
