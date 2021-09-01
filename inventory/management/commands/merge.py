@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     transaction.save()
                     print("transaction, transitem: ", transaction, transaction.item)
                 else:
-                    print("not found: ", item, item.name)
+                    print("not found: ", item)
 
             # search for these in transactions and replace them
             # delete old items
