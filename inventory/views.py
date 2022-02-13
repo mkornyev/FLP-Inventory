@@ -367,6 +367,28 @@ def removeitem_action(request, index, location):
 
     return redirect(reverse('Check' + location))
 
+def plusquantity_action(request, index, location):
+    saved_list = request.session['transactions-' + location]
+
+    curr_item = json.loads(saved_list[index])
+    curr_item[0]['fields']['quantity'] += 1
+    saved_list[index] = json.dumps(curr_item)
+    request.session['transactions-' + location] = saved_list
+
+    return redirect(reverse('Check' + location))
+
+def minusquantity_action(request, index, location):
+    saved_list = request.session['transactions-' + location]
+
+    curr_item = json.loads(saved_list[index])
+    if (curr_item[0]['fields']['quantity'] > 1):
+        curr_item[0]['fields']['quantity'] -= 1
+    saved_list[index] = json.dumps(curr_item)
+    request.session['transactions-' + location] = saved_list
+
+    return redirect(reverse('Check' + location))
+
+
 # Create Family View 
 @login_required
 def createFamily_action(request, location):
