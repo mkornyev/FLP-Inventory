@@ -117,7 +117,7 @@ class AddItemForm(forms.Form):
     item = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
     quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    is_new = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}), label="New")
+    is_new = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}), label="New2")
     required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
@@ -156,7 +156,7 @@ class AddItemForm(forms.Form):
     def clean_is_new(self):
         is_new = self.cleaned_data.get('is_new')
         return is_new
-
+    
 class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -165,6 +165,7 @@ class CheckOutForm(forms.Form):
                            widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     age   = forms.ModelChoiceField(queryset=AgeRange.objects.all(),
                                         widget=forms.Select(attrs={'class': 'form-select'}))
+    
 
     # Customizes form validation for properties that apply to more
     # than one field.  Overrides the forms.Form.clean function.
