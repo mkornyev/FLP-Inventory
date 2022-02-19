@@ -51,11 +51,44 @@
           {% for tx in transactions %}
             <tr> 
                 <th scope="row">{{ tx.item }}</th>
-                <td>{{ tx.quantity }}</td>
-                <td>{% if tx.is_new %} New {% else %} Used {% endif %}</td>
                 <td>
-                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='in' %}" class="btn-sm btn-danger save-notes-on-click">
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="qtyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ tx.quantity }}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="qty-menu" id="qtyDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=1%}">1</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=2%}">2</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=3%}">3</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=4%}">4</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=5%}">5</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=6%}">6</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=7%}">7</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=8%}">8</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=9%}">9</a>
+                    <a class="dropdown-item" href="#" >10+</a>
+                    </div>
+                  </div>
+                  <input type="text" name="qtyText" id="qtyText" style='display:none'/>
+                </td>
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="newDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      {% if tx.is_new %} New {% else %} Used {% endif %}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="new-menu" id="newDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'EditIsNew' index=forloop.counter0 location='in' isnew=1%}">New</a>
+                    <a class="dropdown-item" href="{% url 'EditIsNew' index=forloop.counter0 location='in' isnew=0%}">Used</a>
+                    </div>
+                </div>
+                </td>
+                <td>
+                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='in' %}" class="btn btn-danger btn-sm save-notes-on-click">
                     Remove
+                  </a>
+                  <div class="divider"></div>
+                  <a id="updateBtn" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=10%}" class="btn btn-warning btn-sm save-notes-on-click" style='display:none'>
+                    Update
                   </a>
                 </td>
             </tr>
