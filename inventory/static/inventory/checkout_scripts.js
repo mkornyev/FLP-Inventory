@@ -51,4 +51,21 @@ $(document).ready(function() {
     localStorage.removeItem(LOCAL_STORAGE_NOTES)
     localStorage.setItem('old-notes-field', oldNotes) // in case a Checkout validation fails 
   })
+
+  $('#qtyDropdownMenu').on('click', function(){
+    var textBox = document.getElementById('qtyText')
+    var updateBtn = document.getElementById('updateBtn')
+
+    if($(this).text() == "10+") {
+      textBox.style.display='block'
+      updateBtn.style.display='inline-block'
+    }
+    else {
+      textBox.style.display='none'
+      updateBtn.style.display='none'
+    }
+
+  })
+
 });
+

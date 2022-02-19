@@ -13,6 +13,12 @@
       justify-content: space-between;
     }
 
+    .divider{
+      width: 10px;
+      height:auto;
+      display:inline-block;
+    }
+
     .checkout-form {
       display: flex;
       align-items: flex-start;
@@ -64,7 +70,6 @@
           <tr>
               <th scope="col">Name</th>
               <th scope="col">Quantity</th>
-              <th scope="col">Edit</th>
               <th scope="col">New/Used</th>
               <th scope="col">Actions</th>
           </tr>
@@ -73,19 +78,44 @@
           {% for tx in transactions %}
             <tr> 
                 <th scope="row">{{ tx.item}}</th>
-                <td>{{ tx.quantity }}</td>
                 <td>
-                  <a href="{% url 'PlusQuantity' index=forloop.counter0 location='out' %}" class="btn-sm btn-success save-notes-on-click">
-                    +
-                  </a>
-                  <a href="{% url 'MinusQuantity' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger save-notes-on-click">
-                    -
-                  </a>
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="qtyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ tx.quantity }}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="qty-menu" id="qtyDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=1%}">1</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=2%}">2</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=3%}">3</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=4%}">4</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=5%}">5</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=6%}">6</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=7%}">7</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=8%}">8</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=9%}">9</a>
+                    <a class="dropdown-item" href="#" >10+</a>
+                    </div>
+                  </div>
+                  <input type="text" name="qtyText" id="qtyText" style='display:none'/>
                 </td>
-                <td>{% if tx.is_new %} New {% else %} Used {% endif %}</td>
                 <td>
-                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn-sm btn-danger save-notes-on-click">
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="newDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      {% if tx.is_new %} New {% else %} Used {% endif %}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="new-menu" id="newDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'EditIsNew' index=forloop.counter0 location='out' isnew=1%}">New</a>
+                    <a class="dropdown-item" href="{% url 'EditIsNew' index=forloop.counter0 location='out' isnew=0%}">Used</a>
+                    </div>
+                </div>
+                </td>
+                <td>
+                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='out' %}" class="btn btn-danger btn-sm save-notes-on-click">
                     Remove
+                  </a>
+                  <div class="divider"></div>
+                  <a id="updateBtn" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=10%}" class="btn btn-warning btn-sm save-notes-on-click" style='display:none'>
+                    Update
                   </a>
                 </td>
             </tr>
@@ -171,7 +201,6 @@
   <script>
     $(document).ready(function(){
       // -------------- FAMILY SCRIPTS: --------------
-
       var createdFamily = $("#fromCreatedFamilyRedirect").first().attr('value')
 
       if (createdFamily != 'no family') { localStorage.setItem("family", createdFamily); }
