@@ -19,6 +19,12 @@
       display:inline-block;
     }
 
+    .resizedTextbox {
+      width: 50px;
+      height: 40px;
+      padding: 1px
+    }
+
     .checkout-form {
       display: flex;
       align-items: flex-start;
@@ -53,6 +59,30 @@
 {% block content %}
 
 <div class="container">
+
+  <script type="text/javascript">
+  
+    function changeDropToText(index) {
+      var textBox = document.getElementById('qtyText-' + index)
+      var updateBtn = document.getElementById('updateBtn-' + index)
+      var qtyDropdown = document.getElementById('qtyDropdown-' + index)
+      textBox.style.display='block'
+      updateBtn.style.display='inline-block'
+      qtyDropdown.style.display='none'
+    }
+
+    function updateURLQty(index) {
+      var textBox = document.getElementById('qtyText-' + index)
+      var updateBtn = document.getElementById('updateBtn-' + index)
+      if (textBox.value >= 1) {
+        updateBtn.href = (updateBtn.href).replace('10', textBox.value.toString())
+      } else {
+        updateBtn.href = (updateBtn.href).replace('10', '1')
+      }
+    }
+  
+  </script>
+
   {% for message in messages %}
     <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
       <p class="mb-0">{{ message }}</p>
@@ -80,7 +110,7 @@
                 <th scope="row">{{ tx.item}}</th>
                 <td>
                   <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="qtyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="qtyDropdown-{{ forloop.counter0 }}" data-bs-toggle="dropdown" aria-expanded="false" style='display:block'>
                     {{ tx.quantity }}
                     </button>
                     <div class="dropdown-menu" aria-labelledby="qty-menu" id="qtyDropdownMenu">
@@ -93,10 +123,10 @@
                     <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=7%}">7</a>
                     <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=8%}">8</a>
                     <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=9%}">9</a>
-                    <a class="dropdown-item" href="#" >10+</a>
+                    <button class="dropdown-item" onclick="changeDropToText(index = '{{ forloop.counter0 }}')" >10+</button>
                     </div>
                   </div>
-                  <input type="text" name="qtyText" id="qtyText" style='display:none'/>
+                  <input type="number" min="1" class="resizedTextbox" name="qtyText" onchange="updateURLQty(index = '{{ forloop.counter0 }}')" id="qtyText-{{ forloop.counter0 }}" style='display:none'/>
                 </td>
                 <td>
                   <div class="dropdown">
@@ -114,7 +144,7 @@
                     Remove
                   </a>
                   <div class="divider"></div>
-                  <a id="updateBtn" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=10%}" class="btn btn-warning btn-sm save-notes-on-click" style='display:none'>
+                  <a id="updateBtn-{{ forloop.counter0 }}" href="{% url 'EditQuantity' index=forloop.counter0 location='out' qty=10%}" class="btn btn-warning btn-sm save-notes-on-click" style='display:none'>
                     Update
                   </a>
                 </td>
