@@ -456,7 +456,7 @@ def checkin_action(request):
             transactions.append(deserialized_transaction.object)
 
     context['transactions'] = transactions
-
+    
     if request.method == 'GET':
         addItemForm = AddItemForm()
         if ('itemInfo' in request.session):
