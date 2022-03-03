@@ -1,4 +1,17 @@
 {% extends "inventory/base.html" %}
+{% block page_specific_styles %}
+  <style>
+    .help-info {
+      position: relative;
+      left: 18.5%;
+    }
+
+    .help-info2 {
+      position: relative;
+      left: 19.5%;
+    }
+  </style>
+{% endblock %}
 
 {% block page_specific_scripts %}
   {% if tx == 'Checkout' and itemizedOutput %}
@@ -133,15 +146,22 @@
           <div class="row">
             <div class="col mt-2"><br>
               <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export (By Item)</button>
-              <button id="google-btn" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" onclick="loadPicker()" type="button">Upload to Google Drive</button>
+              <button id="google-btn" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" onclick="loadPicker()" type="button">Upload CSV to Google Drive</button>
             </div>
           </div>
         {% else %}
           <div class="row">
             <div class="col mt-2"><br>
               <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export {% if tx %}(By {{tx}}){% endif %}</button>
-              <button id="google-btn" class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" onclick="loadPicker()" type="button">Upload to Google Drive</button>
+              <button id="google-btn" class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" onclick="loadPicker()" type="button">Upload CSV to Google Drive</button>
             </div>
+            {% if tx == 'Checkin'%}
+              <small class="help-info" > Note: CSV must be downloaded on your 
+              <br> device before uploading to Google Drive. </small>
+            {% else %}
+              <small class="help-info2" > Note: CSV must be downloaded on your 
+              <br> device before uploading to Google Drive. </small>
+            {% endif %}
           </div>
           <br>
         {% endif %}
