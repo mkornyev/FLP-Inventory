@@ -71,7 +71,7 @@ def logout_action(request):
 @login_required
 def generate_report(request):
     context = {}
-
+    print("LOOK: " + str(request.POST))
     if 'start-date' in request.POST \
         and 'end-date' in request.POST \
         and 'tx-type' in request.POST \
@@ -96,7 +96,7 @@ def generate_report(request):
         if 'export' in request.POST:
             qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
             response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
+            response['Content-Disposition'] = 'attachment; filename=ItemReport ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
             writer = csv.writer(response)
     
             if qs is not None:
@@ -174,14 +174,15 @@ def generate_report(request):
 
             context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
 
-        if 'export_table' not in request.POST:
+        if 'export_table' not in request.POST \
+            and 'export_drive_table' not in request.POST:
             context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
             return render(request, 'inventory/reports/generate_report.html', context)
 
         if 'export_table' in request.POST:
             qs = context['results']
             response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
+            response['Content-Disposition'] = 'attachment; filename=' + context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
             writer = csv.writer(response)
 
             if 'itemizedOutput' in request.POST:
@@ -204,6 +205,50 @@ def generate_report(request):
                 return response
 
             if len(qs) != 0:
+                field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
+                writer.writerow(field_names)
+                for i in qs:
+                    row = []
+                    for f in field_names:
+                        if f == "items":
+                            txs = ', '.join([str(tx) for tx in i.items.all()])
+                            row.append(txs)
+                        elif f == "value":
+                            row.append(i.getValue())
+                        else:
+                            row.append(getattr(i, f))
+                    writer.writerow(row)
+            return response
+
+        if 'export_drive_table' in request.POST:
+            qs = context['results']
+            response = HttpResponse()
+            response['Content-Disposition'] = 'text/csv; filename=' + context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            writer = csv.writer(response)
+
+            # if checkin + group by item occurs
+            if 'itemizedOutput' in request.POST:     
+                if len(context.get('results', [])) != 0:
+                    headers = list(context['results'][0].keys())
+                    headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
+                    headers.append('new/used price')
+                    writer.writerow(headers)
+                    for i in context['results']:
+                        row = []
+                        for h in headers:
+                            if h == "new/used price":
+                                if i['is_new']:
+                                    row.append(i['new_price'])
+                                else:
+                                    row.append(i['used_price'])
+                            else:
+                                row.append(i[h])
+                        writer.writerow(row)
+                return response
+
+            # checkin + checkout not group by item
+            if len(qs) != 0:
+                print("BITCH LOOK OVER HERE")
                 field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
                 writer.writerow(field_names)
                 for i in qs:
