@@ -1,4 +1,5 @@
-
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 from re import S
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -29,6 +30,7 @@ from collections import defaultdict
 import json
 import calendar
 import csv
+from io import StringIO
 
 DEFAULT_PAGINATION_SIZE = 25
 LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
@@ -221,10 +223,15 @@ def generate_report(request):
             return response
 
         if 'export_drive_table' in request.POST:
+            si = StringIO()
+            gauth = GoogleAuth()
+            gauth.LocalWebserverAuth()
+            drive = GoogleDrive(gauth)
             qs = context['results']
-            response = HttpResponse()
-            response['Content-Disposition'] = 'text/csv; filename=' + context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
-            writer = csv.writer(response)
+            # response = HttpResponse()
+            # response['Content-Disposition'] = 'text/csv; filename=' + context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            # writer = csv.writer(response)
+            writer = csv.writer(si)
 
             # if checkin + group by item occurs
             if 'itemizedOutput' in request.POST:     
@@ -244,11 +251,9 @@ def generate_report(request):
                             else:
                                 row.append(i[h])
                         writer.writerow(row)
-                return response
 
             # checkin + checkout not group by item
-            if len(qs) != 0:
-                print("BITCH LOOK OVER HERE")
+            if len(qs) != 0 and 'itemizedOutput' not in request.POST:
                 field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
                 writer.writerow(field_names)
                 for i in qs:
@@ -262,7 +267,12 @@ def generate_report(request):
                         else:
                             row.append(getattr(i, f))
                     writer.writerow(row)
-            return response
+            filetitle = context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            file1 = drive.CreateFile({'title': filetitle, 'mimeType': 'text/csv'})
+            file1.SetContentString(si.getvalue().strip('\r\n'))
+            file1.Upload()
+            return render(request, 'inventory/reports/generate_report.html', context)
+            #return response
 
     today = date.today()
     weekAgo = today - timedelta(days=7)
