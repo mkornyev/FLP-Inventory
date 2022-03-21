@@ -1,5 +1,3 @@
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 from re import S
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -12,6 +10,10 @@ from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, Checkou
 
 from django.contrib import messages
 from django.http import HttpResponse
+
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+import os
 
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -27,10 +29,10 @@ from inventory.forms import LoginForm, AddItemForm, CheckOutForm, CreateFamilyFo
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
+from io import StringIO
 import json
 import calendar
 import csv
-from io import StringIO
 
 DEFAULT_PAGINATION_SIZE = 25
 LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
@@ -73,7 +75,6 @@ def logout_action(request):
 @login_required
 def generate_report(request):
     context = {}
-    print("LOOK: " + str(request.POST))
     if 'start-date' in request.POST \
         and 'end-date' in request.POST \
         and 'tx-type' in request.POST \
@@ -135,6 +136,67 @@ def generate_report(request):
                     writer.writerow(item)
 
             return response
+
+        if 'export_drive' in request.POST:
+            cwd = os.getcwd()
+            print("TEST: ")
+            qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+            si = StringIO()
+            gauth = GoogleAuth()
+            # Try to load saved client credentials
+            gauth.LoadCredentialsFile("mycreds.txt")
+            if gauth.credentials is None:
+                # Authenticate if they're not there
+                gauth.LocalWebserverAuth()
+            elif gauth.access_token_expired:
+                # Refresh them if expired
+                gauth.Refresh()
+            else:
+                # Initialize the saved creds
+                gauth.Authorize()
+            # Save the current credentials to a file
+            gauth.SaveCredentialsFile("mycreds.txt")
+            drive = GoogleDrive(gauth)
+            writer = csv.writer(si)
+    
+            if qs is not None:
+                writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
+
+                uniqueItems = {} 
+
+                for c in qs:
+                    for tx in c.items.all():
+                        item_key = (tx.item.id, tx.is_new)
+                        try: 
+                            originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
+                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-' + str(tx.is_new) + '-adjustment', originalPrice))
+                        except (ValueError, TypeError) as _: # noqa: F841
+                            adjustedPrice = 0
+
+                        if item_key not in uniqueItems: 
+                            uniqueItems[item_key] = [
+                                tx.item.name,
+                                "New" if tx.is_new else "Used",
+                                "No category" if tx.item.category is None else tx.item.category.name,
+                                tx.quantity,
+                                adjustedPrice,
+                                0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
+                            ]
+                        else: 
+                            item_key = (tx.item.id, tx.is_new)
+                            uniqueItems[item_key][3] += tx.quantity
+                            uniqueItems[item_key][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                            round(uniqueItems[item_key][5], 2)
+                
+                sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
+                for item in sorted_items:
+                    writer.writerow(item)
+
+            fileTitle = context['tx_type'] + 'Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            csvFile = drive.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
+            csvFile.SetContentString(si.getvalue().strip('\r\n'))
+            csvFile.Upload()
+            return render(request, 'inventory/reports/generate_report.html', context)
 
         if 'itemizedOutput' in request.POST:
             context['itemizedOutput'] = request.POST['itemizedOutput']
@@ -228,13 +290,11 @@ def generate_report(request):
             gauth.LocalWebserverAuth()
             drive = GoogleDrive(gauth)
             qs = context['results']
-            # response = HttpResponse()
-            # response['Content-Disposition'] = 'text/csv; filename=' + context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
-            # writer = csv.writer(response)
             writer = csv.writer(si)
+            fileTitle = ""
 
-            # if checkin + group by item occurs
-            if 'itemizedOutput' in request.POST:     
+            if 'itemizedOutput' in request.POST:  
+                fileTitle = context['tx_type'] + 'Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
                 if len(context.get('results', [])) != 0:
                     headers = list(context['results'][0].keys())
                     headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
@@ -252,8 +312,8 @@ def generate_report(request):
                                 row.append(i[h])
                         writer.writerow(row)
 
-            # checkin + checkout not group by item
             if len(qs) != 0 and 'itemizedOutput' not in request.POST:
+                fileTitle = context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
                 field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
                 writer.writerow(field_names)
                 for i in qs:
@@ -267,12 +327,10 @@ def generate_report(request):
                         else:
                             row.append(getattr(i, f))
                     writer.writerow(row)
-            filetitle = context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
-            file1 = drive.CreateFile({'title': filetitle, 'mimeType': 'text/csv'})
-            file1.SetContentString(si.getvalue().strip('\r\n'))
-            file1.Upload()
+            csvFile = drive.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
+            csvFile.SetContentString(si.getvalue().strip('\r\n'))
+            csvFile.Upload()
             return render(request, 'inventory/reports/generate_report.html', context)
-            #return response
 
     today = date.today()
     weekAgo = today - timedelta(days=7)
