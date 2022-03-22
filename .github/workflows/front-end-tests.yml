@@ -1,0 +1,21 @@
+name: Frontend Build Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Select Node.js version
+      uses: actions/setup-node@v2
+      with:
+        node-version: 17.4.0
+    - name: Install Node packages
+      working-directory: ./dronuts/front-end
+      run: npm i
+    - name: Build Frontend
+      working-directory: ./dronuts/front-end
+      run: npm run build
+
