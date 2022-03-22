@@ -1,4 +1,5 @@
 
+from re import S
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
@@ -367,6 +368,30 @@ def removeitem_action(request, index, location):
 
     return redirect(reverse('Check' + location))
 
+
+def editquantity_action(request, index, location, qty):
+    saved_list = request.session['transactions-' + location]
+    curr_item = json.loads(saved_list[index])
+    curr_item[0]['fields']['quantity'] = qty
+    
+    saved_list[index] = json.dumps(curr_item)
+    request.session['transactions-' + location] = saved_list
+
+    return redirect(reverse('Check' + location))  
+
+def editisnew_action(request, index, location, isnew):
+    saved_list = request.session['transactions-' + location]
+    curr_item = json.loads(saved_list[index])
+    if (isnew == 1):
+        curr_item[0]['fields']['is_new'] = True
+    else:
+        curr_item[0]['fields']['is_new'] = False
+
+    saved_list[index] = json.dumps(curr_item)
+    request.session['transactions-' + location] = saved_list
+
+    return redirect(reverse('Check' + location))  
+
 # Create Family View 
 @login_required
 def createFamily_action(request, location):
@@ -456,7 +481,7 @@ def checkin_action(request):
             transactions.append(deserialized_transaction.object)
 
     context['transactions'] = transactions
-
+    
     if request.method == 'GET':
         addItemForm = AddItemForm()
         if ('itemInfo' in request.session):
@@ -577,7 +602,7 @@ def checkout_action(request):
 
         item = Item.objects.filter(name=name).first()
     
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
+        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new, ), ])
         if not 'transactions-out' in request.session or not request.session['transactions-out']:
             saved_list = []
         else:

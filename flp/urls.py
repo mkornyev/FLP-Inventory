@@ -35,6 +35,8 @@ urlpatterns = [
     path('checkout/', views.checkout_action, name='Checkout'),
     path('createitem/<str:location>/', views.createItem_action, name='CreateItem'),
     path('createFamily/<str:location>/', views.createFamily_action, name='CreateFamily'),
+    path('editquantity/<int:index>/<str:location>/<int:qty>/', views.editquantity_action, name='EditQuantity'),
+    path('editisnew/<int:index>/<str:location>/<int:isnew>/', views.editisnew_action, name='EditIsNew'),
     path('removeitem/<int:index>/<str:location>/', views.removeitem_action, name='RemoveItem'),
     path('analytics/analytics/', views.analytics, name='Analytics'),
 
