@@ -1,4 +1,4 @@
-
+*
 !.flake8
 !Procfile
 !bandit.yaml
@@ -10,4 +10,3 @@
 !manage_items.xlsx
 !requirements.txt
 !runtime.txt
-*
