@@ -19,8 +19,14 @@ WORKDIR /django_ec2
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# copy the app itself
+# copy the app itself before fixing permissions
 COPY . .
+USER root
+RUN chown -R django:django /django_ec2
+USER django
+
+# build the static resources (without this, the production server will fail)
+RUN . deploy/env && python manage.py collectstatic
 
 # RUN export $(cat .env) && python manage.py makemigrations
 # RUN export $(cat .env) && python manage.py migrate

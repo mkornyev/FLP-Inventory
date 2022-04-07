@@ -10,6 +10,6 @@ services:
       context: .
     restart: unless-stopped
     ports:
-      - 8000:8000
+      - 80:8000
     volumes:
       - ./deploy/db.sqlite3:/django_ec2/db.sqlite3:rw
