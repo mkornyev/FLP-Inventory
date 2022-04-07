@@ -1,4 +1,5 @@
-import time 
+#!/usr/bin/env python
+import time
 import os
 
 SECONDS_PER_WEEK = 604800
