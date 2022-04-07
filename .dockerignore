@@ -3,6 +3,7 @@
 !Procfile
 !bandit.yaml
 !deploy/env
+!docker/serve.sh
 !email_backups.py
 !flp
 !inventory
