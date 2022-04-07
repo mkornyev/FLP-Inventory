@@ -1,11 +1,13 @@
-*
-!flp
-!inventory
+
 !.flake8
 !Procfile
 !bandit.yaml
 !email_backups.py
+!flp
+!inventory
+!manage.py
 !manage_inventory.xlsx
 !manage_items.xlsx
 !requirements.txt
 !runtime.txt
+*
