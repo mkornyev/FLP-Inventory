@@ -2,6 +2,7 @@
 !.flake8
 !Procfile
 !bandit.yaml
+!deploy/env
 !email_backups.py
 !flp
 !inventory
