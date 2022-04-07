@@ -1,0 +1,15 @@
+---
+version: "3.3"
+
+services:
+  django:
+    container_name: django
+    env_file:
+      - ./deploy/env
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    volumes:
+      - ./deploy/db.sqlite3:/django_ec2/db.sqlite3:rw
