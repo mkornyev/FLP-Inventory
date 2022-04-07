@@ -15,7 +15,8 @@
 
 ### Dependency Setup (DEVELOPMENT)
 
-The following will set up a python environment for this project using `virtualenv` . This allows us to keep all your project dependencies (or `pip modules`) in isolation, and running their correct versions. 
+The following will set up a python environment for this project using `virtualenv`.
+This allows us to keep all your project dependencies (or `pip modules`) in isolation, and running their correct versions.
 
 * If you dont have `virtualenv` install: `pip install virtualenv`
 * In the project directory, create the env: `virtualenv djangoEnv` (set djangoEnv to your preferred env name)
@@ -58,7 +59,7 @@ The following will set up a python environment for this project using `virtualen
 
 * Run the suite with `./manage.py test`
 
-### Deployment
+### Deployment (First-Time)
 
 * To SSH into AWS, you can find our private key file in Google Drive and use the AWS login credentials in the handoff doc to get the public DNS
 
@@ -73,3 +74,27 @@ The following will set up a python environment for this project using `virtualen
 * Make starter staff superuser and volunteer account
 
 * Finally run the server on port 80 (still using docker exec, `python manage.py runserver 80`. For exact commands you can scroll the bash history)
+
+
+### Deployment (Ongoing)
+
+The AWS/EC2 deployment of the FLP Inventory app is managed using Docker Compose.
+You will need to ensure that the SQLite database file, `db.sqlite3`, is moved into the `deploy` directory.
+Additionally, you will need to copy the `env` file from Google Drive (containing deployment secrets) to the `deploy` directory (i.e., `deploy/env`).
+To launch the server, you should run:
+
+	$ docker-compose up -d
+
+To check on the state of the server via its logs, you can run:
+
+	$ docker-compose logs
+
+To shutdown the server, you should run:
+
+	$ docker-compose down
+
+To restart an already-running server, you should run:
+
+	$ docker-compose restart
+
+Note that all of the above commands should be run from the root of this directory.
