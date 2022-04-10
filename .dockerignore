@@ -1,0 +1,14 @@
+*
+!.flake8
+!Procfile
+!bandit.yaml
+!deploy/env
+!docker/serve.sh
+!email_backups.py
+!flp
+!inventory
+!manage.py
+!manage_inventory.xlsx
+!manage_items.xlsx
+!requirements.txt
+!runtime.txt
