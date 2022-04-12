@@ -24,11 +24,7 @@ class Command(BaseCommand):
 
         print("Staff has been created.")
 
-    def _create_sample_objects(self):
-        today = date.today()
-        five_days_ago = today - timedelta(days=5)
-        ten_days_ago = today - timedelta(days=10)
-
+    def _create_sample_family(self):
         family = Family.objects.create(lname="Jones-Indiana")
         family.save()
         family = Family.objects.create(lname="Pavetti", phone="+1234567891")
@@ -36,16 +32,8 @@ class Command(BaseCommand):
         family = Family.objects.create(fname="Paulo", lname="Merson", phone="1234567891")
         family.save()
         print("Family has been created.")
-
-        category1 = Category.objects.create(name="Clothes")
-        category1.save()
-        category2 = Category.objects.create(name="Expirable")
-        category2.save()
-        category3 = Category.objects.create(name="Expensive Items")
-        category3.save()
-        print("Category has been created.")
-
-
+        
+    def _create_sample_agerange(self):
         a0to1 = AgeRange.objects.create(low=0, high=1)
         a1to2 = AgeRange.objects.create(low=1, high=2)
         a3to5 = AgeRange.objects.create(low=3, high=5)
@@ -59,8 +47,43 @@ class Command(BaseCommand):
         a9to12.save()
         a13to15.save()
         print("Age ranges created")
+        
+    def _create_sample_objects(self):
+        today = date.today()
+        five_days_ago = today - timedelta(days=5)
+        ten_days_ago = today - timedelta(days=10)
 
-        item1 = Item.objects.create(category=category1, name="tshirt boys 4", new_price=10.56, used_price=7.20, quantity=10)
+        family = Family.objects.create(lname="Jones-Indiana")
+        family.save()
+        family = Family.objects.create(lname="Pavetti", phone="+1234567891")
+        family.save()
+        family = Family.objects.create(fname="Paulo", lname="Merson", phone="1234567891")
+        family.save()
+        print("Family has been created.")
+        
+        a0to1 = AgeRange.objects.create(low=0, high=1)
+        a1to2 = AgeRange.objects.create(low=1, high=2)
+        a3to5 = AgeRange.objects.create(low=3, high=5)
+        a6to8 = AgeRange.objects.create(low=6, high=8)
+        a9to12 = AgeRange.objects.create(low=9, high=12)
+        a13to15 = AgeRange.objects.create(low=13, high=15)
+        a0to1.save()
+        a1to2.save()
+        a3to5.save()
+        a6to8.save()
+        a9to12.save()
+        a13to15.save()
+        print("Age ranges created")
+        
+        category1 = Category.objects.create(name="Clothes")
+        category1.save()
+        category2 = Category.objects.create(name="Expirable")
+        category2.save()
+        category3 = Category.objects.create(name="Expensive Items")
+        category3.save()
+        print("Category has been created.")
+
+        item1 = Item.objects.create(category=category1, name="tshirt teen", new_price=10.56, used_price=7.20, quantity=10)
         item1.save()
         item2 = Item.objects.create(category=category1, name="jacket", quantity=18) # No Price 
         item2.save()
@@ -68,7 +91,7 @@ class Command(BaseCommand):
         item3.save()
         item4 = Item.objects.create(category=category2, name="formula", used_price=5.50, quantity=15)
         item4.save()
-        item5 = Item.objects.create(category=category1, name="t shirt girls 4", new_price=2.00, used_price=1.00, quantity=3)
+        item5 = Item.objects.create(category=category1, name="tshirt kid", new_price=2.00, used_price=1.00, quantity=3)
         item5.save()
         print("Item has been created.")
 
@@ -132,4 +155,6 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         self._create_users()
+        # self._create_sample_family()
+        # self._create_sample_agerange()
         self._create_sample_objects()
