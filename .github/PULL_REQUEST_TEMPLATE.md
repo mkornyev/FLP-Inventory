@@ -1,4 +1,4 @@
-- [ ] Does this PR have a [descriptive title](#note)?  
+- [ ] Does this PR have a [descriptive title](#notes)?  
 - [ ] Does this PR add any new dependencies? 
 - [ ] Does this PR modify any existing models/introduce new models?
 - [ ] Does this PR include proper unit tests?
