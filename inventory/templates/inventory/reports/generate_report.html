@@ -10,108 +10,6 @@
 {% block content %}
 <form class="check-report-form" method="POST" action="{% url 'Report' %}">
 <div class="container">
-  <!-- <script type="text/javascript">
-    // Client ID and API key from the Developer Console
-    var CLIENT_ID = '903076341382-g888j3cbjnaqqa1pmbpkgc5cjih5dv9l.apps.googleusercontent.com';
-    var API_KEY = 'AIzaSyBWBb881bGEQvfRRWm6tUXOJexU1j5jd4M';
-
-    // Array of API discovery doc URLs for APIs used by the quickstart
-    var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-
-    // Authorization scopes required by the API; multiple scopes can be
-    // included, separated by spaces.
-    var SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
-
-    var authorizeButton = document.getElementById('authorize_button');
-    var exportButton = document.getElementById('google-btn');
-
-    /**
-     *  On load, called to load the auth2 library and API client library.
-     */
-    function handleClientLoad() {
-      gapi.load('client:auth2', initClient);
-    }
-
-    /**
-     *  Initializes the API client library and sets up sign-in state
-     *  listeners.
-     */
-    function initClient() {
-      gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        discoveryDocs: DISCOVERY_DOCS,
-        scope: SCOPES
-      }).then(function () {
-        authorizeButton.onclick = handleAuthClick();
-      }, function(error) {
-        appendPre(JSON.stringify(error, null, 2));
-      });
-    }
-
-    /**
-     *  Called when the signed in status changes, to update the UI
-     *  appropriately. After a sign-in, the API is called.
-     */
-    function updateSigninStatus(isSignedIn) {
-      var authorizeButton = document.getElementById('authorize_button');
-      var exportButton = document.getElementById('google-btn');
-      if (isSignedIn) {
-        authorizeButton.style.display = 'none';
-        exportButton.style.display = 'block';
-      } else {
-        authorizeButton.style.display = 'block';
-        exportButton.style.display = 'none';
-      }
-    }
-
-    /**
-     *  Sign in the user upon button click.
-     */
-    function handleAuthClick(event) {
-      gapi.auth2.getAuthInstance().signIn();
-      updateSigninStatus(true)
-    }
-
-    /**
-     * Append a pre element to the body containing the given message
-     * as its text node. Used to display the results of the API call.
-     *
-     * @param {string} message Text to be placed in pre element.
-     */
-    function appendPre(message) {
-      var pre = document.getElementById('content');
-      var textContent = document.createTextNode(message + '\n');
-      pre.appendChild(textContent);
-    }
-
-    /**
-     * Print files.
-     */
-    function listFiles() {
-      gapi.client.drive.files.list({
-        'pageSize': 10,
-        'fields': "nextPageToken, files(id, name)"
-      }).then(function(response) {
-        appendPre('Files:');
-        var files = response.result.files;
-        if (files && files.length > 0) {
-          for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            appendPre(file.name + ' (' + file.id + ')');
-          }
-        } else {
-          appendPre('No files found.');
-        }
-      });
-    }
-
-  </script>
-
-  <script async defer src="https://apis.google.com/js/api.js"
-    onload="this.onload=function(){};handleClientLoad()"
-    onreadystatechange="if (this.readyState === 'complete') this.onload()">
-  </script> -->
 
     <div class="row">
         <div class="col">
@@ -162,16 +60,14 @@
         {% if itemizedOutput and tx == "Checkout" %}
           <div class="row">
             <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export (By Item)</button>
-              <!-- <button id="authorize_button" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" style="display:block;" type="button">Sign-in to Google Drive</button> -->
+              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export to Device</button>
               <button id="google-btn" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" name="export_drive" type="submit">Export to Google Drive</button>
             </div>
           </div>
         {% else %}
           <div class="row">
             <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export {% if tx %}(By {{tx}}){% endif %}</button>
-              <!-- <button id="authorize_button" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" style="display: block;" type="button">Sign-in to Google Drive</button> -->
+              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export to Device</button>
               <button id="google-btn" class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_drive_table" type="submit">Export to Google Drive</button>
             </div>
           </div>
