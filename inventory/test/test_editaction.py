@@ -30,7 +30,7 @@ class EditActionTestCase(TestCase):
         curr_item = json.loads(saved_list[0])
 
         #verify the correct value is saved
-        assert(curr_item[0]['fields']['quantity'] == 5)
+        self.assertEqual(curr_item[0]['fields']['quantity'], 5)
 
 
     def test_edit_quantity_zero(self):
@@ -51,7 +51,7 @@ class EditActionTestCase(TestCase):
         curr_item = json.loads(saved_list[0])
 
         #verify the correct value is moved to 1 since qty 0 is not possible
-        assert(curr_item[0]['fields']['quantity'] == 1)
+        self.assertEqual(curr_item[0]['fields']['quantity'], 1)
 
     def test_edit_quantity_negative(self):
         self.client.login(username='testuser', password='12345')
@@ -97,7 +97,7 @@ class EditActionTestCase(TestCase):
         curr_item = json.loads(saved_list[0])
 
         # #verify the is_new is moved to 0
-        assert(not curr_item[0]['fields']['is_new'])
+        self.assertEqual(curr_item[0]['fields']['is_new'], 0)
     
     def test_edit_isnew_new(self):
         self.client.login(username='testuser', password='12345')
@@ -116,7 +116,7 @@ class EditActionTestCase(TestCase):
         curr_item = json.loads(saved_list[0])
 
         # #verify the is_new is moved to 0
-        assert(curr_item[0]['fields']['is_new'])
+        self.assertEqual(curr_item[0]['fields']['is_new'], 1)
     
     def test_edit_isnew_not0or1(self):
         self.client.login(username='testuser', password='12345')
@@ -135,7 +135,7 @@ class EditActionTestCase(TestCase):
         curr_item = json.loads(saved_list[0])
 
         # #verify the is_new is moved to 0
-        assert(not curr_item[0]['fields']['is_new'])
+        self.assertEqual(curr_item[0]['fields']['is_new'], 0)
 
     def test_edit_isnew_negative(self):
         self.client.login(username='testuser', password='12345')
