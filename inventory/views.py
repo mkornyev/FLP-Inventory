@@ -75,6 +75,7 @@ def logout_action(request):
 @login_required
 def generate_report(request):
     context = {}
+
     if 'start-date' in request.POST \
         and 'end-date' in request.POST \
         and 'tx-type' in request.POST \
@@ -134,7 +135,7 @@ def generate_report(request):
                 sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
                 for item in sorted_items:
                     writer.writerow(item)
-
+                    
             return response
 
         if 'export_drive' in request.POST:
@@ -471,8 +472,11 @@ def removeitem_action(request, index, location):
 def editquantity_action(request, index, location, qty):
     saved_list = request.session['transactions-' + location]
     curr_item = json.loads(saved_list[index])
-    curr_item[0]['fields']['quantity'] = qty
-    
+    if (int(qty) >= 1):
+        curr_item[0]['fields']['quantity'] = qty
+    else:
+        curr_item[0]['fields']['quantity'] = 1
+
     saved_list[index] = json.dumps(curr_item)
     request.session['transactions-' + location] = saved_list
 
