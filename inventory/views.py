@@ -1,5 +1,4 @@
 
-from re import S
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
