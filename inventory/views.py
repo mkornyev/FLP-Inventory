@@ -100,7 +100,7 @@ def generate_report(request):
         if 'export' in request.POST:
             qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
             response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=ItemReport ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            response['Content-Disposition'] = 'attachment; filename=Checkout Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
             writer = csv.writer(response)
     
             if qs is not None:
@@ -135,7 +135,7 @@ def generate_report(request):
                 sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
                 for item in sorted_items:
                     writer.writerow(item)
-                    
+
             return response
 
         if 'export_drive' in request.POST:
@@ -233,10 +233,11 @@ def generate_report(request):
         if 'export_table' in request.POST:
             qs = context['results']
             response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=' + context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            response['Content-Disposition'] = 'attachment; filename=' + context['tx_type'] + ' Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
             writer = csv.writer(response)
 
             if 'itemizedOutput' in request.POST:
+                response['Content-Disposition'] = 'attachment; filename=' + context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
                 if len(context.get('results', [])) != 0:
                     headers = list(context['results'][0].keys())
                     headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
@@ -324,6 +325,17 @@ def generate_report(request):
     context['endDate'] = today.strftime('%Y-%m-%d')
     context['startDate'] = weekAgo.strftime('%Y-%m-%d')
     return render(request, 'inventory/reports/generate_report.html', context)
+
+# def collect_itemized_data():
+
+# def write_itemized_data():
+
+# def write_export_table_data():
+
+# def write_export_data():
+
+# def google_auth():
+
 
 ######################### ANALYTICS #########################
 @login_required
@@ -651,7 +663,6 @@ def checkin_action(request):
 @login_required
 def checkout_action(request):
     context = {}
-        
     context['items'] = Item.objects.all()
     context['categories'] = Category.objects.all()
     context['createdFamily'] = 'no family'
