@@ -80,6 +80,12 @@
         updateBtn.href = (updateBtn.href).replace('10', '1')
       }
     }
+
+    function autoFill(catName) {
+      var s = document.getElementById('id_item');
+      s.value = catName;
+      console.log(document.getElementById('id_item').value)
+    }
   
   </script>
 
@@ -213,6 +219,7 @@
           <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add To Cart</button>
       </form>
     </div>
+    
   </div>
 
   {% if createdFamily %}
