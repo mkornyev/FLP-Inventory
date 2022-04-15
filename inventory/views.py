@@ -655,7 +655,7 @@ def checkout_action(request):
   
 def autocomplete_item(request):
     if 'term' in request.GET:
-        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
+        qs = Item.objects.filter(name__icontains=request.GET.get('term'), outdated = False)
         names = list()
         for item in qs:
             names.append(item.name)
