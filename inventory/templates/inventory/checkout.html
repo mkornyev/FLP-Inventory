@@ -84,7 +84,6 @@
     function autoFill(catName) {
       var s = document.getElementById('id_item');
       s.value = catName;
-      console.log(document.getElementById('id_item').value)
     }
   
   </script>
@@ -200,18 +199,18 @@
       <form method="POST" action="{% url 'Checkout' %}">
         <table>
           <tr>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 0-6 mo'); return false;" role="button">Shirt</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys shirt 0-6 mo'); return false;" role="button">Pant</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 6-12 mo'); return false;" role="button">Underwear</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys shirt 6-12 mo'); return false;" role="button">Socks</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 12-18 mo'); return false;" role="button">PJs</a></td>
+            <td><button id="auto-btn1" class="btn btn-warning" href="#" onClick="autoFill('shirt'); return false;">Shirt</a></td>
+            <td><button id="auto-btn2" class="btn btn-warning" href="#" onClick="autoFill('pants'); return false;">Pants</a></td>
+            <td><button id="auto-btn3" class="btn btn-warning" href="#" onClick="autoFill('underwear'); return false;">Underwear</a></td>
+            <td><button id="auto-btn4" class="btn btn-warning" href="#" onClick="autoFill('socks'); return false;">Socks</a></td>
+            <td><button id="auto-btn5" class="btn btn-warning" href="#" onClick="autoFill('pajamas'); return false;">PJs</a></td>
           </tr>
           <tr>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys shirt 12-18 mo'); return false;" role="button">Shoes</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 18-24 mo'); return false;" role="button">Toy</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys  shirt 18-24 mo'); return false;" role="button">Blanket</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 2T-3T'); return false;" role="button">Hygiene Kit</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 4T-5T'); return false;" role="button">Stuffed Animal</a></td>
+            <td><button id="auto-btn6" class="btn btn-warning" href="#" onClick="autoFill('shoes'); return false;">Shoes</a></td>
+            <td><button id="auto-btn7" class="btn btn-warning" href="#" onClick="autoFill('toy'); return false;">Toy</a></td>
+            <td><button id="auto-btn8" class="btn btn-warning" href="#" onClick="autoFill('blanket'); return false;">Blanket</a></td>
+            <td><button id="auto-btn9" class="btn btn-warning" href="#" onClick="autoFill('hygiene kit'); return false;">Hygiene Kit</a></td>
+            <td><button id="auto-btn10" class="btn btn-warning" href="#" onClick="autoFill('stuffed animal'); return false;">Stuffed Animal</a></td>
           </tr>
          </table>
           {% for field in formadditem %}
@@ -289,6 +288,10 @@
       });
       $("#checkout-btn").on('click', function(){
         localStorage.removeItem("family")
+      });
+
+      $("#auto-btn1, #auto-btn2, #auto-btn3, #auto-btn4, #auto-btn5, #auto-btn6, #auto-btn7, #auto-btn8, #auto-btn9, #auto-btn10").on('click', function(){
+        $("#id_item").autocomplete('search', $("#id_item").val())
       })
 
       $("#id_item").autocomplete({
