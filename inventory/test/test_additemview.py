@@ -17,8 +17,7 @@ class AddItemTestCase(TestCase):
         response = self.client.post(
             "/checkin/", data={"additem": "",
                                "item": "ValidItem",
-                               "quantity": 2,
-                               "is_new": True}, follow=True
+                               "new_quantity": 2}, follow=True
         )
 
         self.assertEqual(response.status_code, 200)
@@ -26,7 +25,7 @@ class AddItemTestCase(TestCase):
         response = self.client.post(
             "/checkout/", data={"additem": "",
                                 "item": "ValidItem",
-                                "quantity": 1}, follow=True
+                                "used_quantity": 1}, follow=True
         )
 
         self.assertEqual(response.status_code, 200)
@@ -49,3 +48,83 @@ class AddItemTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Item does not exist.")
+
+    def test_post_new_item_only_success(self):
+        self.client.login(username='testuser', password='12345')
+
+        response = self.client.post(
+            "/checkin/", data={"additem": "",
+                               "item": "ValidItem",
+                               "new_quantity": 2}, follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            "/checkout/", data={"additem": "",
+                               "item": "ValidItem",
+                               "new_quantity": 2}, follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        session = self.client.session
+
+        self.assertEqual(session['transactions-in'],
+                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2, "is_new": true}}]'])
+        
+        self.assertEqual(session['transactions-out'],
+                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2, "is_new": true}}]'])
+
+    def test_post_used_item_only_success(self):
+        self.client.login(username='testuser', password='12345')
+
+        response = self.client.post(
+            "/checkin/", data={"additem": "",
+                               "item": "ValidItem",
+                               "used_quantity": 2}, follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            "/checkout/", data={"additem": "",
+                               "item": "ValidItem",
+                               "used_quantity": 2}, follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        session = self.client.session
+
+        self.assertEqual(session['transactions-in'],
+                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2, "is_new": false}}]'])
+
+        self.assertEqual(session['transactions-out'],
+                         ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2, "is_new": false}}]'])
+
+    def test_post_used_and_new_item_success(self):
+        self.client.login(username='testuser', password='12345')
+
+        response = self.client.post(
+            "/checkin/", data={"additem": "",
+                               "item": "ValidItem",
+                               "used_quantity": 1,
+                               "new_quantity": 2}, follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            "/checkout/", data={"additem": "",
+                               "item": "ValidItem",
+                               "used_quantity": 1,
+                               "new_quantity": 2}, follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        #session = self.client.session
+
+        #self.assertEqual(session['transactions-in'],
+        #                 ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2, "is_new": true}}]'])
