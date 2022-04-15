@@ -126,8 +126,6 @@ class AddItemTestCase(TestCase):
 
         session = self.client.session
 
-        #print(session['transactions-in'])
-
         self.assertEqual(session['transactions-in'],
                          ['[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 1, "is_new": false}}]', '[{"model": "inventory.itemtransaction", "pk": null, "fields": {"item": 1, "quantity": 2, "is_new": true}}]'])
 

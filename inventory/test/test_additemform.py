@@ -17,10 +17,6 @@ class AddItemFormTestCase(TestCase):
             form.errors["item"], ["This field is required."]
         )
 
-        # self.assertEqual(
-        #     form.errors["quantity"], ["This field is required."]
-        # )
-
     def test_invalid_long_name(self):
         form = AddItemForm(data={"item": "This is a very long name that is over fifty characters"})
 
@@ -73,3 +69,21 @@ class AddItemFormTestCase(TestCase):
                                  "new_quantity": 1})
 
         self.assertTrue(form.is_valid())
+
+    def test_invalid_used_and_new_quantity(self):
+        form = AddItemForm(data={"item": "ValidItem",
+                                 "used_quantity": -1,
+                                 "new_quantity": 1})
+
+        form2 = AddItemForm(data={"item": "ValidItem",
+                                 "used_quantity": 1,
+                                 "new_quantity": -1})
+
+        form3 = AddItemForm(data={"item": "ValidItem",
+                                 "used_quantity": -1,
+                                 "new_quantity": -1})
+
+        self.assertFalse(form.is_valid())
+        self.assertFalse(form2.is_valid())
+        self.assertFalse(form3.is_valid())
+
