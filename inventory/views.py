@@ -602,7 +602,8 @@ def checkin_action(request):
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
             addItemForm.fields['item'].initial = itemInfo[0]
-            addItemForm.fields['quantity'].initial = itemInfo[1]
+            addItemForm.fields['used_quantity'].initial = itemInfo[1]
+            addItemForm.fields['new_quantity'].initial = itemInfo[2]
             del request.session['itemInfo']
 
         context['formadditem'] = addItemForm
@@ -616,7 +617,6 @@ def checkin_action(request):
         if not form.is_valid():
             return render(request, 'inventory/checkin.html', context)
 
-        # category = form.cleaned_data['category']
         name = form.cleaned_data['item']
         used_quantity = form.cleaned_data['used_quantity']
         new_quantity = form.cleaned_data['new_quantity']
@@ -700,7 +700,8 @@ def checkout_action(request):
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
             addItemForm.fields['item'].initial = itemInfo[0]
-            addItemForm.fields['quantity'].initial = itemInfo[1]
+            addItemForm.fields['used_quantity'].initial = itemInfo[1]
+            addItemForm.fields['new_quantity'].initial = itemInfo[2]
             del request.session['itemInfo']
 
         return render(request, 'inventory/checkout.html', context)
