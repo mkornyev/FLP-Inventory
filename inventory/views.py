@@ -503,18 +503,23 @@ def checkin_action(request):
 
         # category = form.cleaned_data['category']
         name = form.cleaned_data['item']
-        quantity = form.cleaned_data['quantity']
-        is_new = form.cleaned_data['is_new']
+        used_quantity = form.cleaned_data['used_quantity']
+        new_quantity = form.cleaned_data['new_quantity']
 
         item = Item.objects.filter(name=name).first()
     
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
         if not 'transactions-in' in request.session or not request.session['transactions-in']:
             saved_list = []
         else:
             saved_list = request.session['transactions-in']
 
-        saved_list.append(tx)
+        if used_quantity is not None:
+            used_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=used_quantity, is_new=False, ), ])
+            saved_list.append(used_tx)
+
+        if new_quantity is not None:
+            new_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=new_quantity, is_new=True, ), ])
+            saved_list.append(new_tx)
         request.session['transactions-in'] = saved_list
 
         return redirect(reverse('Checkin'))
@@ -597,18 +602,23 @@ def checkout_action(request):
 
         # category = form.cleaned_data['category']
         name = form.cleaned_data['item']
-        quantity = form.cleaned_data['quantity']
-        is_new = form.cleaned_data['is_new']
+        used_quantity = form.cleaned_data['used_quantity']
+        new_quantity = form.cleaned_data['new_quantity']
 
         item = Item.objects.filter(name=name).first()
-    
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new, ), ])
+
         if not 'transactions-out' in request.session or not request.session['transactions-out']:
             saved_list = []
         else:
             saved_list = request.session['transactions-out']
 
-        saved_list.append(tx)
+        if used_quantity is not None:
+            used_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=used_quantity, is_new=False, ), ])
+            saved_list.append(used_tx)
+
+        if new_quantity is not None:
+            new_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=new_quantity, is_new=True, ), ])
+            saved_list.append(new_tx)
         request.session['transactions-out'] = saved_list
 
         return redirect(reverse('Checkout'))

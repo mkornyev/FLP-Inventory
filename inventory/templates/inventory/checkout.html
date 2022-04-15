@@ -198,22 +198,6 @@
     <div class="col-md-4" id="additemform">
       <h4>Add To Cart</h4>
       <form method="POST" action="{% url 'Checkout' %}">
-        <table>
-          <tr>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 0-6 mo'); return false;" role="button">Shirt</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys shirt 0-6 mo'); return false;" role="button">Pant</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 6-12 mo'); return false;" role="button">Underwear</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys shirt 6-12 mo'); return false;" role="button">Socks</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 12-18 mo'); return false;" role="button">PJs</a></td>
-          </tr>
-          <tr>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys shirt 12-18 mo'); return false;" role="button">Shoes</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 18-24 mo'); return false;" role="button">Toy</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('boys  shirt 18-24 mo'); return false;" role="button">Blanket</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 2T-3T'); return false;" role="button">Hygiene Kit</a></td>
-            <td><a class="btn btn-warning" href="#" onClick="autoFill('girls shirt 4T-5T'); return false;" role="button">Stuffed Animal</a></td>
-          </tr>
-         </table>
           {% for field in formadditem %}
           <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
               {{ field.label_tag }}
