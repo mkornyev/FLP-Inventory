@@ -132,6 +132,7 @@ def generate_report(request):
                 for item in sorted_items:
                     writer.writerow(item)
 
+                writer.writerow(["Total Value:", "new/used", "category", "quantity", "new/used price", "total value"])
             return response
 
         if 'itemizedOutput' in request.POST:
