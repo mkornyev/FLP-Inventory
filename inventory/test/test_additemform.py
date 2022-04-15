@@ -54,3 +54,22 @@ class AddItemFormTestCase(TestCase):
         self.assertEqual(
             form.errors["new_quantity"], ["Quantity must be above zero."]
         )
+
+    def test_success_used_quantity(self):
+        form = AddItemForm(data={"item": "ValidItem",
+                                 "used_quantity": 1})
+
+        self.assertTrue(form.is_valid())
+
+    def test_success_new_quantity(self):
+        form = AddItemForm(data={"item": "ValidItem",
+                                 "new_quantity": 1})
+
+        self.assertTrue(form.is_valid())
+
+    def test_success_used_and_new_quantity(self):
+        form = AddItemForm(data={"item": "ValidItem",
+                                 "used_quantity": 1,
+                                 "new_quantity": 1})
+
+        self.assertTrue(form.is_valid())
