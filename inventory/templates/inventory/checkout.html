@@ -80,6 +80,11 @@
         updateBtn.href = (updateBtn.href).replace('10', '1')
       }
     }
+
+    function autoFill(catName) {
+      var s = document.getElementById('id_item');
+      s.value = catName;
+    }
   
   </script>
 
@@ -192,6 +197,22 @@
     <div class="col-md-4" id="additemform">
       <h4>Add To Cart</h4>
       <form method="POST" action="{% url 'Checkout' %}">
+        <table>
+          <tr>
+            <td><button id="auto-btn1" class="btn btn-warning" href="#" onClick="autoFill('shirt'); return false;">Shirt</a></td>
+            <td><button id="auto-btn2" class="btn btn-warning" href="#" onClick="autoFill('pants'); return false;">Pants</a></td>
+            <td><button id="auto-btn3" class="btn btn-warning" href="#" onClick="autoFill('underwear'); return false;">Underwear</a></td>
+            <td><button id="auto-btn4" class="btn btn-warning" href="#" onClick="autoFill('socks'); return false;">Socks</a></td>
+            <td><button id="auto-btn5" class="btn btn-warning" href="#" onClick="autoFill('pajamas'); return false;">PJs</a></td>
+          </tr>
+          <tr>
+            <td><button id="auto-btn6" class="btn btn-warning" href="#" onClick="autoFill('shoes'); return false;">Shoes</a></td>
+            <td><button id="auto-btn7" class="btn btn-warning" href="#" onClick="autoFill('toy'); return false;">Toy</a></td>
+            <td><button id="auto-btn8" class="btn btn-warning" href="#" onClick="autoFill('blanket'); return false;">Blanket</a></td>
+            <td><button id="auto-btn9" class="btn btn-warning" href="#" onClick="autoFill('hygiene kit'); return false;">Hygiene Kit</a></td>
+            <td><button id="auto-btn10" class="btn btn-warning" href="#" onClick="autoFill('stuffed animal'); return false;">Stuffed Animal</a></td>
+          </tr>
+         </table>
           {% for field in formadditem %}
           <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
               {{ field.label_tag }}
@@ -213,6 +234,7 @@
           <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add To Cart</button>
       </form>
     </div>
+    
   </div>
 
   {% if createdFamily %}
@@ -266,6 +288,10 @@
       });
       $("#checkout-btn").on('click', function(){
         localStorage.removeItem("family")
+      });
+
+      $("#auto-btn1, #auto-btn2, #auto-btn3, #auto-btn4, #auto-btn5, #auto-btn6, #auto-btn7, #auto-btn8, #auto-btn9, #auto-btn10").on('click', function(){
+        $("#id_item").autocomplete('search', $("#id_item").val())
       })
 
       $("#id_item").autocomplete({
