@@ -13,9 +13,8 @@ from django.http import HttpResponse
 
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-import os
 
-# from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -104,15 +103,11 @@ def generate_report(request):
 
         if 'export_drive' in request.POST:
             si = StringIO()
-            gauth = GoogleAuth()
-            gauth.LocalWebserverAuth()
-            drive = GoogleDrive(gauth)
+            drive = google_auth()
             write_export_data(request, context, si)
             
             fileTitle = context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
-            csvFile = drive.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
-            csvFile.SetContentString(si.getvalue().strip('\r\n'))
-            csvFile.Upload()
+            upload_to_gdrive(fileTitle, drive, si)
             return render(request, 'inventory/reports/generate_report.html', context)
 
         if 'itemizedOutput' in request.POST:
@@ -136,9 +131,7 @@ def generate_report(request):
 
         if 'export_drive_table' in request.POST:
             si = StringIO()
-            gauth = GoogleAuth()
-            gauth.LocalWebserverAuth()
-            drive = GoogleDrive(gauth)
+            drive = google_auth()
             write_export_table_data(request, context, si)
 
             if 'itemizedOutput' in request.POST:
@@ -146,9 +139,8 @@ def generate_report(request):
             else:
                 fileTitle = context['tx_type'] + ' Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
 
-            csvFile = drive.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
-            csvFile.SetContentString(si.getvalue().strip('\r\n'))
-            csvFile.Upload()
+            upload_to_gdrive(fileTitle, drive, si)
+            # print("TEST3: ", si.getvalue().strip('\r\n'))
             return render(request, 'inventory/reports/generate_report.html', context)
 
     today = date.today()
@@ -273,6 +265,16 @@ def write_export_data(request, context, csvObj):
             writer.writerow(item)
 
     return csvObj
+
+def google_auth():
+    gauth = GoogleAuth()
+    gauth.LocalWebserverAuth()
+    return GoogleDrive(gauth)
+
+def upload_to_gdrive(fileTitle, driveObj, csvObj):
+    csvFile = driveObj.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
+    csvFile.SetContentString(csvObj.getvalue().strip('\r\n'))
+    csvFile.Upload()
 
 # def google_auth():
 
