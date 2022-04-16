@@ -109,7 +109,7 @@ def generate_report(request):
             drive = GoogleDrive(gauth)
             write_export_data(request, context, si)
             
-            fileTitle = context['tx_type'] + 'Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            fileTitle = context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
             csvFile = drive.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
             csvFile.SetContentString(si.getvalue().strip('\r\n'))
             csvFile.Upload()
@@ -142,9 +142,9 @@ def generate_report(request):
             write_export_table_data(request, context, si)
 
             if 'itemizedOutput' in request.POST:
-                fileTitle = context['tx_type'] + 'Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+                fileTitle = context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
             else:
-                fileTitle = context['tx_type'] + 'Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+                fileTitle = context['tx_type'] + ' Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
 
             csvFile = drive.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
             csvFile.SetContentString(si.getvalue().strip('\r\n'))
@@ -200,7 +200,6 @@ def write_export_table_data(request, context, csvObj):
     writer = csv.writer(csvObj)
 
     if 'itemizedOutput' in request.POST:
-        csvObj['Content-Disposition'] = 'attachment; filename=' + context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
         if len(context.get('results', [])) != 0:
             headers = list(context['results'][0].keys())
             headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
