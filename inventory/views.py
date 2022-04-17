@@ -71,7 +71,7 @@ def logout_action(request):
 
 ######################### REPORT GENERATION #########################
 
-@login_required(login_url='login')
+@login_required(login_url='login') # noqa: F811
 def generate_report(request):
     context = {}
 
