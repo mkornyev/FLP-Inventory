@@ -27,7 +27,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 DEBUG = False
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
-ALLOWED_HOSTS = ['localhost', 'flp-app.herokuapp.com', 'flpinventory.com']
+ALLOWED_HOSTS = ['*','localhost', 'flp-app.herokuapp.com', 'flpinventory.com']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inventory',
     'django_tables2',
+    "sslserver"
 ]
 
 MIDDLEWARE = [
