@@ -1,4 +1,3 @@
-from re import S
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
@@ -71,7 +70,8 @@ def logout_action(request):
     return redirect(reverse('Login'))
 
 ######################### REPORT GENERATION #########################
-@login_required
+
+@login_required(login_url='login')
 def generate_report(request):
     context = {}
 
@@ -140,7 +140,6 @@ def generate_report(request):
                 fileTitle = context['tx_type'] + ' Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
 
             upload_to_gdrive(fileTitle, drive, si)
-            # print("TEST3: ", si.getvalue().strip('\r\n'))
             return render(request, 'inventory/reports/generate_report.html', context)
 
     today = date.today()
