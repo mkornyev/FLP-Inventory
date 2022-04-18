@@ -1,0 +1,19 @@
+{
+  debug
+  log {
+    output stdout
+    format console
+    level DEBUG
+  }
+}
+
+(tls-cloudflare) {
+  tls flpinventory@gmail.com {
+    dns cloudflare {env.CLOUDFLARE_API_KEY}
+  }
+}
+
+flpinventory.com {
+  import tls-cloudflare
+  reverse_proxy http://django:8000
+}
