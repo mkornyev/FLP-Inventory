@@ -65,7 +65,7 @@ You will follow these directions if there is no EC2 instance created with a dock
 
 * To SSH into AWS, you can find our private key file in Google Drive and use the AWS login credentials in the handoff doc to get the public DNS
 
-* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data (Note: Do not follow the `docker run` commands, use 'docker-compose build <name>` to build as now runs using a docker-compose file. 
+* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data (Note: Do not follow the `docker run` commands, use 'docker-compose build django` to build as now runs using a docker-compose file. 
 
 * Make sure in `deploy`, you have the `db.sqlite3`, `env` files from the Google Drive. Furthermore, add the `settings.yaml` file for Exporting to Google Drive functionality in the root directory (`/home/ec2-user/github`) of where the repository is stored.
 
@@ -94,7 +94,7 @@ Finally, you will need to copy the `settings.yaml` file from the Google Drive (c
 
 To build the docker image, you should run:
 
-	$ docker-compose build <name> 
+	$ docker-compose build django
 	
 To launch the server, you should run:
 
