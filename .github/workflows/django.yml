@@ -32,8 +32,8 @@ jobs:
         bandit --configfile bandit.yaml -r inventory
         
     - name: Run Tests
-      env:
-        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-        EMAIL_APP_PASS: ${{ secrets.EMAIL_APP_PASS }}
+      # env:
+      #   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      #   EMAIL_APP_PASS: ${{ secrets.EMAIL_APP_PASS }}
       run: |
         python manage.py test
