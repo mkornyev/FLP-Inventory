@@ -61,11 +61,15 @@ This allows us to keep all your project dependencies (or `pip modules`) in isola
 
 ### Deployment (First-Time)
 
+You will follow these directions if there is no EC2 instance created with a docker image running:
+
 * To SSH into AWS, you can find our private key file in Google Drive and use the AWS login credentials in the handoff doc to get the public DNS
 
-* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data
+* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data (Note: Do not follow the `docker run` commands, use 'docker-compose build <name>` to build as now runs using a docker-compose file. 
 
-* Use `docker exec` to run `source .env` (.env file in the google drive) and all of the following commands
+* Make sure in `deploy`, you have the `db.sqlite3`, `env` files from the Google Drive. Furthermore, add the `settings.yaml` file for Exporting to Google Drive functionality in the root directory (`/home/ec2-user/github`) of where the repository is stored.
+
+* Use `docker exec` to run `source .env` (.env file in the google drive) and all of the following commands (DONT THINK WE NEED THESE NEXT TWO WITH DOCKER COMPOSE - CHECK WITH PROFESSOR)
 
 * Next, run `python manage.py drop` then `python manage.py import MANAGE_INVENTORY_FILE MANAGE_ITEMS_FILE` (these are also in the google drive)
 
@@ -78,9 +82,20 @@ This allows us to keep all your project dependencies (or `pip modules`) in isola
 
 ### Deployment (Ongoing)
 
+You will follow these directions if there is an EC2 instance created with a docker image running:
+
 The AWS/EC2 deployment of the FLP Inventory app is managed using Docker Compose.
-You will need to ensure that the SQLite database file, `db.sqlite3`, is moved into the `deploy` directory.
-Additionally, you will need to copy the `env` file from Google Drive (containing deployment secrets) to the `deploy` directory (i.e., `deploy/env`).
+	
+To update the code/website: You will checkout a new branch or pull the new code that you wish to update the EC2 instance/website with. Then, you will need to build the image and volume mounts with the specified command(s) below. Afterwards, you can start the docker with the up command below. A good resource to see past history of commands to verify your process is `cat ~/.bash_history`. This will give you a good sense of how past updates have occurred. 
+	
+Firstly, you will need to ensure that the SQLite database file, `db.sqlite3`, is moved into the `deploy` directory (i.e. `deploy/env`).
+Secondly, you will need to copy the `env` file from Google Drive (containing deployment secrets) to the `deploy` directory (i.e. `deploy/env`).
+Finally, you will need to copy the `settings.yaml` file from the Google Drive (containing Google API client ID and secrets) to the root directory (`/home/ec2-user/github`) of the repository (`cd ..` if within the `deploy` directory).
+
+To build the docker image, you should run:
+
+	$ docker-compose build <name> 
+	
 To launch the server, you should run:
 
 	$ docker-compose up -d
@@ -97,4 +112,4 @@ To restart an already-running server, you should run:
 
 	$ docker-compose restart
 
-Note that all of the above commands should be run from the root of this directory.
+Note that all of the above commands should be run from the root of this directory (`/home/ec2-user/github`).
