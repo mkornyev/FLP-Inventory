@@ -12,3 +12,4 @@ db_csv_backups/
 staticfiles/*
 .env
 env
+settings.yaml
