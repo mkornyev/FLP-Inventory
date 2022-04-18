@@ -80,6 +80,12 @@
         updateBtn.href = (updateBtn.href).replace('10', '1')
       }
     }
+
+    function autoFill(catName) {
+      var s = document.getElementById('id_item');
+      s.value = catName;
+      console.log(document.getElementById('id_item').value)
+    }
   
   </script>
 
@@ -126,7 +132,7 @@
                     <button class="dropdown-item" onclick="changeDropToText(index = '{{ forloop.counter0 }}')" >10+</button>
                     </div>
                   </div>
-                  <input type="number" min="1" class="resizedTextbox" name="qtyText" onchange="updateURLQty(index = '{{ forloop.counter0 }}')" id="qtyText-{{ forloop.counter0 }}" style='display:none'/>
+                  <input type="number" min="1" pattern="[0-9]" onkeypress="return !(event.charCode == 46)" class="resizedTextbox" name="qtyText" onchange="updateURLQty(index = '{{ forloop.counter0 }}')" id="qtyText-{{ forloop.counter0 }}" style='display:none'/>
                 </td>
                 <td>
                   <div class="dropdown">
@@ -213,6 +219,7 @@
           <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add To Cart</button>
       </form>
     </div>
+    
   </div>
 
   {% if createdFamily %}
