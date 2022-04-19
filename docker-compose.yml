@@ -2,7 +2,9 @@
 version: "3.3"
 
 services:
-  # notice that Django doesn't expose any ports! all traffic is routed via Caddy
+
+  # Django doesn't expose any ports! all traffic is routed via Caddy
+
   django:
     container_name: django
     env_file:
@@ -22,6 +24,7 @@ services:
   #
   # See:
   # - https://caddyserver.com/docs/automatic-https
+
   caddy:
     container_name: caddy
     env_file:
@@ -36,10 +39,5 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./deploy/caddy/data:/data
       - ./deploy/caddy/config:/config
-    # you will need to create an API token on Cloudflare with the following scopes:
-    # - All zones - Zone Settings:Read, Zone:Read, DNS:Edit
-    #
-    # once you've created your API token, you will need to add it to CLOUDFLARE_API_KEY in the env file
-    env_file:
-      - ./deploy/env
+
 
