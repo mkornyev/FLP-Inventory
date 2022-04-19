@@ -65,11 +65,9 @@ You will follow these directions if there is no EC2 instance created with a dock
 
 * To SSH into AWS, you can find our private key file in Google Drive and use the AWS login credentials in the handoff doc to get the public DNS
 
-* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data (Note: Do not follow the `docker run` commands, use 'docker-compose build django` to build as now runs using a docker-compose file. 
+* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data (Note: Do not follow the `docker run` commands, use 'docker-compose build` to build as this application now runs using a docker-compose file. 
 
 * Make sure in `deploy`, you have the `db.sqlite3`, `env` files from the Google Drive. Furthermore, add the `settings.yaml` file for Exporting to Google Drive functionality in the root directory (`/home/ec2-user/github`) of where the repository is stored.
-
-* Use `docker exec` to run `source .env` (.env file in the google drive) and all of the following commands (DONT THINK WE NEED THESE NEXT TWO WITH DOCKER COMPOSE - CHECK WITH PROFESSOR)
 
 * Next, run `python manage.py drop` then `python manage.py import MANAGE_INVENTORY_FILE MANAGE_ITEMS_FILE` (these are also in the google drive)
 
@@ -77,8 +75,7 @@ You will follow these directions if there is no EC2 instance created with a dock
 
 * Make starter staff superuser and volunteer account
 
-* Finally run the server on port 80 (still using docker exec, `python manage.py runserver 80`. For exact commands you can scroll the bash history)
-
+* Finally run the server after running 'docker-compose build' by running 'docker-compose up -d'
 
 ### Deployment (Ongoing)
 
@@ -94,7 +91,7 @@ Finally, you will need to copy the `settings.yaml` file from the Google Drive (c
 
 To build the docker image, you should run:
 
-	$ docker-compose build django
+	$ docker-compose build
 	
 To launch the server, you should run:
 
