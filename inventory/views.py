@@ -10,8 +10,8 @@ from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, Checkou
 from django.contrib import messages
 from django.http import HttpResponse
 
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -30,6 +30,7 @@ from io import StringIO
 import json
 import calendar
 import csv
+import os
 
 DEFAULT_PAGINATION_SIZE = 25
 LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
@@ -265,7 +266,7 @@ def write_export_data(request, context, csvObj):
     return csvObj
 
 def google_auth():
-    gauth = GoogleAuth()
+    gauth = GoogleAuth(settings_file='settings.yaml')
     gauth.LocalWebserverAuth()
     return GoogleDrive(gauth)
 
@@ -273,8 +274,6 @@ def upload_to_gdrive(fileTitle, driveObj, csvObj):
     csvFile = driveObj.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
     csvFile.SetContentString(csvObj.getvalue().strip('\r\n'))
     csvFile.Upload()
-
-# def google_auth():
 
 ######################### ANALYTICS #########################
 @login_required

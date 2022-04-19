@@ -6,8 +6,8 @@ from django.http.request import QueryDict, MultiValueDict
 from datetime import date, timedelta
 from unittest.mock import patch
 
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive, GoogleDriveFile
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive, GoogleDriveFile
 
 class GenerateReportDriveTestCase(TestCase):
     def setUp(self):
