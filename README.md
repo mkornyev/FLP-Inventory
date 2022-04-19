@@ -97,10 +97,6 @@ To launch the server, you should run:
 
 	$ docker-compose up -d
 
-To check on the state of the server via its logs, you can run:
-
-	$ docker-compose logs
-
 To shutdown the server, you should run:
 
 	$ docker-compose down
@@ -108,5 +104,18 @@ To shutdown the server, you should run:
 To restart an already-running server, you should run:
 
 	$ docker-compose restart
+
+To check on the state of the server via its logs, you can run:
+
+	$ docker-compose logs
+
+To check on the state of the server via its logs for a singlular container (generally 'django' for stacking tracing), you can run:
+
+	$ docker-compose logs <container name>
+
+To have the logs outputted in a paginated fashion, you can run (generally 'django' container for stack tracing):
+
+	$ docker-compose logs <container name> | less
+
 
 Note that all of the above commands should be run from the root of this directory (`/home/ec2-user/github`).
