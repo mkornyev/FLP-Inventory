@@ -2,7 +2,8 @@
 
 * Organization: Foster Love Project
 * Client Contacts: <a href="mailto:khughes@fosterloveproject.org">`Kelly Hughes`</a>, <a href="mailto:ebaldoni@fosterloveproject.org">`Elizabeth Baldoni`</a>, <a href="mailto:center@fosterloveproject.org">`Krissy Evans`</a>
-* Student Consultants: <a href="https://github.com/alex-bellomo">`Alex Bellomo`</a>, <a href="https://github.com/mkornyev">`Max Kornyev`</a>, <a href="https://github.com/austin-leung">`Austin Leung`</a>, <a href="https://github.com/lydiaxing">`Lydia Xing`</a>, and <a href="https://github.com/SeanEZhou">`Sean Zhou`</a>
+*  Original Creators: <a href="https://github.com/alex-bellomo">`Alex Bellomo`</a>, <a href="https://github.com/mkornyev">`Max Kornyev`</a>, <a href="https://github.com/austin-leung">`Austin Leung`</a>, <a href="https://github.com/lydiaxing">`Lydia Xing`</a>, and <a href="https://github.com/SeanEZhou">`Sean Zhou`</a>
+*  Student Consultants: <a href="https://github.com/TomasVCMU">`Tomas Viejobueno`</a>, <a href="https://github.com/hkhang1883">`Harriet Khang`</a>, <a href="https://github.com/AashaiAvadhani1">`Aashai Avadhani`</a>, <a href="https://github.com/SantianLin">`Yanyu Lin`</a>, and <a href="https://github.com/hredi">`Hikma Redi`</a>
 * The beta deployment is at <a href="https://flp-app.herokuapp.com/">flp-app.herokuapp.com</a>
 
 ### Application Versions
@@ -65,7 +66,7 @@ You will follow these directions if there is no EC2 instance created with a dock
 
 * To SSH into AWS, you can find our private key file in Google Drive and use the AWS login credentials in the handoff doc to get the public DNS
 
-* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data (Note: Do not follow the `docker run` commands, use 'docker-compose build` to build as this application now runs using a docker-compose file. 
+* Deployment tutorial: https://stackabuse.com/deploying-django-applications-to-aws-ec2-with-docker - also please make sure you turn off debug mode in settings.py, check out our deployment PR to see what changes you gotta make and save the .sqlite3 db file before you run `docker pull` so you don't overwrite FLP's data (Note: Do not follow the `docker run` commands, use `docker-compose build` to build as this application now runs using a docker-compose file. 
 
 * Make sure in `deploy`, you have the `db.sqlite3`, `env` files from the Google Drive. Furthermore, add the `settings.yaml` file for Exporting to Google Drive functionality in the root directory (`/home/ec2-user/github`) of where the repository is stored.
 
@@ -75,7 +76,7 @@ You will follow these directions if there is no EC2 instance created with a dock
 
 * Make starter staff superuser and volunteer account
 
-* Finally run the server after running 'docker-compose build' by running 'docker-compose up -d'
+* Finally run the server after running `docker-compose build` by running `docker-compose up -d`
 
 ### Deployment (Ongoing)
 
@@ -109,11 +110,11 @@ To check on the state of the server via its logs, you can run:
 
 	$ docker-compose logs
 
-To check on the state of the server via its logs for a singlular container (generally 'django' for stacking tracing), you can run:
+To check on the state of the server via its logs for a singlular container (generally `django` for stacking tracing), you can run:
 
 	$ docker-compose logs <container name>
 
-To have the logs outputted in a paginated fashion, you can run (generally 'django' container for stack tracing):
+To have the logs outputted in a paginated fashion, you can run (generally `django` container for stack tracing):
 
 	$ docker-compose logs <container name> | less
 
