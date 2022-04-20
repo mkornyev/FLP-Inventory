@@ -30,7 +30,6 @@ from io import StringIO
 import json
 import calendar
 import csv
-import os
 
 DEFAULT_PAGINATION_SIZE = 25
 LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
