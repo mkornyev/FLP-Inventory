@@ -13,3 +13,4 @@ staticfiles/*
 .env
 env
 settings.yaml
+django_ec2.pem
