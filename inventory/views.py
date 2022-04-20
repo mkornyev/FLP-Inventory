@@ -706,10 +706,19 @@ def checkout_action(request):
             tx.save()
 
             checkout.items.add(tx)
-
-            tx.item.quantity -= tx.quantity
+            
+            """ 
+            Description: Hard stops the quantity left from ever being negative
+            If the amount of items that are checked out are greater than the items available, the quantity_left is set to 0.
+            """
+            item_quantity_left = tx.item.quantity
+            quantity_checked_out = tx.quantity
+            if(item_quantity_left <= 0 or (item_quantity_left - quantity_checked_out <= 0)):
+                tx.item.quantity = 0
+            else:
+                tx.item.quantity -= quantity_checked_out
             tx.item.save()
-
+        
         del request.session['transactions-out']
         request.session.modified = True
 
