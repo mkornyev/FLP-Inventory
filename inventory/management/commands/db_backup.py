@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import EmailMessage
 from inventory.models import Family, Category, Item, ItemTransaction, Checkin, Checkout
-import csv, os
+import os
 from datetime import datetime
 from zipfile import ZipFile
 from email.mime.application import MIMEApplication
