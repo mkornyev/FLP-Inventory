@@ -119,4 +119,4 @@ To have the logs outputted in a paginated fashion, you can run (generally `djang
 	$ docker-compose logs <container name> | less
 
 
-Note that all of the above commands should be run from the root of this directory (`/home/ec2-user/github`).
+Note that all of the above commands should be run from the root of this directory (`/home/ec2-user/github`)
