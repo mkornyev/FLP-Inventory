@@ -131,7 +131,7 @@ def generate_report(request):
                 sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
                 for item in sorted_items:
                     writer.writerow(item)
-
+                
             return response
 
         if 'itemizedOutput' in request.POST:
@@ -206,6 +206,7 @@ def generate_report(request):
             if len(qs) != 0:
                 field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
                 writer.writerow(field_names)
+                totalPrice = 0
                 for i in qs:
                     row = []
                     for f in field_names:
@@ -214,9 +215,12 @@ def generate_report(request):
                             row.append(txs)
                         elif f == "value":
                             row.append(i.getValue())
+                            totalPrice += i.getValue()
                         else:
                             row.append(getattr(i, f))
                     writer.writerow(row)
+                writer.writerow([])
+                writer.writerow(["total price:"+ str(totalPrice)])
             return response
 
     today = date.today()
