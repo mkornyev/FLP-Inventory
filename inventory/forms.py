@@ -116,8 +116,8 @@ class CreateItemForm(forms.Form):
 class AddItemForm(forms.Form):
     item = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
-    used_quantity = forms.IntegerField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     new_quantity = forms.IntegerField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    used_quantity = forms.IntegerField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more

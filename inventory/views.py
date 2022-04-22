@@ -506,7 +506,7 @@ def createItem_action(request, location):
         used_price = form.cleaned_data['used_price']
         quantity = form.cleaned_data['quantity']
 
-        item = Item(category=category, name=name, used_price=used_price, new_price=new_price, quantity=quantity)
+        item = Item(category=category, name=name, new_price=new_price, used_price=used_price, quantity=quantity)
         item.save()
 
         if location == 'in' or location == 'out':
@@ -542,8 +542,8 @@ def checkin_action(request):
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
             addItemForm.fields['item'].initial = itemInfo[0]
-            addItemForm.fields['used_quantity'].initial = itemInfo[1]
-            addItemForm.fields['new_quantity'].initial = itemInfo[2]
+            addItemForm.fields['new_quantity'].initial = itemInfo[1]
+            addItemForm.fields['used_quantity'].initial = itemInfo[2]
             del request.session['itemInfo']
 
         context['formadditem'] = addItemForm
@@ -640,8 +640,8 @@ def checkout_action(request):
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
             addItemForm.fields['item'].initial = itemInfo[0]
-            addItemForm.fields['used_quantity'].initial = itemInfo[1]
-            addItemForm.fields['new_quantity'].initial = itemInfo[2]
+            addItemForm.fields['new_quantity'].initial = itemInfo[1]
+            addItemForm.fields['used_quantity'].initial = itemInfo[2]
             del request.session['itemInfo']
 
         return render(request, 'inventory/checkout.html', context)
