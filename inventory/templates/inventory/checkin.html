@@ -105,7 +105,7 @@
                     <button class="dropdown-item" onclick="changeDropToText(index = '{{ forloop.counter0 }}' )" >10+</a>
                     </div>
                   </div>
-                  <input type="number" min="1" class="resizedTextbox" name="qtyText" onchange="updateURLQty(index = '{{ forloop.counter0 }}')" id="qtyText-{{ forloop.counter0 }}" value=10 style='display:none'/>
+                  <input type="number" min="1" pattern="[0-9]" onkeypress="return !(event.charCode == 46)" class="resizedTextbox" name="qtyText" onchange="updateURLQty(index = '{{ forloop.counter0 }}')" id="qtyText-{{ forloop.counter0 }}" value=10 style='display:none'/>
                 </td>
                 <td>
                   <div class="dropdown">
