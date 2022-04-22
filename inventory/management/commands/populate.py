@@ -7,8 +7,12 @@ import os
 
 class Command(BaseCommand):
     args = '<this func takes no args>'
-    help = 'Run this script to create sample model objects.'
+    help = 'Run this script to create sample model objects. NOTE: duplicate objects will not be created, ignore UNIQUE constraint errors'
 
+    def add_arguments(self, parser):
+        # Optional argument
+        parser.add_argument('-c', '--concise', type=int, help='Range of tables to populate.\n 1: create users, 2:age range 3:family 4:item-transactions-checkin/outs', )
+        
     def _create_users(self):
         admin = User.objects.create_user(username='admin', password=os.environ['ADMIN_USER_PASS'], first_name='Kelly', last_name='Hughes', email='flpadmin@gmail.com')
         admin.is_staff = True 
@@ -154,7 +158,20 @@ class Command(BaseCommand):
         print("Checkout has been created.")
     
     def handle(self, *args, **options):
-        self._create_users()
-        # self._create_sample_family()
-        # self._create_sample_agerange()
-        self._create_sample_objects()
+        print(args)
+        print(options)
+        c = options['concise']
+        if c!=None:
+            if c==1:
+                self._create_users()
+            elif c==2:
+                self._create_sample_agerange()
+            elif c==3:
+                self._create_sample_family()
+            elif c==4:
+                self._create_sample_objects()
+        else:
+            self._create_users()
+            self._create_sample_agerange()
+            self._create_sample_family()
+            self._create_sample_objects()
