@@ -210,6 +210,7 @@ def write_export_table_data(request, context, csvObj):
 
     if len(qs) != 0:
         field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
+        totalPrice = 0
         writer.writerow(field_names)
         for i in qs:
             row = []
@@ -222,6 +223,8 @@ def write_export_table_data(request, context, csvObj):
                 else:
                     row.append(getattr(i, f))
             writer.writerow(row)
+        writer.writerow([])
+        writer.writerow(["Total Price: " + str(totalPrice)])
     return csvObj
 
 def write_export_data(request, context, csvObj):
@@ -726,7 +729,7 @@ def checkout_action(request):
   
 def autocomplete_item(request):
     if 'term' in request.GET:
-        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
+        qs = Item.objects.filter(name__icontains=request.GET.get('term'), outdated = False)
         names = list()
         for item in qs:
             names.append(item.name)
