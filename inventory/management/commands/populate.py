@@ -158,8 +158,6 @@ class Command(BaseCommand):
         print("Checkout has been created.")
     
     def handle(self, *args, **options):
-        print(args)
-        print(options)
         c = options['concise']
         if c!=None:
             if c==1:

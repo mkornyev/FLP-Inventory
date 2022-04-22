@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand
 from inventory.models import *
 from django.utils.dateparse import parse_datetime
 import csv, os
+import sqlite3
+
 
 class Command(BaseCommand):
     args = '<this func takes no args>'
@@ -111,13 +113,41 @@ class Command(BaseCommand):
                 continue
             Checkout.objects.create(id = row[0], user = User.objects.get(username = row[1]), datetime = parse_datetime(row[2]), items = row[3], notes = row[4])
         print("%d Checkout records has been restored." % count)
+    
+    def _overwrite(self):
+        conn_backup = None
+        conn = None
+        try:
+            conn_backup = sqlite3.connect("db_backups/db0.sqlite3")
+            cur_backup = conn_backup.cursor()
+        except sqlite3.Error as e:
+            print(e)
+        try:
+            conn = sqlite3.connect("db.sqlite3")
+            cur = conn.cursor()
+        except sqlite3.Error as e:
+            print(e)
+        
+        cur_backup.execute("SELECT * FROM inventory_itemtransaction")
+        rows = cur_backup.fetchall()
+
+        cur.executemany("INSERT INTO inventory_itemtransaction VALUES(?,?,?,?);", rows)
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM inventory_itemtransaction")
+        rows = cur.fetchall()
+        for r in rows:
+            print(r)
+
+    # def _reset(self):
         
     def handle(self, *args, **options):
-        self._restore_users()
-        self._restore_Category()
-        self._restore_Family()
-        self._restore_Item()
-        self._restore_ItemTransaction()
+        # self._reset()
+        self._overwrite()
+        # self._restore_users()
+        # self._restore_Category()
+        # self._restore_Family()
+        # self._restore_Item()
+        # self._restore_ItemTransaction()
         # self._restore_Checkin()
         # self._restore_Checkout()
         
