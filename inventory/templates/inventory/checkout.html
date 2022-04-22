@@ -49,6 +49,14 @@
     #additemform {
       border-left: 1px solid lightgrey;
     }
+
+    table, th, td {
+      padding: 5px;
+    }
+
+    table {
+      border-spacing: 15px;
+    }
   </style>
 {% endblock %}
 
@@ -79,12 +87,6 @@
       } else {
         updateBtn.href = (updateBtn.href).replace('10', '1')
       }
-    }
-
-    function autoFill(catName) {
-      var s = document.getElementById('id_item');
-      s.value = catName;
-      console.log(document.getElementById('id_item').value)
     }
   
   </script>
@@ -198,6 +200,26 @@
     <div class="col-md-4" id="additemform">
       <h4>Add To Cart</h4>
       <form method="POST" action="{% url 'Checkout' %}">
+<<<<<<< HEAD
+        <table>
+          <tr>
+            {% load static %}
+            <td><button id="auto-btn1" class="btn btn-warning" href="#" onClick="autoFill('shirt'); return false;"><img src="{% static 'images/shirt_icon.jpg' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn2" class="btn btn-warning" href="#" onClick="autoFill('pants'); return false;"><img src="{% static 'images/pants.png' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn3" class="btn btn-warning" href="#" onClick="autoFill('underwear'); return false;"><img src="{% static 'images/underwear.png' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn4" class="btn btn-warning" href="#" onClick="autoFill('socks'); return false;"><img src="{% static 'images/socks.png' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn5" class="btn btn-warning" href="#" onClick="autoFill('pj'); return false;"><img src="{% static 'images/pjs.png' %}" width="30" height="30"></button></td>
+          </tr>
+          <tr>
+            <td><button id="auto-btn6" class="btn btn-warning" href="#" onClick="autoFill('shoes'); return false;"><img src="{% static 'images/shoes.png' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn7" class="btn btn-warning" href="#" onClick="autoFill('toy'); return false;"><img src="{% static 'images/toys.png' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn8" class="btn btn-warning" href="#" onClick="autoFill('blanket'); return false;"><img src="{% static 'images/blanket.png' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn9" class="btn btn-warning" href="#" onClick="autoFill('hygiene kit'); return false;"><img src="{% static 'images/hygiene_kit.png' %}" width="30" height="30"></button></td>
+            <td><button id="auto-btn10" class="btn btn-warning" href="#" onClick="autoFill('stuffed animal'); return false;"><img src="{% static 'images/stuffed_animal.png' %}" width="30" height="30"></button></td>
+          </tr>
+         </table>
+=======
+>>>>>>> master
           {% for field in formadditem %}
           <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
               {{ field.label_tag }}
@@ -219,7 +241,6 @@
           <button id="addToCart-btn" name="additem" class="btn btn-warning" type="submit">Add To Cart</button>
       </form>
     </div>
-    
   </div>
 
   {% if createdFamily %}
