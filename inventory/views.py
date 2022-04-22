@@ -503,7 +503,7 @@ def createItem_action(request, location):
         used_price = form.cleaned_data['used_price']
         quantity = form.cleaned_data['quantity']
 
-        item = Item(category=category, name=name, new_price=new_price, used_price=used_price, quantity=quantity)
+        item = Item(category=category, name=name, used_price=used_price, new_price=new_price, quantity=quantity)
         item.save()
 
         if location == 'in' or location == 'out':
@@ -555,8 +555,8 @@ def checkin_action(request):
             return render(request, 'inventory/checkin.html', context)
 
         name = form.cleaned_data['item']
-        used_quantity = form.cleaned_data['used_quantity']
         new_quantity = form.cleaned_data['new_quantity']
+        used_quantity = form.cleaned_data['used_quantity']
 
         item = Item.objects.filter(name=name).first()
     
