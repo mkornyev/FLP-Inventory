@@ -3,7 +3,8 @@ RUN apk add --no-cache \
   bash \
   gcc \
   musl-dev \
-  python3-dev
+  python3-dev \
+  libffi-dev
 
 # we run as a non-root user to mitigate the possibility of using a Docker root shell to obtain root on the host
 # - note that we also create a user with the same uid (1000) as ec2-user to avoid permissions issues when mounting files
