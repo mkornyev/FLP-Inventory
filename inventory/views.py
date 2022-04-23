@@ -261,10 +261,14 @@ def write_export_data(request, context, csvObj):
                     uniqueItems[item_key][3] += tx.quantity
                     uniqueItems[item_key][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
                     round(uniqueItems[item_key][5], 2)
-        
+        totalPrice = 0
+        for item in uniqueItems.values():
+            totalPrice = totalPrice + item[5]
         sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
         for item in sorted_items:
             writer.writerow(item)
+        writer.writerow([])
+        writer.writerow(["Total Price: " + str(totalPrice)])
 
     return csvObj
 
