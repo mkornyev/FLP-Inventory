@@ -169,6 +169,8 @@
 
     <div class="col-md-4" id="additemform">
       <h4>Add To Cart</h4>
+      <br>
+      <h6 style="text-align:center">Recommended Items</h6>
       <table>
         <tr>
           {% load static %}
@@ -186,6 +188,7 @@
           <td><button id="auto-btn10" class="btn btn-warning" href="#" onClick="autoFill('stuffed animal'); return false;"><img src="{% static 'images/stuffed_animal.png' %}" width="30" height="30"></button></td>
         </tr>
        </table>
+       <hr>
       <form method="POST" action="{% url 'Checkin' %}">
           {% for field in formadditem %}
             <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
