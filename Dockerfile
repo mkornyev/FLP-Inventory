@@ -26,7 +26,7 @@ RUN chown -R django:django /django_ec2
 USER django
 
 # build the static resources (without this, the production server will fail)
-RUN . deploy/env && python manage.py collectstatic
+RUN . deploy/env && python manage.py collectstatic && python manage.py makemigrations && python manage.py migrate
 
 # since we're running as a non-root user, we need to run the web server on a non-port (i.e., > 1024).
 # we use port forwarding to map port 8000 in the container to port 80 on the host
