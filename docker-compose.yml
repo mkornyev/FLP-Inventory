@@ -12,9 +12,7 @@ services:
     build:
       context: .
     ports:
-      - 10411:10411
-      - 10412:10412
-      - 10413:10413
+      - 8080:8080
     restart: unless-stopped
     volumes:
       - ./deploy/db.sqlite3:/django_ec2/db.sqlite3:rw
