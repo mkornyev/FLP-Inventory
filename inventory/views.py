@@ -220,6 +220,7 @@ def write_export_table_data(request, context, csvObj):
                     row.append(txs)
                 elif f == "value":
                     row.append(i.getValue())
+                    totalPrice += i.getValue()
                 else:
                     row.append(getattr(i, f))
             writer.writerow(row)
