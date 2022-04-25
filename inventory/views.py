@@ -18,7 +18,7 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 
 from inventory.gdrive import Create_Service
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -33,7 +33,8 @@ from inventory.forms import LoginForm, AddItemForm, CheckOutForm, CreateFamilyFo
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
-from io import StringIO
+import io
+#from io import StringIO
 
 
 DEFAULT_PAGINATION_SIZE = 25
@@ -113,7 +114,7 @@ def generate_report(request):
             return write_export_data(request, context, response)
 
         if 'export_drive' in request.POST:
-            si = StringIO()
+            si = io.StringIO()
             drive = google_auth()
             write_export_data(request, context, si)
             
@@ -141,7 +142,7 @@ def generate_report(request):
             return write_export_table_data(request, context, response)
 
         if 'export_drive_table' in request.POST:
-            si = StringIO()
+            si = io.StringIO()
             drive = google_auth()
             write_export_table_data(request, context, si)
 
@@ -291,20 +292,26 @@ def google_auth():
     # return GoogleDrive(gauth)
 
 def upload_to_gdrive(fileTitle, driveObj, csvObj):
-    fileMetadata = {
+    fileMetaData = {
         'name': fileTitle,
         'mimeType': 'application/vnd.google-apps.spreadsheet'
     }
 
-    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8") as csvFile:
-        csvFile.write(csvObj.getvalue().strip('\r\n'))
-        csvUpload = MediaFileUpload(csvFile.name,
-                            mimetype='text/csv',
-                            resumable=True)
-        driveObj.files().create(body=fileMetadata,
-                            media_body=csvUpload,
-                            fields='id').execute()
-        csvFile.flush()
+    csvString = csvObj.getvalue().strip('\r\n')
+    bio = io.BytesIO()
+    bio.write(csvString.encode('utf-8'))
+    csvUpload = MediaIoBaseUpload(bio, mimetype='text/csv', resumable=True)
+    driveObj.files().create(body=fileMetaData, media_body=csvUpload).execute()
+
+    # with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8") as csvFile:
+    #     csvFile.write(csvObj.getvalue().strip('\r\n'))
+    #     csvUpload = MediaIoBaseUpload(csvObj,
+    #                         mimetype='text/csv',
+    #                         resumable=True)
+    #     driveObj.files().create(body=fileMetaData,
+    #                         media_body=csvUpload,
+    #                         fields='id').execute()
+    #     csvFile.flush()
     # csvFile = driveObj.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
     # csvFile.SetContentString(csvObj.getvalue().strip('\r\n'))
     # csvFile.Upload()
