@@ -16,6 +16,7 @@ def Create_Service(client_secret_file, api_name, api_version, *scopes):
     HOST = 'localhost'
     PORT = 8080
     cred = None
+    displayMessage = False
 
 
     pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
@@ -33,14 +34,16 @@ def Create_Service(client_secret_file, api_name, api_version, *scopes):
 
         with open(pickle_file, 'wb') as token:
             pickle.dump(cred, token)
+    else:
+        displayMessage = True
 
     try:
         service = build(API_SERVICE_NAME, API_VERSION, credentials=cred)
-        pymsgbox.alert('Report Successfully Exported to Google Drive', 'Google Drive Export', timeout=2000)
+        # pymsgbox.alert('Report Successfully Exported to Google Drive', 'Google Drive Export', timeout=2000)
         print(API_SERVICE_NAME, 'service created successfully')
-        return service
+        return (service, displayMessage)
     except Exception as e:
         print('Unable to connect.')
         print(e)
         pymsgbox.alert('Report Failed to Export to Google Drive', 'Google Drive Export', timeout=2000)
-        return None
+        return (None, displayMessage)

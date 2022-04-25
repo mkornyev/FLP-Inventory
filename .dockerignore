@@ -13,3 +13,5 @@
 !requirements.txt
 !runtime.txt
 !settings.yaml
+!client_secrets.json
+!token_drive_v3.pickle
