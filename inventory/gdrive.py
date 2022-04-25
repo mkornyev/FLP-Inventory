@@ -5,7 +5,7 @@ from google_auth_oauthlib.flow import Flow, InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
-import easygui
+import pymsgbox
 
 
 def Create_Service(client_secret_file, api_name, api_version, *scopes):
@@ -16,7 +16,6 @@ def Create_Service(client_secret_file, api_name, api_version, *scopes):
     HOST = 'localhost'
     PORT = 8080
     cred = None
-    displayMessage = False
 
 
     pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
@@ -34,22 +33,14 @@ def Create_Service(client_secret_file, api_name, api_version, *scopes):
 
         with open(pickle_file, 'wb') as token:
             pickle.dump(cred, token)
-    # else:
-    #     displayMessage = True
-    
-
-    easygui.msgbox("This is a message!", title="simple gui")
-
-
 
     try:
         service = build(API_SERVICE_NAME, API_VERSION, credentials=cred)
-        # if displayMessage:
-        #     ctypes.windll.user32.MessageBoxW(0, "Your text", "Your title", 1)
+        pymsgbox.alert('Report Successfully Exported to Google Drive', 'Google Drive Export', timeout=2000)
         print(API_SERVICE_NAME, 'service created successfully')
         return service
     except Exception as e:
         print('Unable to connect.')
         print(e)
-        displayMessage = False
+        pymsgbox.alert('Report Failed to Export to Google Drive', 'Google Drive Export', timeout=2000)
         return None
