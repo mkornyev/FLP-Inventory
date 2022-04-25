@@ -114,7 +114,8 @@ def generate_report(request):
             write_export_data(request, context, si)
             
             fileTitle = context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
-            upload_to_gdrive(fileTitle, drive, si, displayMessage)
+            upload_to_gdrive(fileTitle, drive, si)
+            context['displayMessage'] = displayMessage
             return render(request, 'inventory/reports/generate_report.html', context)
 
         if 'itemizedOutput' in request.POST:
@@ -146,7 +147,10 @@ def generate_report(request):
             else:
                 fileTitle = context['tx_type'] + ' Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
 
-            upload_to_gdrive(fileTitle, drive, si, displayMessage)
+            upload_to_gdrive(fileTitle, drive, si)
+            print("DISPLAY MSG: " + str(displayMessage) )
+            context['displayMessage'] = displayMessage
+            print("CONTEXT: " + str(context))
             return render(request, 'inventory/reports/generate_report.html', context)
 
     today = date.today()
@@ -286,7 +290,7 @@ def google_auth():
     # gauth.LocalWebserverAuth()
     # return GoogleDrive(gauth)
 
-def upload_to_gdrive(fileTitle, driveObj, csvObj, displayMessage):
+def upload_to_gdrive(fileTitle, driveObj, csvObj):
     fileMetaData = {
         'name': fileTitle,
         'mimeType': 'application/vnd.google-apps.spreadsheet'

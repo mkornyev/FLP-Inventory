@@ -8,6 +8,14 @@
 {% endblock %}
 
 {% block content %}
+
+<script type="text/javascript">
+  function showUploadMessage() {
+    alert("Your report has been successfully uploaded to Google Drive!")
+  }
+
+</script>
+
 <form class="check-report-form" method="POST" action="{% url 'Report' %}">
 <div class="container">
 
@@ -21,6 +29,12 @@
 
         </div>
     </div>
+
+    {% if displayMessage %}
+    <script>
+        showUploadMessage()
+    </script>
+    {% endif %}
 
     <div class="row mt-5">
       <div class="col">
