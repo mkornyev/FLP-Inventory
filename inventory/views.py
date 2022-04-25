@@ -1,3 +1,7 @@
+import json
+import calendar
+import csv
+import tempfile
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
@@ -13,6 +17,9 @@ from django.http import HttpResponse
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 
+from inventory.gdrive import Create_Service
+from googleapiclient.http import MediaFileUpload
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -27,12 +34,17 @@ from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from io import StringIO
-import json
-import calendar
-import csv
+
 
 DEFAULT_PAGINATION_SIZE = 25
 LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
+
+######################### GOOGLE DRIVE VARIABLES #########################
+
+SCOPES = ['https://www.googleapis.com/auth/drive.file']
+CLIENT_SECRET_FILE = 'client_secrets.json'
+API_NAME = 'drive'
+API_VERSION = 'v3'
 
 ######################### BASIC VIEWS #########################
 
@@ -273,14 +285,29 @@ def write_export_data(request, context, csvObj):
     return csvObj
 
 def google_auth():
-    gauth = GoogleAuth(settings_file='settings.yaml')
-    gauth.LocalWebserverAuth()
-    return GoogleDrive(gauth)
+    return Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+    # gauth = GoogleAuth(settings_file='settings.yaml')
+    # gauth.LocalWebserverAuth()
+    # return GoogleDrive(gauth)
 
 def upload_to_gdrive(fileTitle, driveObj, csvObj):
-    csvFile = driveObj.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
-    csvFile.SetContentString(csvObj.getvalue().strip('\r\n'))
-    csvFile.Upload()
+    fileMetadata = {
+        'name': fileTitle,
+        'mimeType': 'application/vnd.google-apps.spreadsheet'
+    }
+
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8") as csvFile:
+        csvFile.write(csvObj.getvalue().strip('\r\n'))
+        csvUpload = MediaFileUpload(csvFile.name,
+                            mimetype='text/csv',
+                            resumable=True)
+        driveObj.files().create(body=fileMetadata,
+                            media_body=csvUpload,
+                            fields='id').execute()
+        csvFile.flush()
+    # csvFile = driveObj.CreateFile({'title': fileTitle, 'mimeType': 'text/csv'})
+    # csvFile.SetContentString(csvObj.getvalue().strip('\r\n'))
+    # csvFile.Upload()
 
 ######################### ANALYTICS #########################
 @login_required
@@ -791,3 +818,8 @@ def getPagination(request, objects, count):
     except EmptyPage:
         paginationOut = paginator.page(paginator.num_pages)
     return paginationOut
+
+
+
+
+
