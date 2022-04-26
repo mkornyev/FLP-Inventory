@@ -1,4 +1,7 @@
-
+import json
+import calendar
+import csv
+import io
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
@@ -11,7 +14,9 @@ from .tables import FamilyTable, CategoryTable, ItemTable, CheckinTable, Checkou
 from django.contrib import messages
 from django.http import HttpResponse
 
-# from django.contrib.auth.decorators import login_required
+from inventory.gdrive import Create_Service
+from googleapiclient.http import MediaIoBaseUpload
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -25,12 +30,16 @@ from inventory.forms import LoginForm, AddItemForm, CheckOutForm, CreateFamilyFo
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
-import json
-import calendar
-import csv
 
 DEFAULT_PAGINATION_SIZE = 25
 LOW_QUANTITY_THRESHOLD = 10 # this number or below is considered low quantity
+
+######################### GOOGLE DRIVE VARIABLES #########################
+
+SCOPES = ['https://www.googleapis.com/auth/drive.file']
+CLIENT_SECRET_FILE = 'client_secrets.json'
+API_NAME = 'drive'
+API_VERSION = 'v3'
 
 ######################### BASIC VIEWS #########################
 
@@ -67,7 +76,8 @@ def logout_action(request):
     return redirect(reverse('Login'))
 
 ######################### REPORT GENERATION #########################
-@login_required
+
+@login_required(login_url='login')
 def generate_report(request):
     context = {}
 
@@ -93,136 +103,205 @@ def generate_report(request):
             context['totalValue'] = result.getValue() + context['totalValue']
 
         if 'export' in request.POST:
-            qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
             response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
-            writer = csv.writer(response)
-    
-            if qs is not None:
-                writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
+            response['Content-Disposition'] = 'attachment; filename=Checkout Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            return write_export_data(request, context, response)
 
-                uniqueItems = {} 
-
-                for c in qs:
-                    for tx in c.items.all():
-                        item_key = (tx.item.id, tx.is_new)
-                        try: 
-                            originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
-                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-' + str(tx.is_new) + '-adjustment', originalPrice))
-                        except (ValueError, TypeError) as _: # noqa: F841
-                            adjustedPrice = 0
-
-                        if item_key not in uniqueItems: 
-                            uniqueItems[item_key] = [
-                                tx.item.name,
-                                "New" if tx.is_new else "Used",
-                                "No category" if tx.item.category is None else tx.item.category.name,
-                                tx.quantity,
-                                adjustedPrice,
-                                0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
-                            ]
-                        else: 
-                            item_key = (tx.item.id, tx.is_new)
-                            uniqueItems[item_key][3] += tx.quantity
-                            uniqueItems[item_key][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
-                            round(uniqueItems[item_key][5], 2)
-                
-                sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
-                for item in sorted_items:
-                    writer.writerow(item)
-
-            return response
+        if 'export_drive' in request.POST:
+            si = io.StringIO()
+            (drive, displayMessage) = google_auth()
+            write_export_data(request, context, si)
+            
+            fileTitle = context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            upload_to_gdrive(fileTitle, drive, si)
+            context['displayMessage'] = displayMessage
+            return render(request, 'inventory/reports/generate_report.html', context)
 
         if 'itemizedOutput' in request.POST:
             context['itemizedOutput'] = request.POST['itemizedOutput']
-
-            newUniqueItems = {}
-            for res in context['results']: 
-                for tx in res.items.all(): 
-                    item_key = (tx.item.id, tx.is_new)
-                    item_price = None
-                    if tx.is_new and tx.item.new_price != None:
-                        item_price = tx.item.new_price
-                    elif not tx.is_new and tx.item.used_price != None:
-                        item_price = tx.item.used_price
-                    if item_key not in newUniqueItems:
-                        newUniqueItems[item_key] = {
-                            'id': tx.item.id,
-                            'item': tx.item.name,
-                            'category': "No category" if tx.item.category is None else tx.item.category.name,
-                            'is_new': tx.is_new,
-                            'quantity': tx.quantity,
-                            'new_price': tx.item.new_price,
-                            'used_price': tx.item.used_price,
-                            'value': 0 if item_price is None else tx.quantity*item_price,
-                            'tx_notes': res.notes_description()
-                        }
-                    else: 
-                        newUniqueItems[item_key]['quantity'] += tx.quantity
-                        newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
-
-                        currNotes = newUniqueItems[item_key]['tx_notes']
-                        if res.notes and currNotes and str(res.id) not in currNotes: 
-                            currNotes = currNotes + "<br>" + res.notes_description()
-                            newUniqueItems[item_key]['tx_notes'] = currNotes
-
-                        currNotes = newUniqueItems[item_key]['tx_notes']
-                        if res.notes and currNotes and str(res.id) not in currNotes: 
-                            currNotes = currNotes + "<br>" + res.notes_description()
-                            newUniqueItems[item_key]['tx_notes'] = currNotes
-
-            context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
-
-        if 'export_table' not in request.POST:
+            collect_itemized_data(context)
+           
+        if 'export_table' not in request.POST \
+            and 'export_drive_table' not in request.POST:
             context['results'] = getPagination(request, context['results'], DEFAULT_PAGINATION_SIZE)
             return render(request, 'inventory/reports/generate_report.html', context)
 
         if 'export_table' in request.POST:
-            qs = context['results']
             response = HttpResponse()
-            response['Content-Disposition'] = 'attachment; filename=data.csv'
-            writer = csv.writer(response)
 
             if 'itemizedOutput' in request.POST:
-                if len(context.get('results', [])) != 0:
-                    headers = list(context['results'][0].keys())
-                    headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
-                    headers.append('new/used price')
-                    writer.writerow(headers)
-                    for i in context['results']:
-                        row = []
-                        for h in headers:
-                            if h == "new/used price":
-                                if i['is_new']:
-                                    row.append(i['new_price'])
-                                else:
-                                    row.append(i['used_price'])
-                            else:
-                                row.append(i[h])
-                        writer.writerow(row)
-                return response
+                response['Content-Disposition'] = 'attachment; filename=' + context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            else:
+                response['Content-Disposition'] = 'attachment; filename=' + context['tx_type'] + ' Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
 
-            if len(qs) != 0:
-                field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
-                writer.writerow(field_names)
-                for i in qs:
-                    row = []
-                    for f in field_names:
-                        if f == "items":
-                            txs = ', '.join([str(tx) for tx in i.items.all()])
-                            row.append(txs)
-                        elif f == "value":
-                            row.append(i.getValue())
-                        else:
-                            row.append(getattr(i, f))
-                    writer.writerow(row)
-            return response
+            return write_export_table_data(request, context, response)
+
+        if 'export_drive_table' in request.POST:
+            si = io.StringIO()
+            (drive, displayMessage) = google_auth()
+            write_export_table_data(request, context, si)
+
+            if 'itemizedOutput' in request.POST:
+                fileTitle = context['tx_type'] + ' Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+            else:
+                fileTitle = context['tx_type'] + ' Report ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
+
+            upload_to_gdrive(fileTitle, drive, si)
+            print("DISPLAY MSG: " + str(displayMessage) )
+            context['displayMessage'] = displayMessage
+            print("CONTEXT: " + str(context))
+            return render(request, 'inventory/reports/generate_report.html', context)
 
     today = date.today()
     weekAgo = today - timedelta(days=7)
     context['endDate'] = today.strftime('%Y-%m-%d')
     context['startDate'] = weekAgo.strftime('%Y-%m-%d')
     return render(request, 'inventory/reports/generate_report.html', context)
+
+def collect_itemized_data(context):
+    newUniqueItems = {}
+    for res in context['results']: 
+        for tx in res.items.all(): 
+            item_key = (tx.item.id, tx.is_new)
+            item_price = None
+            if tx.is_new and tx.item.new_price != None:
+                item_price = tx.item.new_price
+            elif not tx.is_new and tx.item.used_price != None:
+                item_price = tx.item.used_price
+            if item_key not in newUniqueItems:
+                newUniqueItems[item_key] = {
+                    'id': tx.item.id,
+                    'item': tx.item.name,
+                    'category': "No category" if tx.item.category is None else tx.item.category.name,
+                    'is_new': tx.is_new,
+                    'quantity': tx.quantity,
+                    'new_price': tx.item.new_price,
+                    'used_price': tx.item.used_price,
+                    'value': 0 if item_price is None else tx.quantity*item_price,
+                    'tx_notes': res.notes_description()
+                }
+            else: 
+                newUniqueItems[item_key]['quantity'] += tx.quantity
+                newUniqueItems[item_key]['value'] += 0 if item_price is None else tx.quantity*item_price
+
+                currNotes = newUniqueItems[item_key]['tx_notes']
+                if res.notes and currNotes and str(res.id) not in currNotes: 
+                    currNotes = currNotes + "<br>" + res.notes_description()
+                    newUniqueItems[item_key]['tx_notes'] = currNotes
+
+                currNotes = newUniqueItems[item_key]['tx_notes']
+                if res.notes and currNotes and str(res.id) not in currNotes: 
+                    currNotes = currNotes + "<br>" + res.notes_description()
+                    newUniqueItems[item_key]['tx_notes'] = currNotes
+                
+    context['results'] = list(sorted(newUniqueItems.values(), key=lambda x: (x['item'], "New" if x['is_new'] else "Used")))
+
+def write_export_table_data(request, context, csvObj):
+    qs = context['results']
+    writer = csv.writer(csvObj)
+
+    if 'itemizedOutput' in request.POST:
+        if len(context.get('results', [])) != 0:
+            headers = list(context['results'][0].keys())
+            headers = [x for x in headers if x not in ['tx_notes', 'new_price', 'used_price']]
+            headers.append('new/used price')
+            writer.writerow(headers)
+            for i in context['results']:
+                row = []
+                for h in headers:
+                    if h == "new/used price":
+                        if i['is_new']:
+                            row.append(i['new_price'])
+                        else:
+                            row.append(i['used_price'])
+                    else:
+                        row.append(i[h])
+                writer.writerow(row)
+        return csvObj
+
+    if len(qs) != 0:
+        field_names = [f.name for f in qs.model._meta.get_fields()] + ["value"]
+        totalPrice = 0
+        writer.writerow(field_names)
+        for i in qs:
+            row = []
+            for f in field_names:
+                if f == "items":
+                    txs = ', '.join([str(tx) for tx in i.items.all()])
+                    row.append(txs)
+                elif f == "value":
+                    row.append(i.getValue())
+                    totalPrice += i.getValue()
+                else:
+                    row.append(getattr(i, f))
+            writer.writerow(row)
+        writer.writerow([])
+        writer.writerow(["Total Price: " + str(totalPrice)])
+    return csvObj
+
+def write_export_data(request, context, csvObj):
+    endDatetime = datetime.strptime('{} 23:59:59'.format(context['endDate']), '%Y-%m-%d %H:%M:%S')
+    qs = Checkout.objects.filter(datetime__gte=context['startDate']).filter(datetime__lte=endDatetime).all()
+    writer = csv.writer(csvObj)
+
+    if qs is not None:
+        writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
+
+        uniqueItems = {} 
+
+        for c in qs:
+            for tx in c.items.all():
+                item_key = (tx.item.id, tx.is_new)
+                try: 
+                    originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
+                    adjustedPrice = float(request.POST.get(str(tx.item.id) + '-' + str(tx.is_new) + '-adjustment', originalPrice))
+                except (ValueError, TypeError) as _: # noqa: F841
+                    adjustedPrice = 0
+
+                if item_key not in uniqueItems: 
+                    uniqueItems[item_key] = [
+                        tx.item.name,
+                        "New" if tx.is_new else "Used",
+                        "No category" if tx.item.category is None else tx.item.category.name,
+                        tx.quantity,
+                        adjustedPrice,
+                        0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
+                    ]
+                else: 
+                    item_key = (tx.item.id, tx.is_new)
+                    uniqueItems[item_key][3] += tx.quantity
+                    uniqueItems[item_key][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                    round(uniqueItems[item_key][5], 2)
+        totalPrice = 0
+        for item in uniqueItems.values():
+            totalPrice = totalPrice + item[5]
+        sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
+        for item in sorted_items:
+            writer.writerow(item)
+        writer.writerow([])
+        writer.writerow(["Total Price: " + str(totalPrice)])
+
+    return csvObj
+
+def google_auth():
+    return Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+    # gauth = GoogleAuth(settings_file='settings.yaml')
+    # gauth.LocalWebserverAuth()
+    # return GoogleDrive(gauth)
+
+def upload_to_gdrive(fileTitle, driveObj, csvObj):
+    fileMetaData = {
+        'name': fileTitle,
+        'mimeType': 'application/vnd.google-apps.spreadsheet'
+    }
+
+    csvString = csvObj.getvalue().strip('\r\n')
+    bio = io.BytesIO(csvString.encode('utf-8'))
+    csvUpload = MediaIoBaseUpload(bio, mimetype='text/csv', resumable=True)
+    driveObj.files().create(body=fileMetaData, media_body=csvUpload).execute()
+    # if displayMessage:
+    #     pymsgbox.alert('Report Successfully Exported to Google Drive', 'Google Drive Export', timeout=5000)
+
 
 ######################### ANALYTICS #########################
 @login_required
@@ -367,6 +446,33 @@ def removeitem_action(request, index, location):
 
     return redirect(reverse('Check' + location))
 
+
+def editquantity_action(request, index, location, qty):
+    saved_list = request.session['transactions-' + location]
+    curr_item = json.loads(saved_list[index])
+    if (int(qty) >= 1):
+        curr_item[0]['fields']['quantity'] = qty
+    else:
+        curr_item[0]['fields']['quantity'] = 1
+
+    saved_list[index] = json.dumps(curr_item)
+    request.session['transactions-' + location] = saved_list
+
+    return redirect(reverse('Check' + location))  
+
+def editisnew_action(request, index, location, isnew):
+    saved_list = request.session['transactions-' + location]
+    curr_item = json.loads(saved_list[index])
+    if (isnew == 1):
+        curr_item[0]['fields']['is_new'] = True
+    else:
+        curr_item[0]['fields']['is_new'] = False
+
+    saved_list[index] = json.dumps(curr_item)
+    request.session['transactions-' + location] = saved_list
+
+    return redirect(reverse('Check' + location))  
+
 # Create Family View 
 @login_required
 def createFamily_action(request, location):
@@ -456,13 +562,14 @@ def checkin_action(request):
             transactions.append(deserialized_transaction.object)
 
     context['transactions'] = transactions
-
+    
     if request.method == 'GET':
         addItemForm = AddItemForm()
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
             addItemForm.fields['item'].initial = itemInfo[0]
-            addItemForm.fields['quantity'].initial = itemInfo[1]
+            addItemForm.fields['new_quantity'].initial = itemInfo[1]
+            addItemForm.fields['used_quantity'].initial = itemInfo[2]
             del request.session['itemInfo']
 
         context['formadditem'] = addItemForm
@@ -476,20 +583,24 @@ def checkin_action(request):
         if not form.is_valid():
             return render(request, 'inventory/checkin.html', context)
 
-        # category = form.cleaned_data['category']
         name = form.cleaned_data['item']
-        quantity = form.cleaned_data['quantity']
-        is_new = form.cleaned_data['is_new']
+        new_quantity = form.cleaned_data['new_quantity']
+        used_quantity = form.cleaned_data['used_quantity']
 
         item = Item.objects.filter(name=name).first()
     
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
         if not 'transactions-in' in request.session or not request.session['transactions-in']:
             saved_list = []
         else:
             saved_list = request.session['transactions-in']
 
-        saved_list.append(tx)
+        if used_quantity is not None:
+            used_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=used_quantity, is_new=False, ), ])
+            saved_list.append(used_tx)
+
+        if new_quantity is not None:
+            new_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=new_quantity, is_new=True, ), ])
+            saved_list.append(new_tx)
         request.session['transactions-in'] = saved_list
 
         return redirect(reverse('Checkin'))
@@ -523,7 +634,6 @@ def checkin_action(request):
 @login_required
 def checkout_action(request):
     context = {}
-        
     context['items'] = Item.objects.all()
     context['categories'] = Category.objects.all()
     context['createdFamily'] = 'no family'
@@ -556,7 +666,8 @@ def checkout_action(request):
         if ('itemInfo' in request.session):
             itemInfo = request.session['itemInfo']
             addItemForm.fields['item'].initial = itemInfo[0]
-            addItemForm.fields['quantity'].initial = itemInfo[1]
+            addItemForm.fields['new_quantity'].initial = itemInfo[1]
+            addItemForm.fields['used_quantity'].initial = itemInfo[2]
             del request.session['itemInfo']
 
         return render(request, 'inventory/checkout.html', context)
@@ -572,18 +683,23 @@ def checkout_action(request):
 
         # category = form.cleaned_data['category']
         name = form.cleaned_data['item']
-        quantity = form.cleaned_data['quantity']
-        is_new = form.cleaned_data['is_new']
+        used_quantity = form.cleaned_data['used_quantity']
+        new_quantity = form.cleaned_data['new_quantity']
 
         item = Item.objects.filter(name=name).first()
-    
-        tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=quantity, is_new=is_new), ])
+
         if not 'transactions-out' in request.session or not request.session['transactions-out']:
             saved_list = []
         else:
             saved_list = request.session['transactions-out']
 
-        saved_list.append(tx)
+        if used_quantity is not None:
+            used_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=used_quantity, is_new=False, ), ])
+            saved_list.append(used_tx)
+
+        if new_quantity is not None:
+            new_tx = serializers.serialize("json", [ ItemTransaction(item=item, quantity=new_quantity, is_new=True, ), ])
+            saved_list.append(new_tx)
         request.session['transactions-out'] = saved_list
 
         return redirect(reverse('Checkout'))
@@ -618,10 +734,19 @@ def checkout_action(request):
             tx.save()
 
             checkout.items.add(tx)
-
-            tx.item.quantity -= tx.quantity
+            
+            """ 
+            Description: Hard stops the quantity left from ever being negative
+            If the amount of items that are checked out are greater than the items available, the quantity_left is set to 0.
+            """
+            item_quantity_left = tx.item.quantity
+            quantity_checked_out = tx.quantity
+            if(item_quantity_left <= 0 or (item_quantity_left - quantity_checked_out <= 0)):
+                tx.item.quantity = 0
+            else:
+                tx.item.quantity -= quantity_checked_out
             tx.item.save()
-
+        
         del request.session['transactions-out']
         request.session.modified = True
 
@@ -630,7 +755,7 @@ def checkout_action(request):
   
 def autocomplete_item(request):
     if 'term' in request.GET:
-        qs = Item.objects.filter(name__icontains=request.GET.get('term'))
+        qs = Item.objects.filter(name__icontains=request.GET.get('term'), outdated = False)
         names = list()
         for item in qs:
             names.append(item.name)
@@ -687,3 +812,8 @@ def getPagination(request, objects, count):
     except EmptyPage:
         paginationOut = paginator.page(paginator.num_pages)
     return paginationOut
+
+
+
+
+

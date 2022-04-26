@@ -8,8 +8,17 @@
 {% endblock %}
 
 {% block content %}
+
+<script type="text/javascript">
+  function showUploadMessage() {
+    alert("Your report has been successfully uploaded to Google Drive!")
+  }
+
+</script>
+
 <form class="check-report-form" method="POST" action="{% url 'Report' %}">
 <div class="container">
+
     <div class="row">
         <div class="col">
 
@@ -20,6 +29,12 @@
 
         </div>
     </div>
+
+    {% if displayMessage %}
+    <script>
+        showUploadMessage()
+    </script>
+    {% endif %}
 
     <div class="row mt-5">
       <div class="col">
@@ -59,13 +74,15 @@
         {% if itemizedOutput and tx == "Checkout" %}
           <div class="row">
             <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export (By Item)</button>
+              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export to Device</button>
+              <button id="google-btn" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" name="export_drive" type="submit">Export to Google Drive</button>
             </div>
           </div>
         {% else %}
           <div class="row">
             <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export {% if tx %}(By {{tx}}){% endif %}</button>
+              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export to Device</button>
+              <button id="google-btn" class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_drive_table" type="submit">Export to Google Drive</button>
             </div>
           </div>
           <br>

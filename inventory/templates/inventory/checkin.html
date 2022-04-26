@@ -12,6 +12,26 @@
       align-items: center;
       justify-content: space-between;
     }
+    
+    .divider{
+      width: 10px;
+      height:auto;
+      display:inline-block;
+    }
+
+    .resizedTextbox {
+      width: 50px;
+      height: 40px;
+      padding: 1px
+    }
+
+    table, th, td {
+      padding: 5px;
+    }
+
+    table {
+      border-spacing: 15px;
+    }
 
     #additemform {
       border-left: 1px solid lightgrey;
@@ -27,6 +47,35 @@
 {% block content %}
 
 <div class="container">
+
+  <script type="text/javascript">
+  
+    function changeDropToText(index) {
+      var textBox = document.getElementById('qtyText-' + index)
+      var updateBtn = document.getElementById('updateBtn-' + index)
+      var qtyDropdown = document.getElementById('qtyDropdown-' + index)
+      textBox.style.display='block'
+      updateBtn.style.display='inline-block'
+      qtyDropdown.style.display='none'
+    }
+
+    function updateURLQty(index) {
+      var textBox = document.getElementById('qtyText-' + index)
+      var updateBtn = document.getElementById('updateBtn-' + index)
+      if (textBox.value >= 1) {
+        updateBtn.href = (updateBtn.href).replace('10', textBox.value.toString())
+      } else {
+        updateBtn.href = (updateBtn.href).replace('10', '1')
+      }
+    }
+
+    function autoFill(catName) {
+      var s = document.getElementById('id_item');
+      s.value = catName;
+    }
+  
+  </script>
+
   {% for message in messages %}
     <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
       <p class="mb-0">{{ message }}</p>
@@ -51,11 +100,44 @@
           {% for tx in transactions %}
             <tr> 
                 <th scope="row">{{ tx.item }}</th>
-                <td>{{ tx.quantity }}</td>
-                <td>{% if tx.is_new %} New {% else %} Used {% endif %}</td>
                 <td>
-                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='in' %}" class="btn-sm btn-danger save-notes-on-click">
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="qtyDropdown-{{ forloop.counter0 }}" style='display:block' data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ tx.quantity }}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="qty-menu" id="qtyDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=1%}">1</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=2%}">2</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=3%}">3</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=4%}">4</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=5%}">5</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=6%}">6</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=7%}">7</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=8%}">8</a>
+                    <a class="dropdown-item" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=9%}">9</a>
+                    <button class="dropdown-item" onclick="changeDropToText(index = '{{ forloop.counter0 }}' )" >10+</a>
+                    </div>
+                  </div>
+                  <input type="number" min="1" pattern="[0-9]" onkeypress="return !(event.charCode == 46)" class="resizedTextbox" name="qtyText" onchange="updateURLQty(index = '{{ forloop.counter0 }}')" id="qtyText-{{ forloop.counter0 }}" value=10 style='display:none'/>
+                </td>
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="newDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      {% if tx.is_new %} New {% else %} Used {% endif %}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="new-menu" id="newDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'EditIsNew' index=forloop.counter0 location='in' isnew=1%}">New</a>
+                    <a class="dropdown-item" href="{% url 'EditIsNew' index=forloop.counter0 location='in' isnew=0%}">Used</a>
+                    </div>
+                </div>
+                </td>
+                <td>
+                  <a href="{% url 'RemoveItem' index=forloop.counter0 location='in' %}" class="btn btn-danger btn-sm save-notes-on-click">
                     Remove
+                  </a>
+                  <div class="divider"></div>
+                  <a id="updateBtn-{{ forloop.counter0 }}" href="{% url 'EditQuantity' index=forloop.counter0 location='in' qty=10%}" class="btn btn-warning btn-sm save-notes-on-click" style='display:none'>
+                    Update
                   </a>
                 </td>
             </tr>
@@ -87,6 +169,26 @@
 
     <div class="col-md-4" id="additemform">
       <h4>Add To Cart</h4>
+      <br>
+      <h6 style="text-align:center">Recommended Items</h6>
+      <table>
+        <tr>
+          {% load static %}
+          <td><button id="auto-btn1" class="btn btn-warning" href="#" onClick="autoFill('shirt'); return false;"><img src="{% static 'images/shirt_icon.jpg' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn2" class="btn btn-warning" href="#" onClick="autoFill('pants'); return false;"><img src="{% static 'images/pants.png' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn3" class="btn btn-warning" href="#" onClick="autoFill('underwear'); return false;"><img src="{% static 'images/underwear.png' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn4" class="btn btn-warning" href="#" onClick="autoFill('socks'); return false;"><img src="{% static 'images/socks.png' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn5" class="btn btn-warning" href="#" onClick="autoFill('pj'); return false;"><img src="{% static 'images/pjs.png' %}" width="30" height="30"></button></td>
+        </tr>
+        <tr>
+          <td><button id="auto-btn6" class="btn btn-warning" href="#" onClick="autoFill('shoes'); return false;"><img src="{% static 'images/shoes.png' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn7" class="btn btn-warning" href="#" onClick="autoFill('toy'); return false;"><img src="{% static 'images/toys.png' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn8" class="btn btn-warning" href="#" onClick="autoFill('blanket'); return false;"><img src="{% static 'images/blanket.png' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn9" class="btn btn-warning" href="#" onClick="autoFill('hygiene kit'); return false;"><img src="{% static 'images/hygiene_kit.png' %}" width="30" height="30"></button></td>
+          <td><button id="auto-btn10" class="btn btn-warning" href="#" onClick="autoFill('stuffed animal'); return false;"><img src="{% static 'images/stuffed_animal.png' %}" width="30" height="30"></button></td>
+        </tr>
+       </table>
+       <hr>
       <form method="POST" action="{% url 'Checkin' %}">
           {% for field in formadditem %}
             <div class="fieldWrapper form-group" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
@@ -123,6 +225,9 @@
     		minLength: 2
     	});
 	});
+  $("#auto-btn1, #auto-btn2, #auto-btn3, #auto-btn4, #auto-btn5, #auto-btn6, #auto-btn7, #auto-btn8, #auto-btn9, #auto-btn10").on('click', function(){
+        $("#id_item").autocomplete('search', $("#id_item").val())
+  })
 </script>
 
 {% load static %}

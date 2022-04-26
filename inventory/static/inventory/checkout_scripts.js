@@ -51,4 +51,6 @@ $(document).ready(function() {
     localStorage.removeItem(LOCAL_STORAGE_NOTES)
     localStorage.setItem('old-notes-field', oldNotes) // in case a Checkout validation fails 
   })
+
 });
+
