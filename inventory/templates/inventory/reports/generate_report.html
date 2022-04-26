@@ -1,17 +1,4 @@
 {% extends "inventory/base.html" %}
-{% block page_specific_styles %}
-  <style>
-    .help-info {
-      position: relative;
-      left: 18.5%;
-    }
-
-    .help-info2 {
-      position: relative;
-      left: 19.5%;
-    }
-  </style>
-{% endblock %}
 
 {% block page_specific_scripts %}
   {% if tx == 'Checkout' and itemizedOutput %}
@@ -21,80 +8,16 @@
 {% endblock %}
 
 {% block content %}
+
+<script type="text/javascript">
+  function showUploadMessage() {
+    alert("Your report has been successfully uploaded to Google Drive!")
+  }
+
+</script>
+
 <form class="check-report-form" method="POST" action="{% url 'Report' %}">
 <div class="container">
-    <script type="text/javascript">
-
-    // The Browser API key obtained from the Google API Console.
-    // Replace with your own Browser API key, or your own key.
-    var developerKey = 'AIzaSyBWBb881bGEQvfRRWm6tUXOJexU1j5jd4M';
-
-    // The Client ID obtained from the Google API Console. Replace with your own Client ID.
-    var clientId = "903076341382-g888j3cbjnaqqa1pmbpkgc5cjih5dv9l.apps.googleusercontent.com"
-
-    // Replace with your own project number from console.developers.google.com.
-    // See "Project number" under "IAM & Admin" > "Settings"
-    var appId = "903076341382";
-
-    // Scope to use to access user's Drive items.
-    var scope = ['https://www.googleapis.com/auth/drive.file'];
-
-    var pickerApiLoaded = false;
-    var oauthToken;
-
-    // Use the Google API Loader script to load the google.picker script.
-    function loadPicker() {
-      gapi.load('auth', {'callback': onAuthApiLoad});
-      gapi.load('picker', {'callback': onPickerApiLoad});
-    }
-
-    function onAuthApiLoad() {
-      window.gapi.auth.authorize(
-          {
-            'client_id': clientId,
-            'scope': scope,
-            'immediate': false
-          },
-          handleAuthResult);
-    }
-
-    function onPickerApiLoad() {
-      pickerApiLoaded = true;
-      createPicker();
-    }
-
-    function handleAuthResult(authResult) {
-      if (authResult && !authResult.error) {
-        oauthToken = authResult.access_token;
-        createPicker();
-      }
-    }
-
-    // Create and render a Picker object for searching images.
-    function createPicker() {
-      if (pickerApiLoaded && oauthToken) {
-        var uploadView = new google.picker.DocsUploadView();
-        var picker = new google.picker.PickerBuilder()
-            .setAppId(appId)
-            .setOAuthToken(oauthToken)
-            .addView(uploadView)
-            .setDeveloperKey(developerKey)
-            .setCallback(pickerCallback)
-            .build();
-         picker.setVisible(true);
-      }
-    }
-
-    // A simple callback implementation.
-    function pickerCallback(data) {
-      if (data.action == google.picker.Action.PICKED) {
-        var fileName = data.docs[0].name;
-        alert('Successfully uploaded ' + fileName  + ' to Google Drive!');
-      }
-    }
-    </script>
-    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-
 
     <div class="row">
         <div class="col">
@@ -106,6 +29,12 @@
 
         </div>
     </div>
+
+    {% if displayMessage %}
+    <script>
+        showUploadMessage()
+    </script>
+    {% endif %}
 
     <div class="row mt-5">
       <div class="col">
@@ -145,23 +74,16 @@
         {% if itemizedOutput and tx == "Checkout" %}
           <div class="row">
             <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export (By Item)</button>
-              <button id="google-btn" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" onclick="loadPicker()" type="button">Upload CSV to Google Drive</button>
+              <button class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}"  name="export" type="submit">Export to Device</button>
+              <button id="google-btn" class="btn btn-lg btn-warning {% if tx == 'Checkin' or not results %}disabled{% endif %}" name="export_drive" type="submit">Export to Google Drive</button>
             </div>
           </div>
         {% else %}
           <div class="row">
             <div class="col mt-2"><br>
-              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export {% if tx %}(By {{tx}}){% endif %}</button>
-              <button id="google-btn" class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" onclick="loadPicker()" type="button">Upload CSV to Google Drive</button>
+              <button class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_table" type="submit">Export to Device</button>
+              <button id="google-btn" class="btn btn-lg btn-warning {% if not results %}disabled{% endif %}" name="export_drive_table" type="submit">Export to Google Drive</button>
             </div>
-            {% if tx == 'Checkin'%}
-              <small class="help-info" > Note: CSV must be downloaded on your 
-              <br> device before uploading to Google Drive. </small>
-            {% else %}
-              <small class="help-info2" > Note: CSV must be downloaded on your 
-              <br> device before uploading to Google Drive. </small>
-            {% endif %}
           </div>
           <br>
         {% endif %}

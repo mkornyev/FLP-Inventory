@@ -13,3 +13,7 @@ db_backups/
 staticfiles/*
 .env
 env
+settings.yaml
+django_ec2.pem
+client_secrets.json
+token_drive_v3.pickle

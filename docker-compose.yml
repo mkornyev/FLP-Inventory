@@ -2,14 +2,44 @@
 version: "3.3"
 
 services:
+
+  # Django doesn't expose any ports! all traffic is routed via Caddy
+
   django:
     container_name: django
     env_file:
       - ./deploy/env
     build:
       context: .
-    restart: unless-stopped
     ports:
-      - 80:8000
+      - 8080:8080
+    restart: unless-stopped
     volumes:
       - ./deploy/db.sqlite3:/django_ec2/db.sqlite3:rw
+
+  # We use Caddy as a reverse proxy to serve HTTP/S requests to the server
+  # -> traffic is forwarded to Django
+  # -> Django returns unencrypted HTTP responses to Caddy
+  # -> Caddy forwards encrypted HTTPS response to client
+  #
+  # Caddy also takes care of automatically renewing SSL certs via LetsEncrypt (DNS challenge)
+  #
+  # See:
+  # - https://caddyserver.com/docs/automatic-https
+
+  caddy:
+    container_name: caddy
+    env_file:
+      - ./deploy/env
+    build:
+      context: ./docker/caddy
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./deploy/caddy/data:/data
+      - ./deploy/caddy/config:/config
+
+

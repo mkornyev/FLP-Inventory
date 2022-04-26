@@ -116,8 +116,8 @@ class CreateItemForm(forms.Form):
 class AddItemForm(forms.Form):
     item = forms.CharField(max_length=50,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
-    quantity = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    is_new = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}), label="New")
+    new_quantity = forms.IntegerField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    used_quantity = forms.IntegerField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     required_css_class = 'required'
 
     # Customizes form validation for properties that apply to more
@@ -126,6 +126,13 @@ class AddItemForm(forms.Form):
         # Calls our parent (forms.Form) .clean function, gets a dictionary
         # of cleaned data as a result
         cleaned_data = super().clean()
+
+        used_quant = cleaned_data.get('used_quantity')
+        new_quant = cleaned_data.get('new_quantity')
+
+        #Checks that quantity input of both used and new quantity sums to greater than 0
+        if used_quant==None and new_quant==None:
+            raise forms.ValidationError("Total inputted quantity must be above zero.")
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
@@ -142,20 +149,28 @@ class AddItemForm(forms.Form):
         # dictionary
         return name 
 
-    def clean_quantity(self):
-        # Confirms the quantity is above zero
-        quantity = self.cleaned_data.get('quantity')
+    def clean_used_quantity(self):
+        # Confirms the quantity is above zero if a value is inputted
+        used_quantity = self.cleaned_data.get('used_quantity')
 
-        if quantity <= 0:
+        if used_quantity is not None and used_quantity <= 0:
             raise forms.ValidationError("Quantity must be above zero.")
 
         # We must return the cleaned data we got from the cleaned_data
         # dictionary
-        return quantity
-    
-    def clean_is_new(self):
-        is_new = self.cleaned_data.get('is_new')
-        return is_new
+        return used_quantity
+
+    def clean_new_quantity(self):
+        # Confirms the quantity is above zero if a value is inputted
+        new_quantity = self.cleaned_data.get('new_quantity')
+
+        if new_quantity is not None and new_quantity <= 0:
+           raise forms.ValidationError("Quantity must be above zero.")
+
+        # We must return the cleaned data we got from the cleaned_data
+        # dictionary
+        return new_quantity
+
     
 class CheckOutForm(forms.Form):
     family = forms.CharField(max_length=50,

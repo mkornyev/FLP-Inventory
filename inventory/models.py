@@ -55,9 +55,10 @@ class AgeRange(models.Model):
 class Item(models.Model):
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True) # CASCADE - deletes all items if a Category is deleted
   name = models.CharField(max_length=50, blank=False, null=False, unique=True)
-  new_price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
   used_price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+  new_price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
   quantity = models.IntegerField(default=0)
+  outdated = models.BooleanField(default=False, blank=False, null=False)
   
   def __str__(self):
     return "{}".format(self.name)
