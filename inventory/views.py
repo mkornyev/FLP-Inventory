@@ -105,6 +105,7 @@ def generate_report(request):
 
         if 'export' in request.POST:
             response = HttpResponse()
+<<<<<<< HEAD
             response['Content-Disposition'] = 'attachment; filename=Checkout Report By Item ' + request.POST['start-date'] + " to " + request.POST['end-date'] + '.csv'
             return write_export_data(request, context, response)
 
@@ -117,6 +118,46 @@ def generate_report(request):
             upload_to_gdrive(fileTitle, drive, si)
             context['displayMessage'] = displayMessage
             return render(request, 'inventory/reports/generate_report.html', context)
+=======
+            response['Content-Disposition'] = 'attachment; filename=data.csv'
+            writer = csv.writer(response)
+    
+            if qs is not None:
+                writer.writerow(["item", "new/used", "category", "quantity", "new/used price", "total value"])
+
+                uniqueItems = {} 
+
+                for c in qs:
+                    for tx in c.items.all():
+                        item_key = (tx.item.id, tx.is_new)
+                        try: 
+                            originalPrice = tx.item.new_price if tx.is_new else tx.item.used_price
+                            adjustedPrice = float(request.POST.get(str(tx.item.id) + '-' + str(tx.is_new) + '-adjustment', originalPrice))
+                        except (ValueError, TypeError) as _: # noqa: F841
+                            adjustedPrice = 0
+
+                        if item_key not in uniqueItems: 
+                            uniqueItems[item_key] = [
+                                tx.item.name,
+                                "New" if tx.is_new else "Used",
+                                "No category" if tx.item.category is None else tx.item.category.name,
+                                tx.quantity,
+                                adjustedPrice,
+                                0 if adjustedPrice is None else round(tx.quantity*adjustedPrice, 2)
+                            ]
+                        else: 
+                            item_key = (tx.item.id, tx.is_new)
+                            uniqueItems[item_key][3] += tx.quantity
+                            uniqueItems[item_key][5] += 0 if adjustedPrice is None else tx.quantity*adjustedPrice
+                            round(uniqueItems[item_key][5], 2)
+                
+                sorted_items = list(sorted(uniqueItems.values(), key=lambda x: (x[0], x[1])))
+                for item in sorted_items:
+                    writer.writerow(item)
+
+                writer.writerow(["Total Value:", "new/used", "category", "quantity", "new/used price", "total value"])
+            return response
+>>>>>>> f7ebf2960e38db4743359396fd8bafbfe9cbb4f5
 
         if 'itemizedOutput' in request.POST:
             context['itemizedOutput'] = request.POST['itemizedOutput']
